@@ -1,0 +1,84 @@
+sequenceDiagram
+    autonumber
+
+%% DEFINIÇÃO DE APELIDOS (Para as caixas não ficarem gigantes)
+    actor CL as Cliente (HTTP)
+    participant FT as Filter
+    participant TK as TokenService
+    participant CT as Controller
+    participant UC as UseCase
+    participant AS as AppService
+    participant DE as Domain
+    participant RP as RepoAdapter
+    participant DB as DB (PostgreSQL/Mongo)
+
+%% 1. AUTH & SECURITY
+    rect rgb(230, 245, 255)
+        Note over CL, DB: AUTH & SECURITY
+        CL->>FT: POST /auth/login
+        FT->>CT: Passa s/ auth
+        CT->>TK: generateToken(user)
+        TK-->>CL: 200 OK {token}
+
+        CL->>FT: Req + Bearer JWT
+        FT->>TK: validateToken()
+        FT->>RP: findById(userId)
+        RP->>DB: SELECT...
+        DB-->>FT: UserEntity
+        FT->>FT: set SecurityContext
+    end
+
+%% 2. CORE: ANÚNCIOS (GERAR E LER)
+    rect rgb(230, 255, 230)
+        Note over CL, DB: GESTÃO DE ANÚNCIOS
+        CL->>CT: GET /anuncios
+        CT->>UC: lerAnuncios()
+        UC->>AS: TryGetByUserService
+        AS->>DB: find users/turmas
+        UC->>RP: findStatements()
+        RP->>DB: Mongo find
+        DB-->>CL: 200 OK (PageResult)
+
+        CL->>CT: POST /anuncios/management
+        CT->>UC: gerarAnuncio()
+        UC->>UC: orquestrarTarget()
+        UC->>AS: TrySaveService
+        AS->>RP: save(statement)
+        RP->>DB: Mongo insert
+        CT-->>CL: 200 OK
+    end
+
+%% 3. USUÁRIOS & SENHA
+    rect rgb(255, 255, 210)
+        Note over CL, DB: USUÁRIOS E SENHA
+        CL->>CT: POST /management/usuarios
+        CT->>UC: salvarUsuario()
+        UC->>DB: findByEmail
+        alt Novo / Existente
+            UC->>AS: TrySaveUserService
+            AS->>DB: INSERT/UPDATE
+        end
+
+        CL->>CT: POST /solicitar-senha
+        CT->>UC: solicitarAlteracao()
+        UC->>AS: StartChangeService
+        AS->>DE: sendUpdatePasswordToken()
+        AS->>DB: UPDATE token
+        CT-->>CL: 200 OK
+    end
+
+%% 4. MENSAGENS (CHAT)
+    rect rgb(255, 240, 230)
+        Note over CL, DB: SISTEMA DE MENSAGENS (CHAT)
+        CL->>CT: POST /mensagens/{id}
+        CT->>UC: enviarMensagem()
+        UC->>UC: validaMensagem(Regras)
+        UC->>AS: TrySaveService
+        AS->>DB: Mongo insert
+
+        CL->>CT: GET /mensagens/{id}
+        CT->>UC: lerMensagens()
+        UC->>RP: ListarMensagens()
+        RP->>DB: Mongo findChat
+        DB-->>CL: 200 OK
+    end

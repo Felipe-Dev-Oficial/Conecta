@@ -1,7 +1,0 @@
-package br.edu.EtecZonaLeste.Conecta.Domain.Entities.User.BaseUsuarioGeral;
-
-public enum Atividade {
-
-    ATIVO,
-    INATIVO
-}

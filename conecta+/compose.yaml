@@ -1,0 +1,75 @@
+services:
+  app:
+    build: .
+    container_name: connecta_app
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+    environment:
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/connecta_postgres
+        - SPRING_DATASOURCE_USERNAME=admin
+        - SPRING_DATASOURCE_PASSWORD=admin
+
+        - SPRING_DATA_MONGODB_UUID_REPRESENTATION=standard
+        - MONGO_HOST=mongodb
+
+        - SPRING_DATA_REDIS_HOST=redis
+        - SPRING_DATA_REDIS_PORT=6379
+
+        - MAIL_USERNAME=${MAIL_USERNAME}
+        - MAIL_PASSWORD=${MAIL_PASSWORD}
+    networks:
+      - connecta-network
+  postgres:
+    image: postgres:latest
+    container_name: connecta_postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=connecta_postgres
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d connecta_postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - connecta-network
+    volumes:
+      - postgres_data:/var/lib/postgresql
+  mongodb:
+    image: mongo:latest
+    container_name: connecta_mongo
+    ports:
+      - 27017:27017
+    restart: always
+    networks:
+      - connecta-network
+    volumes:
+      - mongo_data:/data/db
+  redis:
+    image: redis:latest
+    container_name: connecta_cache
+    ports:
+      - 6379:6379
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    networks:
+      - connecta-network
+networks:
+  connecta-network:
+    driver: bridge
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:

@@ -1,0 +1,49 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG           # Mostra detalhes das requisições e por que falharam
+    org.springframework.security: DEBUG      # Pra ter certeza que a segurança não tá barrando nada
+    com.fasterxml.jackson: TRACE             # Mostra exatamente qual campo do JSON deu erro
+    org.hibernate.SQL: DEBUG
+spring:
+  application:
+    name: connecta
+  cache:
+    type: redis
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/connecta_postgres}
+    username: admin
+    password: admin
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_HOST:localhost}:27017/connecta_mongo
+      uuid-representation: standard
+
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

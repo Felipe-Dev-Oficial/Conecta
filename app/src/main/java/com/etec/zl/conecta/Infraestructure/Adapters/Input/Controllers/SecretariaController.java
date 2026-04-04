@@ -4,9 +4,9 @@ import com.etec.zl.conecta.Application.DTOs.Messages.DTOReturnMessageSecretaria;
 import com.etec.zl.conecta.Application.DTOs.Turmas.DTOCadastroTurma;
 import com.etec.zl.conecta.Application.DTOs.Users.DTOCadastro;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoSecretaria;
-import com.etec.zl.conecta.Application.UseCases.Messages.LerMensagensSecretariaUseCase;
-import com.etec.zl.conecta.Application.UseCases.Turmas.*;
-import com.etec.zl.conecta.Application.UseCases.Users.*;
+import com.etec.zl.conecta.Application.Ports.Input.Messages.LerMensagensSecretariaPort;
+import com.etec.zl.conecta.Application.Ports.Input.Turmas.*;
+import com.etec.zl.conecta.Application.Ports.Input.Users.*;
 import com.etec.zl.conecta.Domain.Entities.Turmas.Turma;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import lombok.RequiredArgsConstructor;
@@ -21,25 +21,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SecretariaController {
 
-    private final AlterarTipoUseCase alterarTipoUseCase;
-    private final DeletarUsuarioUseCase deletarUsuarioUseCase;
-    private final NovosUsuariosUseCase novosUsuariosUseCase;
-    private final SalvarUsuarioUseCase salvarUsuarioUseCase;
-    private final SecretariaBuscaPorIdUseCase secretariaBuscaPorIdUseCase;
-    private final SecretariaListagemPorCursantesUseCase secretariaListagemPorCursantesUseCase;
-    private final SecretariaListagemPorFuncionariosUseCase secretariaListagemPorFuncionariosUseCase;
-    private final SecretariaListagemPorNomeUseCase secretariaListagemPorNomeUseCase;
-    private final SecretariaListagemPorTurmaUseCase secretariaListagemPorTurmaUseCase;
-    private final SolicitarAlteracaoEmailUseCase solicitarAlteracaoEmailUseCase;
-    private final SolicitarAlteracaoSenhaUseCase solicitarAlteracaoSenhaUseCase;
-    private final EncontrarTurmaPorIdUseCase encontrarTurmaPorIdUseCase;
-    private final ListarTodasAsTurmasAtuaisUseCase listarTodasAsTurmasAtuaisUseCase;
-    private final ListarTodasAsTurmasUseCase listarTodasAsTurmasUseCase;
-    private final ListarTurmasPorCursoAtuaisUseCase listarTurmasPorCursoAtuaisUseCase;
-    private final ListarTurmasPorCursoUseCase listarTurmasPorCursoUseCase;
-    private final NovasTurmasUseCase novasTurmasUseCase;
-    private final PassaModuloUseCase passaModuloUseCase;
-    private final LerMensagensSecretariaUseCase lerMensagensSecretariaUseCase;
+    private final AlterarTipoPort alterarTipoPort;
+    private final DeletarUsuarioPort deletarUsuarioPort;
+    private final NovosUsuariosPort novosUsuariosPort;
+    private final SalvarUsuarioPort salvarUsuarioPort;
+    private final SecretariaBuscaPorIdPort secretariaBuscaPorIdPort;
+    private final SecretariaListagemPorCursantesPort secretariaListagemPorCursantesPort;
+    private final SecretariaListagemPorFuncionariosPort secretariaListagemPorFuncionariosPort;
+    private final SecretariaListagemPorNomePort secretariaListagemPorNomePort;
+    private final SecretariaListagemPorTurmaPort secretariaListagemPorTurmaPort;
+    private final SolicitarAlteracaoEmailPort solicitarAlteracaoEmailPort;
+    private final SolicitarAlteracaoSenhaPort solicitarAlteracaoSenhaPort;
+    private final EncontraTurmaPorIdPort encontraTurmaPorIdPort;
+    private final ListarTodasAsTurmasAtuaisPort listarTodasAsTurmasAtuaisPort;
+    private final ListarTodasAsTurmasPort listarTodasAsTurmasPort;
+    private final ListarTurmasPorCursoAtuaisPort listarTurmasPorCursoAtuaisPort;
+    private final ListarTurmasPorCursoPort listarTurmasPorCursoPort;
+    private final NovasTurmasPort novasTurmasPort;
+    private final PassaModuloPort passaModuloPort;
+    private final LerMensagensSecretariaPort lerMensagensSecretariaPort;
 
     @GetMapping("/alunos")
     public PageResult<DTORetornoSecretaria> lerCursantes(
@@ -47,7 +47,7 @@ public class SecretariaController {
             @RequestParam(defaultValue = "20") int size
     ) {
         var request = new PageRequest(page, size);
-        return secretariaListagemPorCursantesUseCase.secretariaListagemPorCursantes(request);
+        return secretariaListagemPorCursantesPort.secretariaListagemPorCursantes(request);
     }
 
     @GetMapping("/alunos/nome/{nome}")
@@ -57,7 +57,7 @@ public class SecretariaController {
             @RequestParam(defaultValue = "20") int size
     ) {
         var request = new PageRequest(page, size);
-        return secretariaListagemPorNomeUseCase.secretariaListagemPorFuncionarios(new Name(nome), request);
+        return secretariaListagemPorNomePort.secretariaListagemPorFuncionarios(new Name(nome), request);
     }
 
     @GetMapping("/alunos/turma/{idTurma}")
@@ -67,7 +67,7 @@ public class SecretariaController {
             @RequestParam(defaultValue = "20") int size
     ) {
         var request = new PageRequest(page, size);
-        return secretariaListagemPorTurmaUseCase.secretariaListagemPorTurma(idTurma, request);
+        return secretariaListagemPorTurmaPort.secretariaListagemPorTurma(idTurma, request);
     }
 
     @GetMapping("/funcionarios")
@@ -76,45 +76,45 @@ public class SecretariaController {
             @RequestParam(defaultValue = "20") int size
     ) {
         var request = new PageRequest(page, size);
-        return secretariaListagemPorFuncionariosUseCase.secretariaListagemPorFuncionarios(request);
+        return secretariaListagemPorFuncionariosPort.secretariaListagemPorFuncionarios(request);
     }
 
     @GetMapping("/usuarios/{id}")
     public DTORetornoSecretaria buscarUsuario(@PathVariable String id) {
-        return secretariaBuscaPorIdUseCase.secretariaBuscaPorId(id);
+        return secretariaBuscaPorIdPort.secretariaBuscaPorId(id);
     }
 
     @PostMapping("/usuarios")
     @ResponseStatus(HttpStatus.CREATED)
     public void salvarUsuario(@RequestBody DTOCadastro dto) {
-        salvarUsuarioUseCase.salvarUsuario(dto);
+        salvarUsuarioPort.salvarUsuario(dto);
     }
 
     @PostMapping("/usuarios/lote")
     @ResponseStatus(HttpStatus.CREATED)
     public void salvarUsuariosLote(@RequestBody List<DTOCadastro> dtos) {
-        novosUsuariosUseCase.novosUsuarios(dtos);
+        novosUsuariosPort.novosUsuarios(dtos);
     }
 
     @DeleteMapping("/usuarios/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletarUsuario(@PathVariable String id) {
-        deletarUsuarioUseCase.deletarUsuario(id);
+        deletarUsuarioPort.deletarUsuario(id);
     }
 
     @PatchMapping("/usuarios/{id}/tipo")
     public void alterarTipo(@PathVariable String id, @RequestParam Tipo tipo) {
-        alterarTipoUseCase.alterarTipo(id, tipo);
+        alterarTipoPort.alterarTipo(id, tipo);
     }
 
     @PostMapping("/usuarios/{id}/solicitar-senha")
     public void solicitarSenha(@PathVariable String id) {
-        solicitarAlteracaoSenhaUseCase.solicitarAlteracaoSenha(id);
+        solicitarAlteracaoSenhaPort.solicitarAlteracaoSenha(id);
     }
 
     @PostMapping("/usuarios/{id}/solicitar-email")
     public void solicitarEmail(@PathVariable String id) {
-        solicitarAlteracaoEmailUseCase.solicitarAlteracaoEmail(id);
+        solicitarAlteracaoEmailPort.solicitarAlteracaoEmail(id);
     }
 
     @GetMapping("/turmas")
@@ -122,7 +122,7 @@ public class SecretariaController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         var request = new PageRequest(page, size);
-        return listarTodasAsTurmasUseCase.findAllTurmas(request);
+        return listarTodasAsTurmasPort.findAllTurmas(request);
     }
 
     @GetMapping("/turmas/atuais")
@@ -130,12 +130,12 @@ public class SecretariaController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         var request = new PageRequest(page, size);
-        return listarTodasAsTurmasAtuaisUseCase.findAllTurmasAtuais(request);
+        return listarTodasAsTurmasAtuaisPort.findAllTurmasAtuais(request);
     }
 
     @GetMapping("/turmas/{id}")
     public Turma buscarTurma(@PathVariable UUID id) {
-        return encontrarTurmaPorIdUseCase.findTurmaPorId(id);
+        return encontraTurmaPorIdPort.findTurmaPorId(id);
     }
 
     @GetMapping("/turmas/curso")
@@ -144,7 +144,7 @@ public class SecretariaController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         var request = new PageRequest(page, size);
-        return listarTurmasPorCursoUseCase.findAllTurmasByCurso(curso, request);
+        return listarTurmasPorCursoPort.findAllTurmasByCurso(curso, request);
     }
 
     @GetMapping("/turmas/curso/{curso}/atuais")
@@ -153,27 +153,28 @@ public class SecretariaController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         var request = new PageRequest(page, size);
-        return listarTurmasPorCursoAtuaisUseCase.findAllTurmasByCursoAtuais(curso, request);
+        return listarTurmasPorCursoAtuaisPort.findAllTurmasByCursoAtuais(curso, request);
     }
 
     @PostMapping("/turmas")
     @ResponseStatus(HttpStatus.CREATED)
     public void criarTurmas(@RequestBody List<DTOCadastroTurma> dtos) {
-        novasTurmasUseCase.cadastroTurmas(dtos);
+        novasTurmasPort.cadastroTurmas(dtos);
     }
 
     @PostMapping("/turmas/passar-modulo")
     public void proximoModulo() {
-        passaModuloUseCase.passaModulo();
+        passaModuloPort.passaModulo();
     }
 
     @GetMapping("/mensagens/sender/{sender}/receiver/{receiver}")
     public PageResult<DTOReturnMessageSecretaria> listarMensagens(
-            @PathVariable String sender, @PathVariable String receiver,
+            @PathVariable String sender,
+            @PathVariable String receiver,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         var request = new PageRequest(page, size);
-        return lerMensagensSecretariaUseCase.lerMensagensSecretaria(sender, receiver, request);
+        return lerMensagensSecretariaPort.lerMensagensSecretaria(sender, receiver, request);
     }
 }

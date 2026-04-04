@@ -1,4 +1,27 @@
 services:
+  nginx:
+    image: nginx:latest
+    container_name: connecta_nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+      - ui
+    networks:
+      - connecta-network
+  ui:
+    build: ./ui
+    container_name: connecta_ui
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      app:
+        condition: service_started
+    networks:
+      - connecta-network
   app:
     build: ./app
 

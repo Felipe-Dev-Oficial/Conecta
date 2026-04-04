@@ -17,7 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/connecta/mensagens")
+@RequestMapping("/conecta/mensagens")
 @RequiredArgsConstructor
 public class MensagensController {
 

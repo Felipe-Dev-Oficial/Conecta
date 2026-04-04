@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("connecta/alterador")
+@RequestMapping("conecta/alterador")
 @RequiredArgsConstructor
 public class AlteratorController {
 

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("connecta/faqs")
+@RequestMapping("conecta/faqs")
 @RequiredArgsConstructor
 public class FaqController {
 

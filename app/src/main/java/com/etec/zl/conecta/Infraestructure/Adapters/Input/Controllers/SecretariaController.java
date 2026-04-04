@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("connecta/management")
+@RequestMapping("conecta/management")
 @RequiredArgsConstructor
 public class SecretariaController {
 

@@ -7,12 +7,12 @@ logging:
     org.hibernate.SQL: DEBUG
 spring:
   application:
-    name: connecta
+    name: conecta
   cache:
     type: redis
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/connecta_postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/conecta_postgres}
     username: admin
     password: admin
 
@@ -29,7 +29,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://${MONGO_HOST:localhost}:27017/connecta_mongo
+      uri: mongodb://${MONGO_HOST:localhost}:27017/conecta_mongo
       uuid-representation: standard
 
     redis:

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("connecta/auth")
+@RequestMapping("conecta/auth")
 @RequiredArgsConstructor
 public class AuthController {
 

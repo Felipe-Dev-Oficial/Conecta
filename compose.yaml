@@ -1,7 +1,7 @@
 services:
   nginx:
     image: nginx:latest
-    container_name: connecta_nginx
+    container_name: conecta_nginx
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
@@ -10,10 +10,10 @@ services:
       - app
       - ui
     networks:
-      - connecta-network
+      - conecta-network
   ui:
     build: ./ui
-    container_name: connecta_ui
+    container_name: conecta_ui
     restart: always
     ports:
       - 3000:3000
@@ -21,11 +21,11 @@ services:
       app:
         condition: service_started
     networks:
-      - connecta-network
+      - conecta-network
   app:
     build: ./app
 
-    container_name: connecta_app
+    container_name: conecta_app
     ports:
       - 8080:8080
     depends_on:
@@ -36,7 +36,7 @@ services:
       redis:
         condition: service_started
     environment:
-        - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/connecta_postgres
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/conecta_postgres
         - SPRING_DATASOURCE_USERNAME=admin
         - SPRING_DATASOURCE_PASSWORD=admin
 
@@ -49,39 +49,39 @@ services:
         - MAIL_USERNAME=${MAIL_USERNAME}
         - MAIL_PASSWORD=${MAIL_PASSWORD}
     networks:
-      - connecta-network
+      - conecta-network
   postgres:
     image: postgres:latest
-    container_name: connecta_postgres
+    container_name: conecta_postgres
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_DB=connecta_postgres
+      - POSTGRES_DB=conecta_postgres
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin -d connecta_postgres" ]
+      test: [ "CMD-SHELL", "pg_isready -U admin -d conecta_postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: always
     networks:
-      - connecta-network
+      - conecta-network
     volumes:
       - postgres_data:/var/lib/postgresql
   mongodb:
     image: mongo:latest
-    container_name: connecta_mongo
+    container_name: conecta_mongo
     ports:
       - 27017:27017
     restart: always
     networks:
-      - connecta-network
+      - conecta-network
     volumes:
       - mongo_data:/data/db
   redis:
     image: redis:latest
-    container_name: connecta_cache
+    container_name: conecta_cache
     ports:
       - 6379:6379
     restart: always
@@ -89,9 +89,9 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - connecta-network
+      - conecta-network
 networks:
-  connecta-network:
+  conecta-network:
     driver: bridge
 volumes:
   postgres_data:

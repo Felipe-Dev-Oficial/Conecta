@@ -7,7 +7,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - app
+      - api
       - ui
     networks:
       - conecta-network
@@ -18,14 +18,14 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      app:
+      api:
         condition: service_started
     networks:
       - conecta-network
-  app:
-    build: ./app
+  api:
+    build: ./api
 
-    container_name: conecta_app
+    container_name: conecta_api
     ports:
       - 8080:8080
     depends_on:

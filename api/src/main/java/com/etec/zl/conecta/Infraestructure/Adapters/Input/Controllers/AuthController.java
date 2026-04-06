@@ -1,6 +1,5 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Input.Controllers;
 
-import com.etec.zl.conecta.Domain.Entities.Users.User;
 import com.etec.zl.conecta.Infraestructure.Security.Models.DTOLogin;
 import com.etec.zl.conecta.Infraestructure.Security.Models.UserPrincipal;
 import com.etec.zl.conecta.Infraestructure.Security.Service.TokenService;

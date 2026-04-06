@@ -15,7 +15,7 @@ import { environment } from '../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SecretariaService {
-  private base = `${environment.apiUrl}/conecta/management`;
+  private base = `${environment.apiUrl}/management`;
 
   constructor(private http: HttpClient) {}
 

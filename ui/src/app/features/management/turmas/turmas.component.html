@@ -9,7 +9,7 @@
     </div>
     <div style="display: flex; gap: 8px">
       <button class="btn btn-ghost btn-sm" (click)="passarModulo()">📈 Passar Módulo</button>
-      <button class="btn btn-primary btn-sm" (click)="showNova.set(true)">+ Nova Turma</button>
+      <button class="btn btn-primary btn-sm" (click)="abrirNova()">+ Nova Turma</button>
     </div>
   </div>
 
@@ -75,29 +75,55 @@
   }
 </div>
 
-<!-- Modal: Nova Turma -->
+<!-- Modal: Nova(s) Turma(s) -->
 @if (showNova()) {
   <div class="modal-backdrop" (click)="showNova.set(false)">
-    <div class="modal" (click)="$event.stopPropagation()" style="max-width: 400px">
+    <div class="modal modal-turmas" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Nova Turma</h3>
         <button class="btn btn-ghost btn-icon btn-sm" (click)="showNova.set(false)">✕</button>
       </div>
+
       <div class="modal-body">
-        <div class="field">
-          <label>Curso</label>
-          <select class="input" [(ngModel)]="formCurso">
-            @for (c of cursos; track c) {
-              <option [value]="c">{{ c }}</option>
-            }
-          </select>
-        </div>
-        <div class="field">
-          <label>Quantidade de Módulos</label>
-          <input class="input" type="number" [(ngModel)]="formModulos" min="1" placeholder="Ex: 6" />
-        </div>
+        @for (item of lote; track $index; let i = $index) {
+          <div class="lote-card">
+            <div class="lote-card-header">
+              <span class="font-display" style="font-size: 13px; font-weight: 600; color: var(--text-muted)">
+                Turma {{ i + 1 }}
+              </span>
+              @if (lote.length > 1) {
+                <button class="btn btn-ghost btn-icon btn-sm" (click)="remover(i)" title="Remover">✕</button>
+              }
+            </div>
+            <div class="lote-grid">
+              <div class="field">
+                <label>Curso</label>
+                <select class="input" [(ngModel)]="item.curso">
+                  @for (c of cursos; track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label>Qtd. de Módulos</label>
+                <input class="input" type="number" [(ngModel)]="item.modulos" min="1" placeholder="Ex: 6" />
+              </div>
+            </div>
+          </div>
+        }
+
+        <button class="btn btn-ghost btn-sm btn-add-lote" (click)="adicionar()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Adicionar Turma
+        </button>
       </div>
+
       <div class="modal-footer">
+        <span class="text-muted" style="font-size: 13px">{{ lote.length }} turma(s)</span>
         <button class="btn btn-ghost" (click)="showNova.set(false)">Cancelar</button>
         <button class="btn btn-primary" (click)="criar()" [disabled]="saving()">
           @if (saving()) { <span class="spinner"></span> } Criar

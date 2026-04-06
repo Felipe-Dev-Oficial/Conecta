@@ -42,11 +42,10 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         return http
-                .csrf(c-> c.disable())
-                .cors(c-> c.configure(http))
-                .sessionManagement(s-> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(c -> c.disable())
+                .cors(c -> c.configurationSource(corsConfigurationSource())) // ← aqui
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .anyRequest().permitAll()

@@ -4,3 +4,84 @@
   flex-wrap: wrap;
   align-items: center;
 }
+
+/* ── Turmas dinâmicas ─────────────────────────────────────────────────────── */
+.turmas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.turma-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-remove {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.btn-remove:hover {
+  color: var(--danger, #e05252);
+}
+
+/* ── Modal lote ───────────────────────────────────────────────────────────── */
+.modal-lote {
+  max-width: 680px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-lote .modal-body {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lote-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: var(--bg-0);
+}
+
+.lote-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.lote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 500px) {
+  .lote-grid { grid-template-columns: 1fr; }
+}
+
+.btn-add-lote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+
+.btn-add-lote:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}

@@ -7,7 +7,10 @@
         <p class="text-muted">Gerenciamento de alunos e funcionários</p>
       </div>
     </div>
-    <button class="btn btn-primary btn-sm" (click)="abrirCadastro()">+ Novo Usuário</button>
+    <div style="display: flex; gap: 8px">
+      <button class="btn btn-ghost btn-sm" (click)="abrirLote()">📋 Cadastro em Lote</button>
+      <button class="btn btn-primary btn-sm" (click)="abrirCadastro()">+ Novo Usuário</button>
+    </div>
   </div>
 
   <div class="search-bar">
@@ -79,7 +82,7 @@
   }
 </div>
 
-<!-- Modal: Novo Usuário -->
+<!-- ─── Modal: Novo Usuário ──────────────────────────────────────────────────── -->
 @if (showCadastro()) {
   <div class="modal-backdrop" (click)="showCadastro.set(false)">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -110,12 +113,47 @@
         </div>
         <div class="field">
           <label>Tipo</label>
-          <select class="input" [(ngModel)]="form.tipo">
+          <select class="input" [(ngModel)]="form.tipo" (ngModelChange)="onTipoChange()">
             <option value="ALUNO">Aluno</option>
             <option value="PROFESSOR">Professor</option>
             <option value="SECRETARIA">Secretaria</option>
           </select>
         </div>
+
+        <!-- Turmas — oculto para SECRETARIA -->
+        @if (form.tipo !== 'SECRETARIA') {
+          <div class="field">
+            <label style="display: flex; align-items: center; justify-content: space-between">
+              <span>Turmas</span>
+              <button class="btn btn-ghost btn-icon btn-sm" (click)="addTurma()" title="Adicionar turma">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </label>
+            <div class="turmas-list">
+              @for (turma of form.turmas; track $index; let i = $index) {
+                <div class="turma-row">
+                  <input class="input" [(ngModel)]="form.turmas[i]" placeholder="ID da turma" style="flex: 1" />
+                  @if (form.turmas.length > 1) {
+                    <button class="btn btn-ghost btn-icon btn-sm btn-remove" (click)="removeTurma(i)" title="Remover">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <p class="text-muted" style="font-size: 12px; margin-top: -4px">
+            Secretaria não é vinculada a turmas.
+          </p>
+        }
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" (click)="showCadastro.set(false)">Cancelar</button>
@@ -127,7 +165,112 @@
   </div>
 }
 
-<!-- Modal: Alterar Tipo -->
+<!-- ─── Modal: Cadastro em Lote ──────────────────────────────────────────────── -->
+@if (showLote()) {
+  <div class="modal-backdrop" (click)="showLote.set(false)">
+    <div class="modal modal-lote" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Cadastro em Lote</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="showLote.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        @for (u of lote; track $index; let i = $index) {
+          <div class="lote-card">
+            <div class="lote-card-header">
+              <span class="font-display" style="font-size: 13px; font-weight: 600; color: var(--text-muted)">
+                Usuário {{ i + 1 }}
+              </span>
+              @if (lote.length > 1) {
+                <button class="btn btn-ghost btn-icon btn-sm" (click)="removeLoteItem(i)" title="Remover">✕</button>
+              }
+            </div>
+            <div class="lote-grid">
+              <div class="field">
+                <label>RM</label>
+                <input class="input" [(ngModel)]="u.id" placeholder="RM" />
+              </div>
+              <div class="field">
+                <label>Nome</label>
+                <input class="input" [(ngModel)]="u.nome" placeholder="Nome completo" />
+              </div>
+              <div class="field">
+                <label>E-mail</label>
+                <input class="input" type="email" [(ngModel)]="u.email" placeholder="email@etec.sp.gov.br" />
+              </div>
+              <div class="field">
+                <label>Telefone</label>
+                <input class="input" [(ngModel)]="u.numero" placeholder="(11) 9xxxx-xxxx" />
+              </div>
+              <div class="field">
+                <label>Senha Temporária</label>
+                <input class="input" type="password" [(ngModel)]="u.senha" placeholder="••••••••" />
+              </div>
+              <div class="field">
+                <label>Tipo</label>
+                <select class="input" [(ngModel)]="u.tipo" (ngModelChange)="onLoteTipoChange(i)">
+                  <option value="ALUNO">Aluno</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="SECRETARIA">Secretaria</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Turmas do item de lote -->
+            @if (u.tipo !== 'SECRETARIA') {
+              <div class="field" style="margin-top: 8px">
+                <label style="display: flex; align-items: center; justify-content: space-between">
+                  <span>Turmas</span>
+                  <button class="btn btn-ghost btn-icon btn-sm" (click)="addLoteTurma(i)" title="Adicionar turma">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  </button>
+                </label>
+                <div class="turmas-list">
+                  @for (turma of u.turmas; track $index; let j = $index) {
+                    <div class="turma-row">
+                      <input class="input" [(ngModel)]="u.turmas[j]" placeholder="ID da turma" style="flex: 1" />
+                      @if (u.turmas.length > 1) {
+                        <button class="btn btn-ghost btn-icon btn-sm btn-remove" (click)="removeLoteTurma(i, j)" title="Remover">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                          </svg>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else {
+              <p class="text-muted" style="font-size: 12px; margin-top: 4px">Secretaria não é vinculada a turmas.</p>
+            }
+          </div>
+        }
+
+        <button class="btn btn-ghost btn-sm btn-add-lote" (click)="addLoteItem()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Adicionar Usuário
+        </button>
+      </div>
+      <div class="modal-footer">
+        <span class="text-muted" style="font-size: 13px">{{ lote.length }} usuário(s)</span>
+        <button class="btn btn-ghost" (click)="showLote.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="salvarLote()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner"></span> } Enviar Lote
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ─── Modal: Alterar Tipo ──────────────────────────────────────────────────── -->
 @if (showTipo()) {
   <div class="modal-backdrop" (click)="showTipo.set(false)">
     <div class="modal" (click)="$event.stopPropagation()" style="max-width: 360px">

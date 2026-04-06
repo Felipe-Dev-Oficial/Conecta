@@ -16,6 +16,10 @@ const CURSOS: Cursos[] = [
   'LOGISTICA_MTEC_N', 'DESENVOLVIMENTO_DE_SISTEMAS_AMS',
 ];
 
+function itemVazio(): DTOCadastroTurma {
+  return { curso: 'DESENVOLVIMENTO_DE_SISTEMAS', modulos: 6 };
+}
+
 @Component({
   selector: 'app-turmas',
   standalone: true,
@@ -36,11 +40,21 @@ export class TurmasComponent implements OnInit {
 
   apenasAtuais = true;
   filtroCurso = '';
-  formCurso: Cursos = 'DESENVOLVIMENTO_DE_SISTEMAS';
-  formModulos = 6;
   cursos = CURSOS;
+  lote: DTOCadastroTurma[] = [itemVazio()];
 
   ngOnInit() { this.listar(); }
+
+  abrirNova() {
+    this.lote = [itemVazio()];
+    this.showNova.set(true);
+  }
+
+  adicionar() { this.lote.push(itemVazio()); }
+
+  remover(i: number) {
+    if (this.lote.length > 1) this.lote.splice(i, 1);
+  }
 
   listar() {
     this.loading.set(true);
@@ -60,15 +74,14 @@ export class TurmasComponent implements OnInit {
 
   criar() {
     this.saving.set(true);
-    const dto: DTOCadastroTurma = { curso: this.formCurso, modulos: this.formModulos };
-    this.svc.criarTurmas([dto]).subscribe({
+    this.svc.criarTurmas(this.lote).subscribe({
       next: () => {
-        this.toast.success('Turma criada!');
+        this.toast.success(`${this.lote.length} turma(s) criada(s)!`);
         this.showNova.set(false);
         this.saving.set(false);
         this.listar();
       },
-      error: () => { this.toast.error('Erro ao criar turma.'); this.saving.set(false); },
+      error: () => { this.toast.error('Erro ao criar turmas.'); this.saving.set(false); },
     });
   }
 

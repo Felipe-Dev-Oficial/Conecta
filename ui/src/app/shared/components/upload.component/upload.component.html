@@ -1,0 +1,54 @@
+<!-- Área de drop / clique -->
+<div class="upload-area" [class.has-preview]="preview() || midiaAtual">
+
+  @if (uploading()) {
+    <!-- Estado: enviando -->
+    <div class="upload-state">
+      <span class="spinner"></span>
+      <span class="upload-label">Enviando mídia…</span>
+    </div>
+
+  } @else if (preview()) {
+    <!-- Preview local após seleção -->
+    <div class="preview-wrap">
+      @if (tipoAtual() === 'FOTO') {
+        <img [src]="preview()!" class="preview-img" alt="Preview" />
+      } @else if (tipoAtual() === 'VIDEO') {
+        <video [src]="preview()!" class="preview-video" controls></video>
+      } @else if (tipoAtual() === 'AUDIO') {
+        <audio [src]="preview()!" class="preview-audio" controls></audio>
+      }
+      <button class="btn-remove" (click)="remover()" title="Remover mídia">✕</button>
+    </div>
+
+  } @else if (midiaAtual) {
+    <!-- Preview da mídia já salva (edição) -->
+    <div class="preview-wrap">
+      @if (midiaAtual.tipoMidia === 'FOTO') {
+        <img [src]="midiaAtual.link" class="preview-img" alt="Mídia atual" />
+      } @else if (midiaAtual.tipoMidia === 'VIDEO') {
+        <video [src]="midiaAtual.link" class="preview-video" controls></video>
+      } @else if (midiaAtual.tipoMidia === 'AUDIO') {
+        <audio [src]="midiaAtual.link" class="preview-audio" controls></audio>
+      }
+      <button class="btn-remove" (click)="remover()" title="Remover mídia">✕</button>
+    </div>
+
+  } @else {
+    <!-- Estado vazio -->
+    <label class="upload-label-area" [for]="'media-file-input'">
+      <span class="upload-icon">📎</span>
+      <span class="upload-label">Clique para anexar mídia</span>
+      <span class="upload-hint">Imagem, vídeo ou áudio · máx. 50 MB</span>
+    </label>
+  }
+
+  <!-- Input de arquivo sempre presente mas oculto -->
+  <input
+    id="media-file-input"
+    type="file"
+    class="file-input-hidden"
+    [accept]="accept"
+    (change)="onFileSelected($event)"
+  />
+</div>

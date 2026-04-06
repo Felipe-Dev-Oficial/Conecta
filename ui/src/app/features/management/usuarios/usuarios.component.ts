@@ -6,6 +6,20 @@ import { SecretariaService } from '../../../core/services/http/secretaria/secret
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { DTORetornoSecretaria, DTOCadastro, Tipo } from '../../../core/models/models';
 
+interface FormUsuario {
+  id: string;
+  nome: string;
+  email: string;
+  numero: string;
+  senha: string;
+  tipo: Tipo;
+  turmas: string[];
+}
+
+function formVazio(): FormUsuario {
+  return { id: '', nome: '', email: '', numero: '', senha: '', tipo: 'ALUNO', turmas: [''] };
+}
+
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -22,6 +36,7 @@ export class UsuariosComponent implements OnInit {
   saving = signal(false);
   showCadastro = signal(false);
   showTipo = signal(false);
+  showLote = signal(false);
   usuarioSel = signal<DTORetornoSecretaria | null>(null);
   page = signal(0);
   totalPages = signal(1);
@@ -31,9 +46,12 @@ export class UsuariosComponent implements OnInit {
   turmaId = '';
   novoTipo: Tipo = 'ALUNO';
 
-  form = { id: '', nome: '', email: '', numero: '', senha: '', tipo: 'ALUNO' as Tipo };
+  form: FormUsuario = formVazio();
+  lote: FormUsuario[] = [formVazio()];
 
   ngOnInit() { this.listar(); }
+
+  // ── Listagem ─────────────────────────────────────────────────────────────────
 
   listar() {
     this.loading.set(true);
@@ -62,6 +80,27 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
+  // ── Cadastro único ───────────────────────────────────────────────────────────
+
+  abrirCadastro() {
+    this.form = formVazio();
+    this.showCadastro.set(true);
+  }
+
+  onTipoChange() {
+    if (this.form.tipo === 'SECRETARIA') {
+      this.form.turmas = [];
+    } else if (this.form.turmas.length === 0) {
+      this.form.turmas = [''];
+    }
+  }
+
+  addTurma() { this.form.turmas.push(''); }
+
+  removeTurma(i: number) {
+    if (this.form.turmas.length > 1) this.form.turmas.splice(i, 1);
+  }
+
   salvar() {
     this.saving.set(true);
     const dto: DTOCadastro = {
@@ -71,7 +110,7 @@ export class UsuariosComponent implements OnInit {
       numero: { number: this.form.numero },
       senha: { password: this.form.senha },
       tipo: this.form.tipo,
-      turmas: [],
+      turmas: this.form.tipo === 'SECRETARIA' ? [] : this.form.turmas.filter(t => t.trim()),
     };
     this.svc.salvarUsuario(dto).subscribe({
       next: () => {
@@ -83,6 +122,59 @@ export class UsuariosComponent implements OnInit {
       error: () => { this.toast.error('Erro ao criar usuário.'); this.saving.set(false); },
     });
   }
+
+  // ── Cadastro em lote ─────────────────────────────────────────────────────────
+
+  abrirLote() {
+    this.lote = [formVazio()];
+    this.showLote.set(true);
+  }
+
+  addLoteItem() { this.lote.push(formVazio()); }
+
+  removeLoteItem(i: number) {
+    if (this.lote.length > 1) this.lote.splice(i, 1);
+  }
+
+  onLoteTipoChange(i: number) {
+    const u = this.lote[i];
+    if (u.tipo === 'SECRETARIA') {
+      u.turmas = [];
+    } else if (u.turmas.length === 0) {
+      u.turmas = [''];
+    }
+  }
+
+  addLoteTurma(i: number) { this.lote[i].turmas.push(''); }
+
+  removeLoteTurma(i: number, j: number) {
+    if (this.lote[i].turmas.length > 1) this.lote[i].turmas.splice(j, 1);
+  }
+
+  salvarLote() {
+    this.saving.set(true);
+    const dtos: DTOCadastro[] = this.lote.map(u => ({
+      id: u.id,
+      nome: { name: u.nome },
+      email: { email: u.email },
+      numero: { number: u.numero },
+      senha: { password: u.senha },
+      tipo: u.tipo,
+      turmas: u.tipo === 'SECRETARIA' ? [] : u.turmas.filter(t => t.trim()),
+    }));
+
+    this.svc.salvarUsuariosLote(dtos).subscribe({
+      next: () => {
+        this.toast.success(`${dtos.length} usuário(s) cadastrado(s)!`);
+        this.showLote.set(false);
+        this.saving.set(false);
+        this.listar();
+      },
+      error: () => { this.toast.error('Erro ao cadastrar lote.'); this.saving.set(false); },
+    });
+  }
+
+  // ── Ações ────────────────────────────────────────────────────────────────────
 
   deletar(id: string) {
     if (!confirm('Deletar este usuário?')) return;
@@ -127,10 +219,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-  abrirCadastro() {
-    this.form = { id: '', nome: '', email: '', numero: '', senha: '', tipo: 'ALUNO' };
-    this.showCadastro.set(true);
-  }
+  // ── Paginação / utils ────────────────────────────────────────────────────────
 
   goTo(p: number) { this.page.set(p); this.listar(); }
   pageRange() { return Array.from({ length: this.totalPages() }, (_, i) => i); }

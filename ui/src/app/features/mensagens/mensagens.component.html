@@ -1,13 +1,20 @@
 <div class="mensagens-layout">
+
+  <!-- ── Painel de contatos ───────────────────────────────────────────────── -->
   <aside class="contatos-panel">
     <div class="contatos-header">
       <h2 class="font-display" style="font-size: 18px; font-weight: 600">Mensagens</h2>
+      <button class="btn btn-primary btn-sm" (click)="abrirNova()" title="Nova conversa">+ Nova</button>
     </div>
 
     @if (loadingContatos()) {
       <div class="loading-overlay" style="padding: 30px"><div class="spinner"></div></div>
     } @else if (contatos().length === 0) {
-      <div class="empty" style="padding: 30px"><div class="empty-icon">💬</div><p>Sem contatos.</p></div>
+      <div class="empty" style="padding: 30px">
+        <div class="empty-icon">💬</div>
+        <p>Sem contatos.</p>
+        <button class="btn btn-ghost btn-sm" style="margin-top: 10px" (click)="abrirNova()">Iniciar conversa</button>
+      </div>
     } @else {
       <div class="contatos-list">
         @for (c of contatos(); track c.id) {
@@ -22,11 +29,13 @@
     }
   </aside>
 
+  <!-- ── Painel do chat ───────────────────────────────────────────────────── -->
   <main class="chat-panel">
     @if (!contatoAtivo()) {
       <div class="empty chat-empty">
         <div class="empty-icon">💬</div>
         <p>Selecione um contato para ver as mensagens</p>
+        <button class="btn btn-primary btn-sm" style="margin-top: 16px" (click)="abrirNova()">+ Nova conversa</button>
       </div>
     } @else {
       <div class="chat-header">
@@ -34,13 +43,15 @@
         <span class="font-display" style="font-size: 16px; font-weight: 600">{{ contatoAtivo()!.nome.name }}</span>
       </div>
 
-      <div class="chat-msgs">
+      <div class="chat-msgs" #msgContainer>
         @if (loadingMsgs()) { <div class="loading-overlay"><div class="spinner"></div></div> }
         @for (m of mensagens(); track $index) {
           <div class="msg-wrap" [class.own]="m.nameSender.name === meuNome()">
             <div class="msg-bubble">
               <div class="msg-author">{{ m.nameSender.name }}</div>
-              <p class="msg-text">{{ m.content.content }}</p>
+              @if (m.content.content) {
+                <p class="msg-text">{{ m.content.content }}</p>
+              }
               <app-media-viewer [midia]="m.midia" />
             </div>
           </div>
@@ -50,13 +61,106 @@
         }
       </div>
 
+      <!-- Painel de upload expansível -->
+      @if (showUpload()) {
+        <div class="upload-panel">
+          <app-media-upload (midiaChange)="onMidiaChange($event)" />
+        </div>
+      }
+
       <div class="chat-input-bar">
-        <input class="input" type="text" placeholder="Escreva uma mensagem..."
-          [(ngModel)]="texto" (keyup.enter)="enviar()" style="flex: 1" />
-        <button class="btn btn-primary" (click)="enviar()" [disabled]="!texto.trim() || enviando()">
-          @if (enviando()) { <span class="spinner"></span> } @else { Enviar }
+        <button
+          class="btn btn-ghost btn-icon"
+          [class.active]="showUpload()"
+          (click)="toggleUpload()"
+          title="Anexar mídia"
+        >📎</button>
+
+        <input
+          class="input"
+          type="text"
+          placeholder="Escreva uma mensagem..."
+          [(ngModel)]="texto"
+          (keyup.enter)="enviar()"
+          style="flex: 1"
+        />
+
+        <button
+          class="btn btn-primary btn-send"
+          (click)="enviar()"
+          [disabled]="(!texto.trim() && !midiaAnexada) || enviando()"
+          title="Enviar mensagem"
+        >
+          @if (enviando()) {
+            <span class="spinner"></span>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          }
         </button>
       </div>
     }
   </main>
 </div>
+
+<!-- ── Modal: Nova Conversa ──────────────────────────────────────────────── -->
+@if (showNova()) {
+  <div class="modal-backdrop" (click)="fecharNova()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Nova conversa</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="fecharNova()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="field">
+          <label>RM / ID do destinatário</label>
+          <input
+            class="input"
+            type="text"
+            placeholder="Ex: 123456"
+            [(ngModel)]="novoDestinatarioId"
+            (keyup.enter)="iniciarConversa()"
+            autofocus
+          />
+        </div>
+
+        <div class="field">
+          <label>Mensagem</label>
+          <textarea
+            class="input"
+            rows="3"
+            placeholder="Escreva sua mensagem..."
+            [(ngModel)]="novaMensagem"
+          ></textarea>
+        </div>
+
+        <!-- Upload de mídia opcional -->
+        <div class="field">
+          @if (!showNovaUpload()) {
+            <button class="btn btn-ghost btn-sm" (click)="toggleNovaUpload()">
+              📎 Anexar mídia <span class="text-muted">(opcional)</span>
+            </button>
+          } @else {
+            <label>Mídia <span class="text-muted">(opcional)</span></label>
+            <app-media-upload (midiaChange)="onNovaMidiaChange($event)" />
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="fecharNova()">Cancelar</button>
+        <button
+          class="btn btn-primary"
+          (click)="iniciarConversa()"
+          [disabled]="!novoDestinatarioId.trim() || (!novaMensagem.trim() && !novaMidia) || enviando()"
+        >
+          @if (enviando()) { <span class="spinner"></span> } Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+}

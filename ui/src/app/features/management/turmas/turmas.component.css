@@ -1,0 +1,56 @@
+.modal-turmas {
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-turmas .modal-body {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lote-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  background: var(--bg-0);
+}
+
+.lote-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.lote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .lote-grid { grid-template-columns: 1fr; }
+}
+
+.btn-add-lote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+
+.btn-add-lote:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}

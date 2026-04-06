@@ -90,6 +90,11 @@
             </select>
           </div>
         </div>
+        <!-- ── Campo de mídia ── -->
+        <div class="field">
+          <label>Mídia <span class="text-muted">(opcional)</span></label>
+          <app-media-upload (midiaChange)="onMidiaChange($event)" />
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" (click)="showNovo.set(false)">Cancelar</button>
@@ -126,6 +131,11 @@
             <option value="ALTA">Alta</option>
             <option value="URGENTE">Urgente</option>
           </select>
+        </div>
+        <!-- ── Campo de mídia (com preview da mídia atual) ── -->
+        <div class="field">
+          <label>Mídia <span class="text-muted">(opcional)</span></label>
+          <app-media-upload [midiaAtual]="fMidia" (midiaChange)="onMidiaChange($event)" />
         </div>
       </div>
       <div class="modal-footer">

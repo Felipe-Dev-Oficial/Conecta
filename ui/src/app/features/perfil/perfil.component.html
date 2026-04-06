@@ -1,0 +1,73 @@
+<div class="page-body">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Painel</h1>
+      <p class="text-muted">{{ rolePretty() }}</p>
+    </div>
+  </div>
+
+  @if (role() === 'PROFESSOR') {
+    <div class="search-bar">
+      <input class="input" type="text" placeholder="Buscar aluno por nome..."
+        [(ngModel)]="busca" style="max-width: 300px; height: 38px" />
+      <input class="input" type="text" placeholder="ID da Turma (UUID)..."
+        [(ngModel)]="turmaId" style="max-width: 220px; height: 38px" />
+      <button class="btn btn-primary btn-sm" (click)="buscarAlunos()">Buscar</button>
+      <button class="btn btn-ghost btn-sm" (click)="listarTodos()">Todos os alunos</button>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-overlay"><div class="spinner"></div></div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>RM</th><th>Nome</th><th>Tipo</th><th>Ação</th></tr></thead>
+          <tbody>
+            @for (a of lista(); track a.id) {
+              <tr>
+                <td class="font-mono">{{ a.id }}</td>
+                <td style="font-weight: 500; color: var(--text-primary)">{{ a.nome.name }}</td>
+                <td><span class="badge badge-blue">{{ a.tipo }}</span></td>
+                <td><button class="btn btn-ghost btn-sm" (click)="verDetalhe(a.id)">Ver</button></td>
+              </tr>
+            }
+            @if (lista().length === 0) {
+              <tr><td colspan="4" style="text-align: center; padding: 32px; color: var(--text-muted)">Nenhum resultado.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  @if (role() === 'ALUNO') {
+    <div class="search-bar">
+      <button class="btn btn-primary btn-sm" (click)="listarProfessores()">Ver meus professores</button>
+      <input class="input" type="text" placeholder="ID do professor..."
+        [(ngModel)]="profId" style="max-width: 240px; height: 38px" />
+      <button class="btn btn-ghost btn-sm" (click)="buscarProfessor()">Buscar por ID</button>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-overlay"><div class="spinner"></div></div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>RM</th><th>Nome</th><th>Tipo</th></tr></thead>
+          <tbody>
+            @for (p of lista(); track p.id) {
+              <tr>
+                <td class="font-mono">{{ p.id }}</td>
+                <td style="font-weight: 500; color: var(--text-primary)">{{ p.nome.name }}</td>
+                <td><span class="badge badge-amber">{{ p.tipo }}</span></td>
+              </tr>
+            }
+            @if (lista().length === 0) {
+              <tr><td colspan="3" style="text-align: center; padding: 32px; color: var(--text-muted)">Nenhum resultado.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

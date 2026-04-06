@@ -1,0 +1,139 @@
+<div class="page-body">
+  <div class="page-header">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <a routerLink="/management" class="btn btn-ghost btn-sm btn-icon">←</a>
+      <div>
+        <h1 class="page-title">Anúncios</h1>
+        <p class="text-muted">Gerenciamento de comunicados</p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="showNovo.set(true)">+ Novo Anúncio</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><div class="spinner"></div></div>
+  } @else if (anuncios().length === 0) {
+    <div class="empty"><div class="empty-icon">📢</div><p>Nenhum anúncio cadastrado.</p></div>
+  } @else {
+    <div class="anuncios-mgmt-list">
+      @for (a of anuncios(); track a.id) {
+        <div class="card anuncio-item">
+          <div class="anuncio-item-top">
+            <div class="anuncio-item-info">
+              <div class="anuncio-badges">
+                <span [class]="prioridadeBadge(a.priority)">{{ a.priority }}</span>
+                <span [class]="a.status === 'ON' ? 'badge badge-green' : 'badge badge-gray'">{{ a.status }}</span>
+                @if (a.edited) { <span class="badge badge-gray">Editado</span> }
+                <span class="text-muted" style="font-size: 12px">{{ formatDate(a.timestamp) }}</span>
+              </div>
+              <div class="anuncio-titulo font-display">{{ a.title.content }}</div>
+              <p class="anuncio-texto">{{ a.content.content }}</p>
+              <app-media-viewer [midia]="a.midia" />
+            </div>
+            <div class="anuncio-item-acoes">
+              <button class="btn btn-ghost btn-sm" (click)="elevar(a.id)" title="Elevar prioridade">▲</button>
+              <button class="btn btn-ghost btn-sm" (click)="reduzir(a.id)" title="Reduzir prioridade">▼</button>
+              <button class="btn btn-ghost btn-sm" (click)="abrirEditar(a)">✏️</button>
+              <button class="btn btn-danger btn-sm" (click)="apagar(a.id)">🗑</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="goTo(page() - 1)" [disabled]="page() === 0">‹</button>
+        @for (p of pageRange(); track p) {
+          <button class="page-btn" [class.active]="p === page()" (click)="goTo(p)">{{ p + 1 }}</button>
+        }
+        <button class="page-btn" (click)="goTo(page() + 1)" [disabled]="page() === totalPages() - 1">›</button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal: Novo Anúncio -->
+@if (showNovo()) {
+  <div class="modal-backdrop" (click)="showNovo.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Novo Anúncio</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="showNovo.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Título</label>
+          <input class="input" [(ngModel)]="fTitulo" placeholder="Título do anúncio" />
+        </div>
+        <div class="field">
+          <label>Conteúdo</label>
+          <textarea class="input" [(ngModel)]="fConteudo" placeholder="Texto do anúncio..." rows="4"></textarea>
+        </div>
+        <div class="modal-row">
+          <div class="field">
+            <label>Prioridade</label>
+            <select class="input" [(ngModel)]="fPrioridade">
+              <option value="BAIXA">Baixa</option>
+              <option value="MEDIA">Média</option>
+              <option value="ALTA">Alta</option>
+              <option value="URGENTE">Urgente</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Destino</label>
+            <select class="input" [(ngModel)]="fTarget">
+              <option value="GERAL">Geral</option>
+              <option value="ALUNOS">Alunos</option>
+              <option value="PROFESSORES">Professores</option>
+              <option value="TURMAS">Turmas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showNovo.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="criar()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner"></span> } Publicar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Editar Anúncio -->
+@if (showEditar()) {
+  <div class="modal-backdrop" (click)="showEditar.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Editar Anúncio</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="showEditar.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Título</label>
+          <input class="input" [(ngModel)]="fTitulo" />
+        </div>
+        <div class="field">
+          <label>Conteúdo</label>
+          <textarea class="input" [(ngModel)]="fConteudo" rows="4"></textarea>
+        </div>
+        <div class="field">
+          <label>Prioridade</label>
+          <select class="input" [(ngModel)]="fPrioridade">
+            <option value="BAIXA">Baixa</option>
+            <option value="MEDIA">Média</option>
+            <option value="ALTA">Alta</option>
+            <option value="URGENTE">Urgente</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showEditar.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="editar()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner"></span> } Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+}

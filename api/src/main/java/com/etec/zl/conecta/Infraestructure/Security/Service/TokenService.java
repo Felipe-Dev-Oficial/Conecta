@@ -31,7 +31,7 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("conecta-app")
                     .withSubject(user.getId())
-                    .withClaim("user_id", user.getNome().name())
+                    .withClaim("user_nome", user.getNome().name())
                     .withClaim("user_role", user.getTipo().toString())
                     .withExpiresAt(expirationDate())
                     .sign(algorithm);

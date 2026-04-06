@@ -1,0 +1,62 @@
+<div class="mensagens-layout">
+  <aside class="contatos-panel">
+    <div class="contatos-header">
+      <h2 class="font-display" style="font-size: 18px; font-weight: 600">Mensagens</h2>
+    </div>
+
+    @if (loadingContatos()) {
+      <div class="loading-overlay" style="padding: 30px"><div class="spinner"></div></div>
+    } @else if (contatos().length === 0) {
+      <div class="empty" style="padding: 30px"><div class="empty-icon">💬</div><p>Sem contatos.</p></div>
+    } @else {
+      <div class="contatos-list">
+        @for (c of contatos(); track c.id) {
+          <button class="contato-item" [class.active]="contatoAtivo()?.id === c.id" (click)="selecionarContato(c)">
+            <div class="contato-avatar">{{ c.nome.name[0]?.toUpperCase() }}</div>
+            <div class="contato-info">
+              <div class="contato-nome truncate">{{ c.nome.name }}</div>
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </aside>
+
+  <main class="chat-panel">
+    @if (!contatoAtivo()) {
+      <div class="empty chat-empty">
+        <div class="empty-icon">💬</div>
+        <p>Selecione um contato para ver as mensagens</p>
+      </div>
+    } @else {
+      <div class="chat-header">
+        <div class="contato-avatar">{{ contatoAtivo()!.nome.name[0]?.toUpperCase() }}</div>
+        <span class="font-display" style="font-size: 16px; font-weight: 600">{{ contatoAtivo()!.nome.name }}</span>
+      </div>
+
+      <div class="chat-msgs">
+        @if (loadingMsgs()) { <div class="loading-overlay"><div class="spinner"></div></div> }
+        @for (m of mensagens(); track $index) {
+          <div class="msg-wrap" [class.own]="m.nameSender.name === meuNome()">
+            <div class="msg-bubble">
+              <div class="msg-author">{{ m.nameSender.name }}</div>
+              <p class="msg-text">{{ m.content.content }}</p>
+              <app-media-viewer [midia]="m.midia" />
+            </div>
+          </div>
+        }
+        @if (!loadingMsgs() && mensagens().length === 0) {
+          <div class="empty"><div class="empty-icon">✉️</div><p>Nenhuma mensagem ainda. Diga olá!</p></div>
+        }
+      </div>
+
+      <div class="chat-input-bar">
+        <input class="input" type="text" placeholder="Escreva uma mensagem..."
+          [(ngModel)]="texto" (keyup.enter)="enviar()" style="flex: 1" />
+        <button class="btn btn-primary" (click)="enviar()" [disabled]="!texto.trim() || enviando()">
+          @if (enviando()) { <span class="spinner"></span> } @else { Enviar }
+        </button>
+      </div>
+    }
+  </main>
+</div>

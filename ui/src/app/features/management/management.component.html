@@ -1,0 +1,19 @@
+<div class="page-body">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Painel de Gerenciamento</h1>
+      <p class="text-muted">Secretaria — acesso administrativo completo</p>
+    </div>
+  </div>
+
+  <div class="mgmt-grid">
+    @for (c of cards; track c.route) {
+      <a [routerLink]="c.route" class="mgmt-card card">
+        <div class="mgmt-icon">{{ c.icon }}</div>
+        <div class="mgmt-title font-display">{{ c.title }}</div>
+        <div class="text-muted" style="font-size: 13px; margin-top: 4px">{{ c.desc }}</div>
+        <div class="mgmt-arrow">→</div>
+      </a>
+    }
+  </div>
+</div>

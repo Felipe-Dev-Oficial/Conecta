@@ -1,0 +1,9 @@
+.anuncios-list { display: flex; flex-direction: column; gap: 16px; }
+.anuncio-card { transition: border-color var(--transition); }
+.anuncio-card:hover { border-color: var(--border-light); }
+.anuncio-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
+.anuncio-author { display: flex; align-items: center; gap: 10px; }
+.author-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-glow); color: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 15px; font-weight: 700; border: 1px solid var(--accent-dim); flex-shrink: 0; }
+.author-name { font-size: 14px; font-weight: 500; }
+.anuncio-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.anuncio-body { color: var(--text-secondary); font-size: 15px; line-height: 1.6; white-space: pre-wrap; }

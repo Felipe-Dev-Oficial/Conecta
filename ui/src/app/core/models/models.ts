@@ -245,3 +245,9 @@ export interface Statement {
   targetVO: TargetVO;
   pesoPrioridade: number;
 }
+
+export interface UserData {
+  id: string;
+  nome: string;
+  role: string;
+}

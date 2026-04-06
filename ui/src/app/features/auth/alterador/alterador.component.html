@@ -1,0 +1,69 @@
+<div class="login-page">
+  <button class="theme-toggle" (click)="theme.toggle()">
+    {{ theme.theme() === 'dark' ? '☀️' : '🌙' }}
+  </button>
+
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark">C</div>
+      <h1 class="brand-name">CONECTA</h1>
+    </div>
+
+    @if (step() === 'escolha') {
+      <div class="step-header">
+        <h2>Alteração de Dados</h2>
+        <p class="text-muted">O que você deseja alterar?</p>
+      </div>
+      <div class="escolha-buttons">
+        <button class="btn btn-ghost w-full escolha-btn" (click)="escolher('senha')">
+          🔒 &nbsp; Alterar Senha
+        </button>
+        <button class="btn btn-ghost w-full escolha-btn" (click)="escolher('email')">
+          ✉️ &nbsp; Alterar E-mail
+        </button>
+      </div>
+    }
+
+    @if (step() === 'formulario') {
+      <div class="form-header">
+        <button class="btn btn-ghost btn-sm" (click)="step.set('escolha')">← Voltar</button>
+        <h2>{{ tipo() === 'senha' ? 'Alterar Senha' : 'Alterar E-mail' }}</h2>
+        <p class="text-muted">
+          Informe seu RM e o token recebido {{ tipo() === 'senha' ? 'por e-mail' : 'por SMS' }}.
+        </p>
+      </div>
+
+      <form class="login-form" (ngSubmit)="submit()">
+        <div class="field">
+          <label>RM / Matrícula</label>
+          <input class="input" type="text" placeholder="Seu RM" [(ngModel)]="rm" name="rm" required />
+        </div>
+        <div class="field">
+          <label>Token</label>
+          <input class="input font-mono" type="text" placeholder="Token recebido"
+            [(ngModel)]="token" name="token" required />
+        </div>
+        <div class="field">
+          <label>{{ tipo() === 'senha' ? 'Nova Senha' : 'Novo E-mail' }}</label>
+          <input class="input" [type]="tipo() === 'email' ? 'email' : 'password'"
+            [placeholder]="tipo() === 'email' ? 'novo@email.com' : 'Nova senha'"
+            [(ngModel)]="valor" name="valor" required />
+        </div>
+
+        @if (error()) { <div class="error-msg">{{ error() }}</div> }
+        @if (success()) { <div class="success-msg">{{ success() }}</div> }
+
+        <button class="btn btn-primary w-full" type="submit" [disabled]="loading()">
+          @if (loading()) { <span class="spinner"></span> }
+          {{ loading() ? 'Confirmando...' : 'Confirmar Alteração' }}
+        </button>
+      </form>
+    }
+
+    <div class="login-footer">
+      <a routerLink="/auth/login">← Voltar ao login</a>
+    </div>
+  </div>
+
+  <div class="login-bg-pattern"></div>
+</div>

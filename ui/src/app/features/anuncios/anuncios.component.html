@@ -1,0 +1,45 @@
+<div class="page-body">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Anúncios</h1>
+      <p class="text-muted">Comunicados e avisos da escola</p>
+    </div>
+    <button class="btn btn-ghost btn-sm" (click)="load()">↺ Atualizar</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><div class="spinner"></div> Carregando anúncios...</div>
+  } @else if (anuncios().length === 0) {
+    <div class="empty"><div class="empty-icon">📢</div><p>Nenhum anúncio no momento.</p></div>
+  } @else {
+    <div class="anuncios-list">
+      @for (a of anuncios(); track $index) {
+        <article class="anuncio-card card">
+          <div class="anuncio-header">
+            <div class="anuncio-author">
+              <div class="author-avatar">{{ initial(a.nome.name) }}</div>
+              <div>
+                <div class="author-name">{{ a.nome.name }}</div>
+                <div class="text-muted">{{ formatDate(a.publicacao) }}</div>
+              </div>
+            </div>
+            @if (a.edited) { <span class="badge badge-gray">Editado</span> }
+          </div>
+          <h2 class="anuncio-title">{{ a.titulo.content }}</h2>
+          <p class="anuncio-body">{{ a.content.content }}</p>
+          <app-media-viewer [midia]="a.midia" />
+        </article>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="goTo(page() - 1)" [disabled]="page() === 0">‹</button>
+        @for (p of pageRange(); track p) {
+          <button class="page-btn" [class.active]="p === page()" (click)="goTo(p)">{{ p + 1 }}</button>
+        }
+        <button class="page-btn" (click)="goTo(page() + 1)" [disabled]="page() === totalPages() - 1">›</button>
+      </div>
+    }
+  }
+</div>

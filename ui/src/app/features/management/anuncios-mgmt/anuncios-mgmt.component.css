@@ -1,0 +1,14 @@
+.anuncios-mgmt-list { display: flex; flex-direction: column; gap: 12px; }
+.anuncio-item { transition: border-color var(--transition); }
+.anuncio-item:hover { border-color: var(--border-light); }
+.anuncio-item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.anuncio-item-info { flex: 1; min-width: 0; }
+.anuncio-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.anuncio-titulo { font-size: 17px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
+.anuncio-texto { font-size: 14px; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap; }
+.anuncio-item-acoes { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+.modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 500px) {
+  .modal-row { grid-template-columns: 1fr; }
+  .anuncio-item-acoes { flex-direction: row; flex-wrap: wrap; }
+}

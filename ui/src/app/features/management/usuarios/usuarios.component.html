@@ -1,0 +1,158 @@
+<div class="page-body">
+  <div class="page-header">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <a routerLink="/management" class="btn btn-ghost btn-sm btn-icon">←</a>
+      <div>
+        <h1 class="page-title">Usuários</h1>
+        <p class="text-muted">Gerenciamento de alunos e funcionários</p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="abrirCadastro()">+ Novo Usuário</button>
+  </div>
+
+  <div class="search-bar">
+    <select class="input" [(ngModel)]="filtroTipo" style="width: 160px; height: 38px" (change)="listar()">
+      <option value="alunos">Alunos</option>
+      <option value="funcionarios">Funcionários</option>
+    </select>
+    <input class="input" type="text" placeholder="Buscar por nome..."
+      [(ngModel)]="busca" style="max-width: 260px; height: 38px" />
+    <input class="input" type="text" placeholder="ID da turma..."
+      [(ngModel)]="turmaId" style="max-width: 180px; height: 38px" />
+    <button class="btn btn-primary btn-sm" (click)="buscar()">Buscar</button>
+    <button class="btn btn-ghost btn-sm" (click)="listar()">Todos</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>RM</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>Tipo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of usuarios(); track u.id) {
+            <tr>
+              <td class="font-mono">{{ u.id }}</td>
+              <td style="font-weight: 500; color: var(--text-primary)">{{ u.nome.name }}</td>
+              <td>{{ u.email.email }}</td>
+              <td>{{ u.numero.number }}</td>
+              <td><span [class]="badgeClass(u.tipo)">{{ u.tipo }}</span></td>
+              <td>
+                <div class="acoes">
+                  <button class="btn btn-ghost btn-sm" (click)="solicitarSenha(u.id)">🔒 Senha</button>
+                  <button class="btn btn-ghost btn-sm" (click)="solicitarEmail(u.id)">✉️ Email</button>
+                  <button class="btn btn-ghost btn-sm" (click)="abrirAlterarTipo(u)">Tipo</button>
+                  <button class="btn btn-danger btn-sm" (click)="deletar(u.id)">🗑</button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (usuarios().length === 0) {
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 32px; color: var(--text-muted)">
+                Nenhum usuário encontrado.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="goTo(page() - 1)" [disabled]="page() === 0">‹</button>
+        @for (p of pageRange(); track p) {
+          <button class="page-btn" [class.active]="p === page()" (click)="goTo(p)">{{ p + 1 }}</button>
+        }
+        <button class="page-btn" (click)="goTo(page() + 1)" [disabled]="page() === totalPages() - 1">›</button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal: Novo Usuário -->
+@if (showCadastro()) {
+  <div class="modal-backdrop" (click)="showCadastro.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Novo Usuário</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="showCadastro.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>RM</label>
+          <input class="input" [(ngModel)]="form.id" placeholder="RM do usuário" />
+        </div>
+        <div class="field">
+          <label>Nome</label>
+          <input class="input" [(ngModel)]="form.nome" placeholder="Nome completo" />
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input class="input" type="email" [(ngModel)]="form.email" placeholder="email@etec.sp.gov.br" />
+        </div>
+        <div class="field">
+          <label>Telefone</label>
+          <input class="input" [(ngModel)]="form.numero" placeholder="(11) 9xxxx-xxxx" />
+        </div>
+        <div class="field">
+          <label>Senha Temporária</label>
+          <input class="input" type="password" [(ngModel)]="form.senha" placeholder="••••••••" />
+        </div>
+        <div class="field">
+          <label>Tipo</label>
+          <select class="input" [(ngModel)]="form.tipo">
+            <option value="ALUNO">Aluno</option>
+            <option value="PROFESSOR">Professor</option>
+            <option value="SECRETARIA">Secretaria</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showCadastro.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="salvar()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner"></span> } Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Alterar Tipo -->
+@if (showTipo()) {
+  <div class="modal-backdrop" (click)="showTipo.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()" style="max-width: 360px">
+      <div class="modal-header">
+        <h3>Alterar Tipo</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="showTipo.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">
+          Usuário: <strong style="color: var(--text-primary)">{{ usuarioSel()!.nome.name }}</strong>
+        </p>
+        <div class="field">
+          <label>Novo Tipo</label>
+          <select class="input" [(ngModel)]="novoTipo">
+            <option value="ALUNO">Aluno</option>
+            <option value="PROFESSOR">Professor</option>
+            <option value="SECRETARIA">Secretaria</option>
+            <option value="DESATIVADO">Desativado</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showTipo.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="alterarTipo()" [disabled]="saving()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+}

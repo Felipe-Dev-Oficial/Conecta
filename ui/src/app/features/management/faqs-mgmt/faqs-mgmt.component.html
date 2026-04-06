@@ -1,0 +1,106 @@
+<div class="page-body">
+  <div class="page-header">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <a routerLink="/management" class="btn btn-ghost btn-sm btn-icon">←</a>
+      <div>
+        <h1 class="page-title">FAQs</h1>
+        <p class="text-muted">Gerenciamento de perguntas frequentes</p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="abrirNova()">+ Nova FAQ</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><div class="spinner"></div></div>
+  } @else if (faqs().length === 0) {
+    <div class="empty"><div class="empty-icon">❓</div><p>Nenhuma FAQ cadastrada.</p></div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pergunta / Resposta</th>
+            <th>Status</th>
+            <th>Relevância</th>
+            <th>Criado em</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of faqs(); track f.id) {
+            <tr>
+              <td style="max-width: 380px">
+                <div class="faq-pergunta">{{ f.question }}</div>
+                <div class="faq-resposta">{{ f.answer }}</div>
+              </td>
+              <td><span [class]="statusBadge(f.statusFAQ)">{{ f.statusFAQ }}</span></td>
+              <td><span [class]="relevBadge(f.relevance)">{{ f.relevance }}</span></td>
+              <td class="text-muted" style="font-size: 12px; white-space: nowrap">{{ formatDate(f.createdAt) }}</td>
+              <td>
+                <div class="faq-acoes">
+                  @if (f.statusFAQ === 'RASCUNHO') {
+                    <button class="btn btn-success btn-sm" (click)="publicar(f.id)">Publicar</button>
+                  }
+                  <button class="btn btn-ghost btn-sm" (click)="elevar(f.id)" title="Elevar relevância">▲</button>
+                  <button class="btn btn-ghost btn-sm" (click)="reduzir(f.id)" title="Reduzir relevância">▼</button>
+                  <button class="btn btn-ghost btn-sm" (click)="abrirEditar(f)">✏️</button>
+                  <button class="btn btn-danger btn-sm" (click)="apagar(f.id)">🗑</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="goTo(page() - 1)" [disabled]="page() === 0">‹</button>
+        @for (p of pageRange(); track p) {
+          <button class="page-btn" [class.active]="p === page()" (click)="goTo(p)">{{ p + 1 }}</button>
+        }
+        <button class="page-btn" (click)="goTo(page() + 1)" [disabled]="page() === totalPages() - 1">›</button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal: Nova / Editar FAQ -->
+@if (showModal()) {
+  <div class="modal-backdrop" (click)="showModal.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editId ? 'Editar FAQ' : 'Nova FAQ' }}</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="showModal.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Pergunta</label>
+          <input class="input" [(ngModel)]="fPergunta" placeholder="Qual é a dúvida?" />
+        </div>
+        <div class="field">
+          <label>Resposta</label>
+          <textarea class="input" [(ngModel)]="fResposta" rows="5" placeholder="Resposta completa..."></textarea>
+        </div>
+        @if (!editId) {
+          <div class="field">
+            <label>Relevância inicial</label>
+            <select class="input" [(ngModel)]="fRelevancia">
+              <option value="BAIXA">Baixa</option>
+              <option value="MEDIA">Média</option>
+              <option value="ALTA">Alta</option>
+              <option value="URGENTE">Urgente</option>
+            </select>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showModal.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="salvar()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner"></span> }
+          {{ editId ? 'Salvar alterações' : 'Criar rascunho' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

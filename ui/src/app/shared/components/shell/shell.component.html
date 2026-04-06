@@ -1,0 +1,92 @@
+<div class="sidebar-overlay" [class.visible]="mobileOpen()" (click)="mobileOpen.set(false)"></div>
+
+<div class="shell">
+  <aside class="sidebar" [class.open]="mobileOpen()">
+    <div class="sidebar-logo">
+      <div class="logo-mark">C</div>
+      <span class="logo-text">CONECTA</span>
+    </div>
+
+    <div class="divider" style="margin: 0"></div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📢</span>
+        <span>Anúncios</span>
+      </a>
+      <a routerLink="/mensagens" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">💬</span>
+        <span>Mensagens</span>
+      </a>
+      <a routerLink="/faqs" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">❓</span>
+        <span>FAQs</span>
+      </a>
+
+      @if (role() === 'PROFESSOR') {
+        <div class="nav-section-label">PROFESSOR</div>
+        <a routerLink="/perfil" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">👤</span>
+          <span>Painel</span>
+        </a>
+      }
+
+      @if (role() === 'ALUNO') {
+        <div class="nav-section-label">ALUNO</div>
+        <a routerLink="/perfil" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">👤</span>
+          <span>Painel</span>
+        </a>
+      }
+
+      @if (role() === 'SECRETARIA') {
+        <div class="nav-section-label">SECRETARIA</div>
+        <a routerLink="/management" routerLinkActive="active" class="nav-item nav-accent">
+          <span class="nav-icon">⚙️</span>
+          <span>Gerenciamento</span>
+        </a>
+      }
+    </nav>
+
+    <div class="mt-auto">
+      <div class="divider" style="margin: 0"></div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">{{ initials() }}</div>
+        <div class="user-info">
+          <div class="user-name truncate">{{ nome() }}</div>
+          <div class="user-role">{{ rolePretty() }}</div>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="themeService.toggle()" title="Alternar tema">
+          {{ themeService.theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
+        <button class="btn btn-ghost btn-sm" style="flex:1" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="btn btn-ghost btn-icon" (click)="mobileOpen.update(v => !v)">☰</button>
+      <span class="topbar-title font-display">CONECTA</span>
+      <button class="btn btn-ghost btn-icon" (click)="themeService.toggle()">
+        {{ themeService.theme() === 'dark' ? '☀️' : '🌙' }}
+      </button>
+    </header>
+
+    <router-outlet />
+  </div>
+</div>
+
+<div class="toast-container">
+  @for (t of toastService.toasts(); track t.id) {
+    <div class="toast" [class]="'toast toast-' + t.type">
+      <span>{{ t.type === 'success' ? '✅' : t.type === 'error' ? '❌' : 'ℹ️' }}</span>
+      <span>{{ t.message }}</span>
+      <button class="toast-close" (click)="toastService.remove(t.id)">✕</button>
+    </div>
+  }
+</div>

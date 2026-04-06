@@ -1,0 +1,16 @@
+.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-0); padding: 16px; position: relative; overflow: hidden; }
+.theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 10; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-sm); width: 40px; height: 40px; cursor: pointer; font-size: 18px; transition: all var(--transition); }
+.theme-toggle:hover { border-color: var(--accent); }
+.login-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); position: relative; z-index: 1; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.login-brand { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 32px; }
+.brand-mark { width: 52px; height: 52px; background: var(--accent); color: var(--accent-text); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; font-weight: 700; box-shadow: 0 4px 20px var(--accent-glow); }
+.brand-name { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: 0.15em; }
+.brand-sub { font-size: 13px; color: var(--text-muted); }
+.login-form { display: flex; flex-direction: column; gap: 16px; }
+.input-wrap { position: relative; }
+.input-wrap .input { padding-right: 44px; }
+.pwd-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px; color: var(--text-muted); transition: color var(--transition); }
+.pwd-toggle:hover { color: var(--text-primary); }
+.error-msg { padding: 10px 14px; background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-sm); color: var(--danger); font-size: 13px; }
+.login-footer { text-align: center; margin-top: 20px; font-size: 13px; }
+.login-bg-pattern { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle at 20% 80%, var(--accent-glow) 0%, transparent 50%), radial-gradient(circle at 80% 20%, var(--info-bg) 0%, transparent 50%); }

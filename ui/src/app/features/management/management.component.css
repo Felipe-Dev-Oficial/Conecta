@@ -1,0 +1,7 @@
+.mgmt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.mgmt-card { display: flex; flex-direction: column; gap: 6px; padding: 24px; cursor: pointer; transition: all var(--transition); position: relative; text-decoration: none; color: var(--text-primary); }
+.mgmt-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+.mgmt-icon { font-size: 32px; margin-bottom: 4px; }
+.mgmt-title { font-size: 18px; font-weight: 600; }
+.mgmt-arrow { position: absolute; top: 20px; right: 20px; color: var(--text-muted); font-size: 18px; transition: all var(--transition); }
+.mgmt-card:hover .mgmt-arrow { color: var(--accent); transform: translateX(4px); }

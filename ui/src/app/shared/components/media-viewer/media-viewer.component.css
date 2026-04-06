@@ -1,0 +1,6 @@
+.media-wrap { margin-top: 12px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+.media-img { width: 100%; max-height: 360px; object-fit: cover; display: block; }
+.media-video { width: 100%; max-height: 360px; display: block; background: #000; }
+.media-audio-wrap { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--bg-2); }
+.audio-icon { font-size: 24px; }
+.media-audio { flex: 1; }

@@ -4,6 +4,7 @@ services:
     container_name: conecta_nginx
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ui/dist/ui/browser:/usr/share/nginx/html:ro
     ports:
       - "80:80"
     depends_on:
@@ -15,6 +16,9 @@ services:
     build: ./ui
     container_name: conecta_ui
     restart: always
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - PORT=3000
     ports:
       - 3000:3000
     depends_on:

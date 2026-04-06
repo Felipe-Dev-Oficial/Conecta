@@ -1,0 +1,16 @@
+@if (midia) {
+  <div class="media-wrap">
+    @if (midia.tipoMidia === 'FOTO') {
+      <img [src]="midia.link" alt="Imagem" class="media-img" loading="lazy" />
+    }
+    @if (midia.tipoMidia === 'VIDEO') {
+      <video [src]="midia.link" controls class="media-video" preload="metadata"></video>
+    }
+    @if (midia.tipoMidia === 'AUDIO') {
+      <div class="media-audio-wrap">
+        <span class="audio-icon">🎵</span>
+        <audio [src]="midia.link" controls class="media-audio"></audio>
+      </div>
+    }
+  </div>
+}

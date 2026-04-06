@@ -1,0 +1,38 @@
+<div class="page-body">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Perguntas Frequentes</h1>
+      <p class="text-muted">Dúvidas comuns respondidas pela secretaria</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+  } @else if (faqs().length === 0) {
+    <div class="empty"><div class="empty-icon">❓</div><p>Nenhuma FAQ disponível.</p></div>
+  } @else {
+    <div class="faqs-list">
+      @for (f of faqs(); track $index) {
+        <div class="faq-item card" [class.open]="openIdx() === $index">
+          <button class="faq-question" (click)="toggle($index)">
+            <span>{{ f.question }}</span>
+            <span class="faq-arrow">{{ openIdx() === $index ? '▲' : '▼' }}</span>
+          </button>
+          @if (openIdx() === $index) {
+            <div class="faq-answer">{{ f.answer }}</div>
+          }
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="goTo(page() - 1)" [disabled]="page() === 0">‹</button>
+        @for (p of pageRange(); track p) {
+          <button class="page-btn" [class.active]="p === page()" (click)="goTo(p)">{{ p + 1 }}</button>
+        }
+        <button class="page-btn" (click)="goTo(page() + 1)" [disabled]="page() === totalPages() - 1">›</button>
+      </div>
+    }
+  }
+</div>

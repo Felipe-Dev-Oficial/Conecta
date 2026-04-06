@@ -44,6 +44,12 @@ public class LerAnuncioUseCase implements LerAnuncioPort {
         return TryGetService.execute(
                 () -> repository.findStatements(mapper.toDTOLeitura(user.getTipo(), turmas), pageable),
                 log
-        ).map(s -> mapper.toDTOReturn(s, user.getNome()));
+        ).map(s -> {
+            var publisherName = userService.execute(
+                    ()-> userRepository.findById(s.getIdSender()),
+                    log
+            ).getNome();
+            return mapper.toDTOReturn(s, publisherName);
+        });
     }
 }

@@ -22,6 +22,7 @@ public interface UserRepository {
     PageResult<User> findAllByTurma(UUID idTurma, PageRequest pageable);
     PageResult<User> findAll(PageRequest pageable);
     PageResult<User> findAllByName(Name name, PageRequest pageable);
+    PageResult<User> findAllSecretaria(PageRequest pageable);
     void delete(String id);
 
     //professores

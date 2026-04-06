@@ -87,6 +87,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     @Transactional
+    @Cacheable(value = "users-lists", key = "'secretaria-' + #pageable.page()")
     public PageResult<User> findAll(PageRequest pageable) {
         return PaginationAdapter.toDomain(externalRepository.findAll(PaginationAdapter.toSpring(pageable))
                 .map(mapper::toDomain));
@@ -97,6 +98,13 @@ public class UserRepositoryAdapter implements UserRepository {
     @Cacheable(value = "users-lists", key = "'name-' + #name.name() + '-' + #pageable.page()")
     public PageResult<User> findAllByName(Name name, PageRequest pageable) {
         return PaginationAdapter.toDomain(externalRepository.findByNomeContaining(name.name(), PaginationAdapter.toSpring(pageable))
+                .map(mapper::toDomain));
+    }
+
+    @Override
+    @Transactional
+    public PageResult<User> findAllSecretaria(PageRequest pageable) {
+        return PaginationAdapter.toDomain(externalRepository.findByTipoIn(List.of("SECRETARIA"), PaginationAdapter.toSpring(pageable))
                 .map(mapper::toDomain));
     }
 

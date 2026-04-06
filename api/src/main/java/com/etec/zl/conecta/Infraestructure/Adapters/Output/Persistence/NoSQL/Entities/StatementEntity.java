@@ -1,5 +1,6 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Entities;
 
+import com.etec.zl.conecta.Domain.Entities.Midia.Midia;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

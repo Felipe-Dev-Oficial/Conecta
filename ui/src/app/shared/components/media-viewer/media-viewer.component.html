@@ -12,5 +12,11 @@
         <audio [src]="midia.link" controls class="media-audio"></audio>
       </div>
     }
+    @if (midia.tipoMidia === 'PDF' || midia.tipoMidia === 'DOCUMENTO') {
+      <a [href]="midia.link" target="_blank" class="media-doc-link">
+        <span class="media-doc-icon">📄</span>
+        <span>{{ midia.tipoMidia === 'PDF' ? 'Abrir PDF' : 'Abrir Documento' }}</span>
+      </a>
+    }
   </div>
 }

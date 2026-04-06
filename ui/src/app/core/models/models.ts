@@ -1,6 +1,6 @@
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
-export type TipoMidia = 'AUDIO' | 'FOTO' | 'VIDEO';
+export type TipoMidia = 'AUDIO' | 'FOTO' | 'VIDEO' | 'PDF' | 'DOCUMENTO';
 
 export type Tipo = 'ALUNO' | 'PROFESSOR' | 'SECRETARIA' | 'DESATIVADO';
 

@@ -6,7 +6,7 @@ import { AnuncioService } from '../../../core/services/http/anuncio/anuncio.serv
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { Statement, DTOAnuncio, DTOAlteraAnuncio, Prioridade, TargetType, Midia } from '../../../core/models/models';
 import { MediaViewerComponent } from '../../../shared/components/media-viewer/media-viewer.component';
-import { MediaUploadComponent } from '../../../shared/components/upload.component/upload.component';
+import { MediaUploadComponent } from '../../../shared/components/upload/upload.component';
 
 @Component({
   selector: 'app-anuncios-mgmt',
@@ -32,7 +32,8 @@ export class AnunciosMgmtComponent implements OnInit {
   fConteudo = '';
   fPrioridade: Prioridade = 'MEDIA';
   fTarget: TargetType = 'GERAL';
-  fMidia: Midia | null = null;           // ← mídia selecionada no form
+  fMidia: Midia | null = null;
+  fTargetsId = '';
 
   ngOnInit() { this.load(); }
 
@@ -44,9 +45,11 @@ export class AnunciosMgmtComponent implements OnInit {
     });
   }
 
-  /** Chamado pelo (midiaChange) do MediaUploadComponent */
-  onMidiaChange(midia: Midia | null) {
-    this.fMidia = midia;
+  onMidiaChange(midia: Midia | null) { this.fMidia = midia; }
+
+  private getTargetsId(): string[] {
+    if (this.fTarget !== 'TURMAS' && this.fTarget !== 'TURMA') return [];
+    return this.fTargetsId.split(',').map(s => s.trim()).filter(s => s.length > 0);
   }
 
   criar() {
@@ -57,7 +60,7 @@ export class AnunciosMgmtComponent implements OnInit {
       midia: this.fMidia,
       priority: this.fPrioridade,
       targetType: this.fTarget,
-      targetsId: [],
+      targetsId: this.getTargetsId(),
     };
     this.svc.gerarAnuncio(dto).subscribe({
       next: () => {
@@ -76,7 +79,7 @@ export class AnunciosMgmtComponent implements OnInit {
     this.fTitulo = a.title.content;
     this.fConteudo = a.content.content;
     this.fPrioridade = a.priority;
-    this.fMidia = a.midia;              // ← carrega mídia existente
+    this.fMidia = a.midia;
     this.showEditar.set(true);
   }
 
@@ -122,6 +125,7 @@ export class AnunciosMgmtComponent implements OnInit {
     this.fPrioridade = 'MEDIA';
     this.fTarget = 'GERAL';
     this.fMidia = null;
+    this.fTargetsId = '';
   }
 
   prioridadeBadge(p: Prioridade) {

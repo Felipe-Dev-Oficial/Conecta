@@ -10,6 +10,10 @@ spring:
     name: conecta
   cache:
     type: redis
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/conecta_postgres}
@@ -47,3 +51,8 @@ spring:
           auth: true
           starttls:
             enable: true
+midia:
+  storage:
+    path: /var/www/media/
+  public:
+    base-url: http://localhost

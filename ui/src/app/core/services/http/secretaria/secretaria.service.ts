@@ -6,6 +6,7 @@ import {
   DTOCadastroTurma,
   DTORetornoSecretaria,
   DTOReturnMessageSecretaria,
+  DTORetornoNormal,
   Turma,
   Tipo,
   Cursos,
@@ -135,5 +136,10 @@ export class SecretariaService {
       `${this.base}/mensagens/sender/${sender}/receiver/${receiver}`,
       { params }
     );
+  }
+  /** GET /conecta/secretaria */
+  listarSecretaria(page = 0, size = 20): Observable<PageResult<DTORetornoNormal>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<PageResult<DTORetornoNormal>>(`${environment.apiUrl}/secretaria`, { params });
   }
 }

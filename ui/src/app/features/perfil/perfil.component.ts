@@ -6,6 +6,7 @@ import { ProfessorService } from '../../core/services/http/professor/professor.s
 import { AlunoService } from '../../core/services/http/aluno/aluno.service';
 import { ToastService } from '../../core/services/toast/toast.service';
 import { DTORetornoNormal } from '../../core/models/models';
+import { SecretariaService } from '../../core/services/http/secretaria/secretaria.service';
 
 @Component({
   selector: 'app-perfil',
@@ -24,6 +25,10 @@ export class PerfilComponent implements OnInit {
   loading = signal(false);
   busca = ''; turmaId = ''; profId = '';
 
+  secSvc = inject(SecretariaService);
+  secretaria = signal<DTORetornoNormal[]>([]);
+  loadingSecretaria = signal(false);
+
   private userData = computed(() => this.auth.getUserData());
   role = computed(() => this.userData()?.role ?? '');
   rolePretty = computed(() => {
@@ -33,6 +38,7 @@ export class PerfilComponent implements OnInit {
 
   ngOnInit() {
     if (this.role() === 'PROFESSOR') this.listarTodos();
+    this.carregarSecretaria();
   }
 
   listarTodos() {
@@ -83,6 +89,13 @@ export class PerfilComponent implements OnInit {
     this.alunoSvc.buscarProfessorPorId(this.profId).subscribe({
       next: r => { this.lista.set([r]); this.loading.set(false); },
       error: () => { this.toast.error('Professor não encontrado.'); this.loading.set(false); },
+    });
+  }
+  carregarSecretaria() {
+    this.loadingSecretaria.set(true);
+    this.secSvc.listarSecretaria().subscribe({
+      next: r => { this.secretaria.set(r.content); this.loadingSecretaria.set(false); },
+      error: () => { this.toast.error('Erro ao listar secretaria.'); this.loadingSecretaria.set(false); },
     });
   }
 }

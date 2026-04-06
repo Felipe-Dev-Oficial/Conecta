@@ -86,11 +86,21 @@
               <option value="GERAL">Geral</option>
               <option value="ALUNOS">Alunos</option>
               <option value="PROFESSORES">Professores</option>
-              <option value="TURMAS">Turmas</option>
+              <option value="TURMA">Turma específica</option>
+              <option value="TURMAS">Lista de turmas</option>
             </select>
           </div>
         </div>
-        <!-- ── Campo de mídia ── -->
+        @if (fTarget === 'TURMA' || fTarget === 'TURMAS') {
+          <div class="field">
+            <label>
+              {{ fTarget === 'TURMA' ? 'UUID da turma' : 'UUIDs das turmas' }}
+              @if (fTarget === 'TURMAS') { <span class="text-muted">(separados por vírgula)</span> }
+            </label>
+            <input class="input" [(ngModel)]="fTargetsId"
+              [placeholder]="fTarget === 'TURMA' ? 'ex: 550e8400-e29b-41d4-a716-...' : 'ex: uuid1, uuid2, uuid3'" />
+          </div>
+        }
         <div class="field">
           <label>Mídia <span class="text-muted">(opcional)</span></label>
           <app-media-upload (midiaChange)="onMidiaChange($event)" />
@@ -132,7 +142,6 @@
             <option value="URGENTE">Urgente</option>
           </select>
         </div>
-        <!-- ── Campo de mídia (com preview da mídia atual) ── -->
         <div class="field">
           <label>Mídia <span class="text-muted">(opcional)</span></label>
           <app-media-upload [midiaAtual]="fMidia" (midiaChange)="onMidiaChange($event)" />

@@ -1,7 +1,7 @@
 package com.etec.zl.conecta.Domain.Entities.Messages;
 
 import com.etec.zl.conecta.Domain.ValueObjects.Content;
-import com.etec.zl.conecta.Domain.ValueObjects.Midia;
+import com.etec.zl.conecta.Domain.Entities.Midia.Midia;
 
 import java.time.Instant;
 import java.util.UUID;

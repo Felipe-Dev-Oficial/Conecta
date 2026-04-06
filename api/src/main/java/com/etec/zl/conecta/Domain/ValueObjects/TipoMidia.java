@@ -4,5 +4,7 @@ public enum TipoMidia {
 
     AUDIO,
     FOTO,
-    VIDEO
+    VIDEO,
+    PDF,
+    DOCUMENTO
 }

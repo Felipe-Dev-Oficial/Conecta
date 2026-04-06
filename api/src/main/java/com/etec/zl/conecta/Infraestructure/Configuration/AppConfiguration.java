@@ -7,11 +7,13 @@ import com.etec.zl.conecta.Application.Mappers.Turmas.TurmaMapper;
 import com.etec.zl.conecta.Application.Mappers.Users.UserMapper;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.*;
 import com.etec.zl.conecta.Application.Ports.Output.Services.EmailService;
+import com.etec.zl.conecta.Application.Ports.Output.Storage.MidiaStorage;
 import com.etec.zl.conecta.Application.Services.Services.FAQs.VerifyIfExistsModifyAndSaveFAQsService;
 import com.etec.zl.conecta.Application.Services.Services.Statements.VerifyIfExistsModifyAndSaveStatementsService;
 import com.etec.zl.conecta.Application.Services.Services.Users.*;
 import com.etec.zl.conecta.Application.UseCases.FAQs.*;
 import com.etec.zl.conecta.Application.UseCases.Messages.*;
+import com.etec.zl.conecta.Application.UseCases.Midia.UploadMidiaUseCase;
 import com.etec.zl.conecta.Application.UseCases.Statements.*;
 import com.etec.zl.conecta.Application.UseCases.Turmas.*;
 import com.etec.zl.conecta.Application.UseCases.Users.*;
@@ -327,6 +329,17 @@ class AppConfiguration {
     public EncontrarTurmaPorIdUseCase encontrarTurmaPorIdUseCase(TurmaRepository turmaRepository) {
         return new EncontrarTurmaPorIdUseCase(turmaRepository);
     }
+
+    @Bean
+    public RetornarSecretariaUseCase retornarSecretariaUseCase(UserRepository userRepository, TryGetUsersService tryGetUsersService) {
+        return new RetornarSecretariaUseCase(userRepository, tryGetUsersService);
+    }
+
+    @Bean
+    public UploadMidiaUseCase uploadMidiaUseCase(MidiaStorage midiaStorage) {
+        return new UploadMidiaUseCase(midiaStorage);
+    }
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -70,4 +70,28 @@
       </div>
     }
   }
+  <div style="margin-top: 32px">
+    <h2 class="page-title" style="font-size: 16px; margin-bottom: 12px">Secretaria</h2>
+    @if (loadingSecretaria()) {
+      <div class="loading-overlay"><div class="spinner"></div></div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>RM</th><th>Nome</th><th>Tipo</th></tr></thead>
+          <tbody>
+            @for (s of secretaria(); track s.id) {
+              <tr>
+                <td class="font-mono">{{ s.id }}</td>
+                <td style="font-weight: 500; color: var(--text-primary)">{{ s.nome.name }}</td>
+                <td><span class="badge badge-gray">{{ s.tipo }}</span></td>
+              </tr>
+            }
+            @if (secretaria().length === 0) {
+              <tr><td colspan="3" style="text-align: center; padding: 32px; color: var(--text-muted)">Nenhuma secretaria encontrada.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
 </div>

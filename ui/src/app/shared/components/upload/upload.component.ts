@@ -24,7 +24,7 @@ export class MediaUploadComponent {
   preview = signal<string | null>(null);
   tipoAtual = signal<TipoMidia | null>(null);
 
-  private readonly ACCEPT = 'image/*,video/*,audio/*';
+  private readonly ACCEPT = 'image/*,video/*,audio/*,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
   get accept() { return this.ACCEPT; }
 
   onFileSelected(event: Event) {
@@ -49,12 +49,12 @@ export class MediaUploadComponent {
     form.append('file', file);
 
     this.uploading.set(true);
-    this.http.post<{ link: string }>(`${environment.apiUrl}/media/upload`, form).subscribe({
-      next: ({ link }) => {
+    this.http.post(`${environment.apiUrl}/arquivos/upload`, form, { responseType: 'text' }).subscribe({
+      next: (link) => {
         this.uploading.set(false);
         this.midiaChange.emit({ tipoMidia: tipo, link });
       },
-      error: () => {
+      error: (err) => {
         this.uploading.set(false);
         this.preview.set(null);
         this.tipoAtual.set(null);
@@ -76,6 +76,8 @@ export class MediaUploadComponent {
     if (file.type.startsWith('image/')) return 'FOTO';
     if (file.type.startsWith('video/')) return 'VIDEO';
     if (file.type.startsWith('audio/')) return 'AUDIO';
+    if (file.type === 'application/pdf') return 'PDF';
+    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'DOCUMENTO';
     return null;
   }
 }

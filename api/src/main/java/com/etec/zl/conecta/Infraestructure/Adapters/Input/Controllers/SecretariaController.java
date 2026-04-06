@@ -3,6 +3,7 @@ package com.etec.zl.conecta.Infraestructure.Adapters.Input.Controllers;
 import com.etec.zl.conecta.Application.DTOs.Messages.DTOReturnMessageSecretaria;
 import com.etec.zl.conecta.Application.DTOs.Turmas.DTOCadastroTurma;
 import com.etec.zl.conecta.Application.DTOs.Users.DTOCadastro;
+import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoNormal;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoSecretaria;
 import com.etec.zl.conecta.Application.Ports.Input.Messages.LerMensagensSecretariaPort;
 import com.etec.zl.conecta.Application.Ports.Input.Turmas.*;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("conecta/management")
+@RequestMapping("conecta")
 @RequiredArgsConstructor
 public class SecretariaController {
 
@@ -40,8 +41,9 @@ public class SecretariaController {
     private final NovasTurmasPort novasTurmasPort;
     private final PassaModuloPort passaModuloPort;
     private final LerMensagensSecretariaPort lerMensagensSecretariaPort;
+    private final RetornarSecretariaPort retornarSecretariaPort;
 
-    @GetMapping("/alunos")
+    @GetMapping("/management/alunos")
     public PageResult<DTORetornoSecretaria> lerCursantes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
@@ -50,7 +52,7 @@ public class SecretariaController {
         return secretariaListagemPorCursantesPort.secretariaListagemPorCursantes(request);
     }
 
-    @GetMapping("/alunos/nome/{nome}")
+    @GetMapping("/management/alunos/nome/{nome}")
     public PageResult<DTORetornoSecretaria> lerPorNome(
             @PathVariable String nome,
             @RequestParam(defaultValue = "0") int page,
@@ -60,7 +62,7 @@ public class SecretariaController {
         return secretariaListagemPorNomePort.secretariaListagemPorFuncionarios(new Name(nome), request);
     }
 
-    @GetMapping("/alunos/turma/{idTurma}")
+    @GetMapping("/management/alunos/turma/{idTurma}")
     public PageResult<DTORetornoSecretaria> lerPorTurma(
             @PathVariable UUID idTurma,
             @RequestParam(defaultValue = "0") int page,
@@ -70,7 +72,7 @@ public class SecretariaController {
         return secretariaListagemPorTurmaPort.secretariaListagemPorTurma(idTurma, request);
     }
 
-    @GetMapping("/funcionarios")
+    @GetMapping("/management/funcionarios")
     public PageResult<DTORetornoSecretaria> lerFuncionarios(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
@@ -79,45 +81,45 @@ public class SecretariaController {
         return secretariaListagemPorFuncionariosPort.secretariaListagemPorFuncionarios(request);
     }
 
-    @GetMapping("/usuarios/{id}")
+    @GetMapping("/management/usuarios/{id}")
     public DTORetornoSecretaria buscarUsuario(@PathVariable String id) {
         return secretariaBuscaPorIdPort.secretariaBuscaPorId(id);
     }
 
-    @PostMapping("/usuarios")
+    @PostMapping("/management/usuarios")
     @ResponseStatus(HttpStatus.CREATED)
     public void salvarUsuario(@RequestBody DTOCadastro dto) {
         salvarUsuarioPort.salvarUsuario(dto);
     }
 
-    @PostMapping("/usuarios/lote")
+    @PostMapping("/management/usuarios/lote")
     @ResponseStatus(HttpStatus.CREATED)
     public void salvarUsuariosLote(@RequestBody List<DTOCadastro> dtos) {
         novosUsuariosPort.novosUsuarios(dtos);
     }
 
-    @DeleteMapping("/usuarios/{id}")
+    @DeleteMapping("/management/usuarios/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletarUsuario(@PathVariable String id) {
         deletarUsuarioPort.deletarUsuario(id);
     }
 
-    @PatchMapping("/usuarios/{id}/tipo")
+    @PatchMapping("/management/usuarios/{id}/tipo")
     public void alterarTipo(@PathVariable String id, @RequestParam Tipo tipo) {
         alterarTipoPort.alterarTipo(id, tipo);
     }
 
-    @PostMapping("/usuarios/{id}/solicitar-senha")
+    @PostMapping("/management/usuarios/{id}/solicitar-senha")
     public void solicitarSenha(@PathVariable String id) {
         solicitarAlteracaoSenhaPort.solicitarAlteracaoSenha(id);
     }
 
-    @PostMapping("/usuarios/{id}/solicitar-email")
+    @PostMapping("/management/usuarios/{id}/solicitar-email")
     public void solicitarEmail(@PathVariable String id) {
         solicitarAlteracaoEmailPort.solicitarAlteracaoEmail(id);
     }
 
-    @GetMapping("/turmas")
+    @GetMapping("/management/turmas")
     public PageResult<Turma> listarTurmas(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -125,7 +127,7 @@ public class SecretariaController {
         return listarTodasAsTurmasPort.findAllTurmas(request);
     }
 
-    @GetMapping("/turmas/atuais")
+    @GetMapping("/management/turmas/atuais")
     public PageResult<Turma> listarTurmasAtuais(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -133,12 +135,12 @@ public class SecretariaController {
         return listarTodasAsTurmasAtuaisPort.findAllTurmasAtuais(request);
     }
 
-    @GetMapping("/turmas/{id}")
+    @GetMapping("/management/turmas/{id}")
     public Turma buscarTurma(@PathVariable UUID id) {
         return encontraTurmaPorIdPort.findTurmaPorId(id);
     }
 
-    @GetMapping("/turmas/curso")
+    @GetMapping("/management/turmas/curso")
     public PageResult<Turma> listarPorCurso(
             @RequestParam Cursos curso,
             @RequestParam(defaultValue = "0") int page,
@@ -147,7 +149,7 @@ public class SecretariaController {
         return listarTurmasPorCursoPort.findAllTurmasByCurso(curso, request);
     }
 
-    @GetMapping("/turmas/curso/{curso}/atuais")
+    @GetMapping("/management/turmas/curso/{curso}/atuais")
     public PageResult<Turma> listarPorCursoAtuais(
             @PathVariable Cursos curso,
             @RequestParam(defaultValue = "0") int page,
@@ -156,18 +158,18 @@ public class SecretariaController {
         return listarTurmasPorCursoAtuaisPort.findAllTurmasByCursoAtuais(curso, request);
     }
 
-    @PostMapping("/turmas")
+    @PostMapping("/management/turmas")
     @ResponseStatus(HttpStatus.CREATED)
     public void criarTurmas(@RequestBody List<DTOCadastroTurma> dtos) {
         novasTurmasPort.cadastroTurmas(dtos);
     }
 
-    @PostMapping("/turmas/passar-modulo")
+    @PostMapping("/management/turmas/passar-modulo")
     public void proximoModulo() {
         passaModuloPort.passaModulo();
     }
 
-    @GetMapping("/mensagens/sender/{sender}/receiver/{receiver}")
+    @GetMapping("/management/mensagens/sender/{sender}/receiver/{receiver}")
     public PageResult<DTOReturnMessageSecretaria> listarMensagens(
             @PathVariable String sender,
             @PathVariable String receiver,
@@ -176,5 +178,13 @@ public class SecretariaController {
     ) {
         var request = new PageRequest(page, size);
         return lerMensagensSecretariaPort.lerMensagensSecretaria(sender, receiver, request);
+    }
+
+    @GetMapping("/secretaria")
+    public PageResult<DTORetornoNormal> listarSecretaria(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size){
+        var request = new PageRequest(page, size);
+        return retornarSecretariaPort.listagemSecretaria(request);
     }
 }

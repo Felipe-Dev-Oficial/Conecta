@@ -1,5 +1,6 @@
 package com.etec.zl.conecta.Domain.Entities.Statements;
 
+import com.etec.zl.conecta.Domain.Entities.Midia.Midia;
 import com.etec.zl.conecta.Domain.Exceptions.InvalidDataException;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import org.junit.jupiter.api.DisplayName;

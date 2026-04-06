@@ -6,7 +6,7 @@ import { AuthService } from '../../core/services/http/auth/auth.service';
 import { ToastService } from '../../core/services/toast/toast.service';
 import { DTOContatos, DTOReturnMessage, Midia } from '../../core/models/models';
 import { MediaViewerComponent } from '../../shared/components/media-viewer/media-viewer.component';
-import { MediaUploadComponent } from '../../shared/components/upload.component/upload.component';
+import { MediaUploadComponent } from '../../shared/components/upload/upload.component';
 
 @Component({
   selector: 'app-mensagens',

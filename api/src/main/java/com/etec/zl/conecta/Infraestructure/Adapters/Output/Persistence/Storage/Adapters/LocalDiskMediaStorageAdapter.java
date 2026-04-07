@@ -3,10 +3,13 @@ package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.Storage.
 import com.etec.zl.conecta.Application.Ports.Output.Storage.MidiaStorage;
 import com.etec.zl.conecta.Domain.Exceptions.ProcessingErrorException;
 import com.etec.zl.conecta.Domain.ValueObjects.MediaFile;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,6 +62,22 @@ public class LocalDiskMediaStorageAdapter implements MidiaStorage {
     }
 
     private String buildPublicUrl(String filename) {
-        return publicBaseUrl.stripTrailing() + "/media/" + filename;
+        try {
+            ServletRequestAttributes attrs =
+                    (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            HttpServletRequest request = attrs.getRequest();
+
+            String scheme = request.getHeader("X-Forwarded-Proto");
+            if (scheme == null) scheme = request.getScheme();
+
+            String host = request.getHeader("X-Forwarded-Host");
+            if (host == null) host = request.getHeader("Host");
+            if (host == null) host = request.getServerName();
+
+            return scheme + "://" + host + "/media/" + filename;
+
+        } catch (IllegalStateException e) {
+            return publicBaseUrl.stripTrailing() + "/media/" + filename;
+        }
     }
 }

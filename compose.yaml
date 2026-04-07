@@ -1,4 +1,11 @@
 services:
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: conecta_tunnel_quick
+    restart: always
+    command: tunnel --url http://nginx:80
+    networks:
+      - network
   nginx:
     image: nginx:latest
     container_name: conecta_nginx
@@ -30,7 +37,7 @@ services:
     build: ./api
     container_name: conecta_api
     ports:
-      - "8080:8080"
+      - "8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -102,7 +109,15 @@ services:
       - "9090:9090"
     networks:
       - network
-
+  loki:
+    image: grafana/loki:3.0.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - network
+    volumes:
+      - loki_data:/loki
   grafana:
     image: grafana/grafana:latest
     container_name: conecta_grafana
@@ -114,7 +129,8 @@ services:
     networks:
       - network
     depends_on:
-      - prometheus    
+      - prometheus
+      - loki  
 networks:
   network:
     driver: bridge
@@ -123,3 +139,4 @@ volumes:
   mongo_data:
   redis_data:
   media_data:
+  loki_data:

@@ -10,12 +10,8 @@ import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Rep
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.cache.CacheManager;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -24,27 +20,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 class FAQRepositoryAdapterIntegrationTest {
 
-    @Container
-    @ServiceConnection
-    static MongoDBContainer mongo = new MongoDBContainer("mongo:7.0");
-
-    @Container
-    @ServiceConnection
-    static GenericContainer<?> redis = new GenericContainer<>("redis:7.2-alpine")
-            .withExposedPorts(6379);
-
-    @Autowired
-    private FAQRepositoryAdapter adapter;
-
-    @Autowired
-    private MongoFAQRepository mongoRepository;
-
-    @Autowired
-    private CacheManager cacheManager;
+    @Autowired private FAQRepositoryAdapter adapter;
+    @Autowired private MongoFAQRepository mongoRepository;
+    @Autowired private CacheManager cacheManager;
 
     @BeforeEach
     void setUp() {
@@ -106,17 +88,13 @@ class FAQRepositoryAdapterIntegrationTest {
     @Order(2)
     @DisplayName("save() deve invalidar todos os caches de faqs")
     void save_shouldEvictFaqsCache() {
+        adapter.getAll(new PageRequest(0, 10)); // aquece cache
+
         FAQ faq = buildDomain(StatusFAQ.PUBLICADO, "Pergunta", "Resposta");
-
-        // Aquece cache
-        adapter.getAll(new PageRequest(0, 10));
-
-        // Salva e invalida
         adapter.save(faq);
 
         var cache = cacheManager.getCache("faqs");
         assertThat(cache).isNotNull();
-        // Cache deve ter sido limpo (allEntries = true)
         assertThat(cache.get("page-0")).isNull();
     }
 
@@ -130,8 +108,8 @@ class FAQRepositoryAdapterIntegrationTest {
     void getAllActives_shouldReturnOnlyPublished() {
         mongoRepository.save(buildEntity(StatusFAQ.PUBLICADO, "Q1", "A1"));
         mongoRepository.save(buildEntity(StatusFAQ.PUBLICADO, "Q2", "A2"));
-        mongoRepository.save(buildEntity(StatusFAQ.RASCUNHO, "Q3", "A3")); // não deve aparecer
-        mongoRepository.save(buildEntity(StatusFAQ.APAGADO, "Q4", "A4")); // não deve aparecer
+        mongoRepository.save(buildEntity(StatusFAQ.RASCUNHO,  "Q3", "A3")); // não deve aparecer
+        mongoRepository.save(buildEntity(StatusFAQ.APAGADO,   "Q4", "A4")); // não deve aparecer
 
         PageResult<FAQ> result = adapter.getAllActives(new PageRequest(0, 10));
 
@@ -177,8 +155,8 @@ class FAQRepositoryAdapterIntegrationTest {
     @DisplayName("getAll() deve retornar todos os FAQs independente do status")
     void getAll_shouldReturnAllFAQs() {
         mongoRepository.save(buildEntity(StatusFAQ.PUBLICADO, "Q1", "A1"));
-        mongoRepository.save(buildEntity(StatusFAQ.RASCUNHO, "Q2", "A2"));
-        mongoRepository.save(buildEntity(StatusFAQ.APAGADO, "Q3", "A3"));
+        mongoRepository.save(buildEntity(StatusFAQ.RASCUNHO,  "Q2", "A2"));
+        mongoRepository.save(buildEntity(StatusFAQ.APAGADO,   "Q3", "A3"));
 
         PageResult<FAQ> result = adapter.getAll(new PageRequest(0, 10));
 
@@ -246,11 +224,11 @@ class FAQRepositoryAdapterIntegrationTest {
         FAQEntity entity = buildEntity(StatusFAQ.PUBLICADO, "Pergunta", "Resposta");
         mongoRepository.save(entity);
 
-        adapter.getById(entity.getId()); // aquece cache
+        adapter.getById(entity.getId());           // aquece cache
         mongoRepository.deleteById(entity.getId()); // remove do banco
 
         Optional<FAQ> cached = adapter.getById(entity.getId());
-        assertThat(cached).isPresent(); // ainda no cache
+        assertThat(cached).isPresent();
     }
 
     @Test

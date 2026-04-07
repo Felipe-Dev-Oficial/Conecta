@@ -10,12 +10,8 @@ import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Rep
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.cache.CacheManager;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -23,27 +19,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 class MessageRepositoryAdapterIntegrationTest {
 
-    @Container
-    @ServiceConnection
-    static MongoDBContainer mongo = new MongoDBContainer("mongo:7.0");
-
-    @Container
-    @ServiceConnection
-    static GenericContainer<?> redis = new GenericContainer<>("redis:7.2-alpine")
-            .withExposedPorts(6379);
-
-    @Autowired
-    private MessageRepositoryAdapter adapter;
-
-    @Autowired
-    private MongoMessageRepository mongoRepository;
-
-    @Autowired
-    private CacheManager cacheManager;
+    @Autowired private MessageRepositoryAdapter adapter;
+    @Autowired private MongoMessageRepository mongoRepository;
+    @Autowired private CacheManager cacheManager;
 
     private static final String USER_A = UUID.randomUUID().toString();
     private static final String USER_B = UUID.randomUUID().toString();
@@ -102,8 +84,7 @@ class MessageRepositoryAdapterIntegrationTest {
     @Order(2)
     @DisplayName("save() deve invalidar o cache de messages")
     void save_shouldEvictMessagesCache() {
-        // Aquece cache
-        adapter.ListarMensagens(USER_A, USER_B, new PageRequest(0, 10));
+        adapter.ListarMensagens(USER_A, USER_B, new PageRequest(0, 10)); // aquece cache
 
         Message message = buildDomain(USER_A, USER_B, "Nova mensagem");
         adapter.save(message);
@@ -149,7 +130,7 @@ class MessageRepositoryAdapterIntegrationTest {
     void listarMensagens_shouldUseCache_onSecondCall() {
         mongoRepository.save(buildMessage(USER_A, USER_B));
 
-        adapter.ListarMensagens(USER_A, USER_B, new PageRequest(0, 10)); // aquece
+        adapter.ListarMensagens(USER_A, USER_B, new PageRequest(0, 10)); // aquece cache
         mongoRepository.deleteAll();
 
         PageResult<Message> cached = adapter.ListarMensagens(USER_A, USER_B, new PageRequest(0, 10));
@@ -194,7 +175,7 @@ class MessageRepositoryAdapterIntegrationTest {
     void listarMensagensSecretaria_shouldUseSortedCacheKey() {
         mongoRepository.save(buildMessage(USER_B, USER_A)); // invertido
 
-        adapter.ListarMensagensSecretaria(USER_A, USER_B, new PageRequest(0, 10));
+        adapter.ListarMensagensSecretaria(USER_A, USER_B, new PageRequest(0, 10)); // aquece cache
         mongoRepository.deleteAll();
 
         PageResult<Message> cached = adapter.ListarMensagensSecretaria(USER_B, USER_A, new PageRequest(0, 10));
@@ -234,7 +215,7 @@ class MessageRepositoryAdapterIntegrationTest {
     void contatos_shouldUseCache_onSecondCall() {
         mongoRepository.save(buildMessage(USER_A, USER_B));
 
-        adapter.contatos(USER_A, new PageRequest(0, 10)); // aquece
+        adapter.contatos(USER_A, new PageRequest(0, 10)); // aquece cache
         mongoRepository.deleteAll();
 
         SliceResult<String> cached = adapter.contatos(USER_A, new PageRequest(0, 10));

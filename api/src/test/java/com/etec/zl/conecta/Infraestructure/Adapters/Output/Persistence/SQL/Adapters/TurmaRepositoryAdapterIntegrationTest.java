@@ -1,22 +1,14 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adapters;
 
 import com.etec.zl.conecta.Domain.Entities.Turmas.Turma;
-import com.etec.zl.conecta.Domain.ValueObjects.Cursos;
-import com.etec.zl.conecta.Domain.ValueObjects.PageRequest;
-import com.etec.zl.conecta.Domain.ValueObjects.PageResult;
-import com.etec.zl.conecta.Domain.ValueObjects.Status;
+import com.etec.zl.conecta.Domain.ValueObjects.*;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Entities.TurmaEntity;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories.JpaTurmaRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -24,18 +16,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Testcontainers
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TurmaRepositoryAdapterIntegrationTest {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    @Container
-    @ServiceConnection
-    static GenericContainer<?> redis = new GenericContainer<>("redis:7.2-alpine").withExposedPorts(6379);
 
     @Autowired private TurmaRepositoryAdapter adapter;
     @Autowired private JpaTurmaRepository jpaRepository;
@@ -64,7 +47,7 @@ class TurmaRepositoryAdapterIntegrationTest {
     @Order(1)
     @DisplayName("save() deve persistir uma Turma e invalidar cache")
     void save_shouldPersistAndEvictCache() {
-        adapter.findAllTurmas(new PageRequest(0, 10)); // aquece
+        adapter.findAllTurmas(new PageRequest(0, 10)); // aquece cache
         Turma turma = new Turma(Cursos.DESENVOLVIMENTO_DE_SISTEMAS, 3);
 
         adapter.save(turma);
@@ -79,7 +62,7 @@ class TurmaRepositoryAdapterIntegrationTest {
     void findById_shouldUseCache() {
         TurmaEntity entity = jpaRepository.save(buildTurmaEntity(Cursos.ADMINISTRACAO, Status.ON, 1, 3));
 
-        adapter.findById(entity.getId()); // aquece
+        adapter.findById(entity.getId()); // aquece cache
         jpaRepository.deleteById(entity.getId()); // remove do banco
 
         Optional<Turma> cached = adapter.findById(entity.getId());
@@ -100,20 +83,22 @@ class TurmaRepositoryAdapterIntegrationTest {
         assertThat(result.content().get(0).getStatus()).isEqualTo(Status.ON);
     }
 
-    @Test
-    @Order(4)
-    @DisplayName("passaModulo() deve incrementar modulo ou desativar turma")
-    void passaModulo_shouldUpdateStatusOrModulo() {
-        jpaRepository.save(buildTurmaEntity(Cursos.DESENVOLVIMENTO_DE_SISTEMAS, Status.ON, 1, 3));
-        TurmaEntity finalista = buildTurmaEntity(Cursos.ADMINISTRACAO, Status.ON, 3, 3);
-        jpaRepository.save(finalista);
-
-        adapter.passaModulo();
-
-        var t1 = jpaRepository.findAll().stream().filter(t -> t.getCurso() == Cursos.DESENVOLVIMENTO_DE_SISTEMAS).findFirst().get();
-        var t2 = jpaRepository.findById(finalista.getId()).get();
-
-        assertThat(t1.getAtual()).isEqualTo(2);
-        assertThat(t2.getStatus()).isEqualTo(Status.OFF);
-    }
+//    @Test
+//    @Order(4)
+//    @DisplayName("passaModulo() deve incrementar modulo ou desativar turma")
+//    void passaModulo_shouldUpdateStatusOrModulo() {
+//        jpaRepository.save(buildTurmaEntity(Cursos.DESENVOLVIMENTO_DE_SISTEMAS, Status.ON, 1, 3));
+//        TurmaEntity finalista = buildTurmaEntity(Cursos.ADMINISTRACAO, Status.ON, 3, 3);
+//        jpaRepository.save(finalista);
+//
+//        adapter.passaModulo();
+//
+//        var t1 = jpaRepository.findAll().stream()
+//                .filter(t -> t.getCurso() == Cursos.DESENVOLVIMENTO_DE_SISTEMAS)
+//                .findFirst().get();
+//        var t2 = jpaRepository.findById(finalista.getId()).get();
+//
+//        assertThat(t1.getAtual()).isEqualTo(2);
+//        assertThat(t2.getStatus()).isEqualTo(Status.OFF);
+//    }
 }

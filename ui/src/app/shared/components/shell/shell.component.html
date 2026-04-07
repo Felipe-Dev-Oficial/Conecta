@@ -11,15 +11,12 @@
 
     <nav class="sidebar-nav">
       <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📢</span>
         <span>Anúncios</span>
       </a>
       <a routerLink="/mensagens" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">💬</span>
         <span>Mensagens</span>
       </a>
       <a routerLink="/faqs" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">❓</span>
         <span>FAQs</span>
       </a>
 
@@ -63,9 +60,13 @@
         <button class="btn btn-ghost btn-icon btn-sm" (click)="themeService.toggle()" title="Alternar tema">
           {{ themeService.theme() === 'dark' ? '☀️' : '🌙' }}
         </button>
-        <button class="btn btn-ghost btn-sm" style="flex:1" (click)="logout()">Sair</button>
+        @if (isLogado()) {
+          <button class="btn btn-ghost btn-sm" style="flex:1" (click)="logout()">Sair</button>
+        } @else {
+          <a routerLink="/auth/login" class="btn btn-primary btn-sm" style="flex:1">Entrar</a>
+        }
       </div>
-    </div>
+     </div>  
   </aside>
 
   <div class="main-content">

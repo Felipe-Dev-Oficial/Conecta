@@ -69,11 +69,11 @@ public class FAQ {
     }
 
     public void elevarPrioridade(){
-        this.relevance.elevar();
+        this.relevance = this.relevance.elevar();
     }
 
     public void reduzirPrioridade(){
-        this.relevance.reduzir();
+        this.relevance = this.relevance.reduzir();
     }
 
     public void apagarFAQ() {

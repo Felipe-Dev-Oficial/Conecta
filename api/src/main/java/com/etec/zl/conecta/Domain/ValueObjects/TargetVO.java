@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public record TargetVO(TargetType targetType, List<UUID> targetIds) {
+public record TargetVO(TargetType targetType, List<String> targetIds) {
 
     public TargetVO {
         if (targetIds == null) {
@@ -20,11 +20,11 @@ public record TargetVO(TargetType targetType, List<UUID> targetIds) {
         return new TargetVO(TargetType.PROFESSORES, null);
     }
 
-    public static TargetVO paraTurma(UUID idTurma) {
+    public static TargetVO paraTurma(String idTurma) {
         return new TargetVO(TargetType.TURMA, List.of(idTurma));
     }
 
-    public static TargetVO paraListaDeTurmas(List<UUID> ids) {
+    public static TargetVO paraListaDeTurmas(List<String> ids) {
         return new TargetVO(TargetType.TURMAS, ids);
     }
 }

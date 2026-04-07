@@ -39,7 +39,7 @@ public class LerAnuncioUseCase implements LerAnuncioPort {
                 () -> userRepository.findById(reader_id),
                 log
         );
-        List<UUID> turmas = user.getTurmasIds() != null ? user.getTurmasIds() : List.of();
+        List<String> turmas = user.getTurmasIds() != null ? user.getTurmasIds() : List.of();
 
         return TryGetService.execute(
                 () -> repository.findStatements(mapper.toDTOLeitura(user.getTipo(), turmas), pageable),

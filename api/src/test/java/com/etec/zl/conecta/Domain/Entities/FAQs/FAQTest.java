@@ -4,6 +4,7 @@ import com.etec.zl.conecta.Domain.Exceptions.InvalidDataException;
 import com.etec.zl.conecta.Domain.ValueObjects.Prioridade;
 import com.etec.zl.conecta.Domain.ValueObjects.StatusFAQ;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -24,177 +25,264 @@ class FAQTest {
 
     // ─── Criação ──────────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("Deve criar FAQ com status RASCUNHO por padrão")
-    void criacao_statusRascunho() {
-        assertEquals(StatusFAQ.RASCUNHO, faqRascunho().getStatusFAQ());
-    }
+    @Nested
+    @DisplayName("Criação via construtor simples")
+    class Criacao {
 
-    @Test
-    @DisplayName("Deve criar FAQ com id gerado automaticamente")
-    void criacao_idGerado() {
-        assertNotNull(faqRascunho().getId());
-    }
+        @Test
+        @DisplayName("deve iniciar com status RASCUNHO")
+        void statusRascunho() {
+            assertEquals(StatusFAQ.RASCUNHO, faqRascunho().getStatusFAQ());
+        }
 
-    @Test
-    @DisplayName("Deve criar FAQ com createdAt preenchido")
-    void criacao_createdAt() {
-        assertNotNull(faqRascunho().getCreatedAt());
-    }
+        @Test
+        @DisplayName("deve gerar id não nulo automaticamente")
+        void idGerado() {
+            assertNotNull(faqRascunho().getId());
+        }
 
-    @Test
-    @DisplayName("Deve criar FAQ com updatedAt nulo")
-    void criacao_updatedAtNulo() {
-        assertNull(faqRascunho().getUpdatedAt());
+        @Test
+        @DisplayName("deve preencher createdAt automaticamente")
+        void createdAt() {
+            assertNotNull(faqRascunho().getCreatedAt());
+        }
+
+        @Test
+        @DisplayName("deve iniciar com updatedAt nulo")
+        void updatedAtNulo() {
+            assertNull(faqRascunho().getUpdatedAt());
+        }
     }
 
     // ─── publicar() ───────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("publicar() deve mudar status para PUBLICADO")
-    void publicar_valido() {
-        var faq = faqRascunho();
-        faq.publicar();
-        assertEquals(StatusFAQ.PUBLICADO, faq.getStatusFAQ());
-    }
+    @Nested
+    @DisplayName("publicar()")
+    class Publicar {
 
-    @Test
-    @DisplayName("publicar() deve lançar InvalidDataException se já PUBLICADO")
-    void publicar_jaPublicado() {
-        var faq = faqRascunho();
-        faq.publicar();
-        assertThrows(InvalidDataException.class, faq::publicar);
-    }
+        @Test
+        @DisplayName("deve mudar status para PUBLICADO")
+        void valido() {
+            var faq = faqRascunho();
+            faq.publicar();
+            assertEquals(StatusFAQ.PUBLICADO, faq.getStatusFAQ());
+        }
 
-    @Test
-    @DisplayName("publicar() deve lançar InvalidDataException se pergunta for nula")
-    void publicar_perguntaNula() {
-        var faq = new FAQ(UUID.randomUUID(), null, "Resposta", "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
-        assertThrows(InvalidDataException.class, faq::publicar);
-    }
+        @Test
+        @DisplayName("deve lançar InvalidDataException se já PUBLICADO")
+        void jaPublicado() {
+            var faq = faqRascunho();
+            faq.publicar();
+            var ex = assertThrows(InvalidDataException.class, faq::publicar);
+            assertNotNull(ex.getMessage());
+        }
 
-    @Test
-    @DisplayName("publicar() deve lançar InvalidDataException se pergunta for vazia")
-    void publicar_perguntaVazia() {
-        var faq = new FAQ(UUID.randomUUID(), "", "Resposta", "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
-        assertThrows(InvalidDataException.class, faq::publicar);
-    }
+        @Test
+        @DisplayName("status não deve ser alterado quando já PUBLICADO e lança exceção")
+        void naoAlteraEmCasoDeExcecao() {
+            var faq = faqRascunho();
+            faq.publicar();
+            assertThrows(InvalidDataException.class, faq::publicar);
+            assertEquals(StatusFAQ.PUBLICADO, faq.getStatusFAQ());
+        }
 
-    @Test
-    @DisplayName("publicar() deve lançar InvalidDataException se resposta for nula")
-    void publicar_respostaNula() {
-        var faq = new FAQ(UUID.randomUUID(), "Pergunta?", null, "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
-        assertThrows(InvalidDataException.class, faq::publicar);
-    }
+        @Test
+        @DisplayName("deve lançar InvalidDataException se pergunta for nula")
+        void perguntaNula() {
+            var faq = new FAQ(UUID.randomUUID(), null, "Resposta", "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
+            assertThrows(InvalidDataException.class, faq::publicar);
+        }
 
-    @Test
-    @DisplayName("publicar() deve lançar InvalidDataException se resposta for vazia")
-    void publicar_respostaVazia() {
-        var faq = new FAQ(UUID.randomUUID(), "Pergunta?", "", "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
-        assertThrows(InvalidDataException.class, faq::publicar);
+        @Test
+        @DisplayName("deve lançar InvalidDataException se pergunta for vazia")
+        void perguntaVazia() {
+            var faq = new FAQ(UUID.randomUUID(), "", "Resposta", "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
+            assertThrows(InvalidDataException.class, faq::publicar);
+        }
+
+        @Test
+        @DisplayName("deve lançar InvalidDataException se resposta for nula")
+        void respostaNula() {
+            var faq = new FAQ(UUID.randomUUID(), "Pergunta?", null, "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
+            assertThrows(InvalidDataException.class, faq::publicar);
+        }
+
+        @Test
+        @DisplayName("deve lançar InvalidDataException se resposta for vazia")
+        void respostaVazia() {
+            var faq = new FAQ(UUID.randomUUID(), "Pergunta?", "", "autor", StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.BAIXA);
+            assertThrows(InvalidDataException.class, faq::publicar);
+        }
     }
 
     // ─── apagarFAQ() ──────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("apagarFAQ() deve mudar status para APAGADO")
-    void apagar_rascunho() {
-        var faq = faqRascunho();
-        faq.apagarFAQ();
-        assertEquals(StatusFAQ.APAGADO, faq.getStatusFAQ());
-    }
+    @Nested
+    @DisplayName("apagarFAQ()")
+    class ApagarFAQ {
 
-    @Test
-    @DisplayName("apagarFAQ() deve mudar status para APAGADO mesmo se PUBLICADO")
-    void apagar_publicado() {
-        var faq = faqCompleta(StatusFAQ.PUBLICADO);
-        faq.apagarFAQ();
-        assertEquals(StatusFAQ.APAGADO, faq.getStatusFAQ());
+        @Test
+        @DisplayName("deve mudar status para APAGADO quando RASCUNHO")
+        void rascunho_paraApagado() {
+            var faq = faqRascunho();
+            faq.apagarFAQ();
+            assertEquals(StatusFAQ.APAGADO, faq.getStatusFAQ());
+        }
+
+        @Test
+        @DisplayName("deve mudar status para APAGADO mesmo quando PUBLICADO")
+        void publicado_paraApagado() {
+            var faq = faqCompleta(StatusFAQ.PUBLICADO);
+            faq.apagarFAQ();
+            assertEquals(StatusFAQ.APAGADO, faq.getStatusFAQ());
+        }
     }
 
     // ─── alterarResposta() ────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("alterarResposta() deve atualizar para string não vazia")
-    void alterarResposta_valido() {
-        var faq = faqRascunho();
-        faq.alterarResposta("Nova resposta");
-        assertEquals("Nova resposta", faq.getAnswer());
+    @Nested
+    @DisplayName("alterarResposta()")
+    class AlterarResposta {
+
+        @Test
+        @DisplayName("deve atualizar para o novo valor quando válido")
+        void valido() {
+            var faq = faqRascunho();
+            faq.alterarResposta("Nova resposta");
+            assertEquals("Nova resposta", faq.getAnswer());
+        }
+
+        @Test
+        @DisplayName("string vazia não deve atualizar a resposta")
+        void vazio_naoAtualiza() {
+            var faq = faqRascunho();
+            String original = faq.getAnswer();
+            faq.alterarResposta("");
+            assertEquals(original, faq.getAnswer());
+        }
+
+        @Test
+        @DisplayName("null não deve atualizar a resposta")
+        void nulo_naoAtualiza() {
+            var faq = faqRascunho();
+            String original = faq.getAnswer();
+            faq.alterarResposta(null);
+            assertEquals(original, faq.getAnswer());
+        }
     }
 
-    @Test
-    @DisplayName("alterarResposta() não deve atualizar para string vazia")
-    void alterarResposta_vazio_naoAtualiza() {
-        var faq = faqRascunho();
-        String original = faq.getAnswer();
-        faq.alterarResposta("");
-        assertEquals(original, faq.getAnswer());
-    }
+    // ─── alterarPergunta() ────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("alterarResposta() não deve atualizar para null")
-    void alterarResposta_null_naoAtualiza() {
-        var faq = faqRascunho();
-        String original = faq.getAnswer();
-        faq.alterarResposta(null);
-        assertEquals(original, faq.getAnswer());
-    }
+    @Nested
+    @DisplayName("alterarPergunta()")
+    class AlterarPergunta {
 
-    @Test
-    @DisplayName("Deve manter pergunta original quando nova pergunta for vazia")
-    void alterarPergunta_naoDeveAtualizarComVazio() {
-        var faq = new FAQ("autor123", "Pergunta Original", "Resposta", Prioridade.BAIXA);
+        @Test
+        @DisplayName("deve atualizar para o novo valor quando válido")
+        void valido() {
+            var faq = faqRascunho();
+            faq.alterarPergunta("Como integro o Redis?");
+            assertEquals("Como integro o Redis?", faq.getQuestion());
+        }
 
-        faq.alterarPergunta("");
+        @Test
+        @DisplayName("string vazia não deve atualizar a pergunta")
+        void vazio_naoAtualiza() {
+            var faq = new FAQ("autor123", "Pergunta Original", "Resposta", Prioridade.BAIXA);
+            faq.alterarPergunta("");
+            assertEquals("Pergunta Original", faq.getQuestion());
+        }
 
-        assertEquals("Pergunta Original", faq.getQuestion(), "A pergunta não deveria ter mudado");
-    }
-
-    @Test
-    @DisplayName("Deve atualizar pergunta quando string for válida")
-    void alterarPergunta_deveAtualizarComSucesso() {
-        var faq = new FAQ("autor123", "Pergunta Original", "Resposta", Prioridade.BAIXA);
-        String novaPergunta = "Como integro o Redis?";
-
-        faq.alterarPergunta(novaPergunta);
-
-        assertEquals(novaPergunta, faq.getQuestion());
-    }
-
-    @Test
-    @DisplayName("alterarPergunta() não deve atualizar para null")
-    void alterarPergunta_null_naoAtualiza() {
-        var faq = faqRascunho();
-        String original = faq.getQuestion();
-        faq.alterarPergunta(null);
-        assertEquals(original, faq.getQuestion());
+        @Test
+        @DisplayName("null não deve atualizar a pergunta")
+        void nulo_naoAtualiza() {
+            var faq = faqRascunho();
+            String original = faq.getQuestion();
+            faq.alterarPergunta(null);
+            assertEquals(original, faq.getQuestion());
+        }
     }
 
     // ─── Prioridade ───────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("getPesoPrioridade() deve retornar peso correto")
-    void getPeso() {
-        var faq = new FAQ("autor", "P", "R", Prioridade.ALTA);
-        assertEquals(2, faq.getPesoPrioridade());
-    }
+    @Nested
+    @DisplayName("Prioridade (relevância)")
+    class PrioridadeFAQ {
 
-    @Test
-    @DisplayName("elevarPrioridade() deve subir um nível")
-    void elevarPrioridade() {
-        // elevarPrioridade() chama relevance.elevar() mas NÃO atribui o retorno — outro bug.
-        // O teste documenta que o estado interno NÃO muda (bug).
-        var faq = new FAQ("autor", "P", "R", Prioridade.BAIXA);
-        faq.elevarPrioridade();
-        assertEquals(Prioridade.BAIXA, faq.getRelevance()); // permanece BAIXA por causa do bug
-    }
+        @Test
+        @DisplayName("getPesoPrioridade() deve retornar 2 para ALTA")
+        void getPeso_alta() {
+            assertEquals(2, new FAQ("autor", "P", "R", Prioridade.ALTA).getPesoPrioridade());
+        }
 
-    @Test
-    @DisplayName("reduzirPrioridade() deve descer um nível")
-    void reduzirPrioridade() {
-        // mesmo bug de elevarPrioridade() — não atribui o retorno
-        var faq = new FAQ("autor", "P", "R", Prioridade.ALTA);
-        faq.reduzirPrioridade();
-        assertEquals(Prioridade.ALTA, faq.getRelevance()); // permanece ALTA por causa do bug
+        @Test
+        @DisplayName("getPesoPrioridade() deve retornar 1 para MEDIA")
+        void getPeso_media() {
+            assertEquals(1, new FAQ("autor", "P", "R", Prioridade.MEDIA).getPesoPrioridade());
+        }
+
+        @Test
+        @DisplayName("elevarPrioridade() deve subir BAIXA para MEDIA")
+        void elevar_baixa_paraMedia() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.BAIXA);
+            faq.elevarPrioridade();
+            assertEquals(Prioridade.MEDIA, faq.getRelevance());
+        }
+
+        @Test
+        @DisplayName("elevarPrioridade() deve subir MEDIA para ALTA")
+        void elevar_media_paraAlta() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.MEDIA);
+            faq.elevarPrioridade();
+            assertEquals(Prioridade.ALTA, faq.getRelevance());
+        }
+
+        @Test
+        @DisplayName("elevarPrioridade() deve subir ALTA para URGENTE")
+        void elevar_alta_paraUrgente() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.ALTA);
+            faq.elevarPrioridade();
+            assertEquals(Prioridade.URGENTE, faq.getRelevance());
+        }
+
+        @Test
+        @DisplayName("elevarPrioridade() em URGENTE deve permanecer URGENTE (teto)")
+        void elevar_urgente_permanece() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.URGENTE);
+            faq.elevarPrioridade();
+            assertEquals(Prioridade.URGENTE, faq.getRelevance());
+        }
+
+        @Test
+        @DisplayName("reduzirPrioridade() deve descer URGENTE para ALTA")
+        void reduzir_urgente_paraAlta() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.URGENTE);
+            faq.reduzirPrioridade();
+            assertEquals(Prioridade.ALTA, faq.getRelevance());
+        }
+
+        @Test
+        @DisplayName("reduzirPrioridade() deve descer ALTA para MEDIA")
+        void reduzir_alta_paraMedia() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.ALTA);
+            faq.reduzirPrioridade();
+            assertEquals(Prioridade.MEDIA, faq.getRelevance());
+        }
+
+        @Test
+        @DisplayName("reduzirPrioridade() deve descer MEDIA para BAIXA")
+        void reduzir_media_paraBaixa() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.MEDIA);
+            faq.reduzirPrioridade();
+            assertEquals(Prioridade.BAIXA, faq.getRelevance());
+        }
+
+        @Test
+        @DisplayName("reduzirPrioridade() em BAIXA deve permanecer BAIXA (piso)")
+        void reduzir_baixa_permanece() {
+            var faq = new FAQ("autor", "P", "R", Prioridade.BAIXA);
+            faq.reduzirPrioridade();
+            assertEquals(Prioridade.BAIXA, faq.getRelevance());
+        }
     }
 }

@@ -27,6 +27,8 @@ const angularApp = new AngularNodeAppEngine();
 /**
  * Serve static files from /browser
  */
+app.set('trust proxy', true);
+app.use((req, _res, next) => { req.headers['x-forwarded-host'] ??= req.headers['host']; next(); });
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',

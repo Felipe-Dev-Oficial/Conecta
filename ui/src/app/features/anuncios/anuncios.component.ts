@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { AnuncioService } from '../../core/services/http/anuncio/anuncio.service';
 import { ToastService } from '../../core/services/toast/toast.service';
@@ -15,17 +16,26 @@ import { MediaViewerComponent } from '../../shared/components/media-viewer/media
 export class AnunciosComponent implements OnInit {
   svc = inject(AnuncioService);
   toast = inject(ToastService);
+  platformId = inject(PLATFORM_ID);
 
   anuncios = signal<DTORetornoAnuncio[]>([]);
   loading = signal(true);
   page = signal(0);
   totalPages = signal(1);
 
+  get isLogado(): boolean {
+    return isPlatformBrowser(this.platformId) && !!localStorage.getItem('token');
+  }
+
   ngOnInit() { this.load(); }
 
   load() {
     this.loading.set(true);
-    this.svc.listarAnuncios(this.page()).subscribe({
+    const obs = this.isLogado
+      ? this.svc.listarAnuncios(this.page())
+      : this.svc.listarAnunciosDefault(this.page());
+
+    obs.subscribe({
       next: r => { this.anuncios.set(r.content); this.totalPages.set(r.totalPages); this.loading.set(false); },
       error: () => { this.toast.error('Erro ao carregar anúncios.'); this.loading.set(false); },
     });

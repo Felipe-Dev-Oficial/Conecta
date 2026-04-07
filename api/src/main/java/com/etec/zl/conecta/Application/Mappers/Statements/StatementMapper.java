@@ -24,7 +24,7 @@ public class StatementMapper {
         );
     }
 
-    public DTOLeitura toDTOLeitura(Tipo tipo, List<UUID> ids){
+    public DTOLeitura toDTOLeitura(Tipo tipo, List<String> ids){
         return new DTOLeitura(tipo, ids);
     }
 

@@ -38,7 +38,7 @@ public class TurmaRepositoryAdapter implements TurmaRepository {
 
     @Override
     @Cacheable(value = "turmas", key = "#id")
-    public Optional<Turma> findById(UUID id) {
+    public Optional<Turma> findById(String id) {
         return externalRepository.findById(id)
                 .map(mapper::toDomain);
     }

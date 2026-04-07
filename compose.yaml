@@ -11,7 +11,7 @@ services:
       - api
       - ui
     networks:
-      - conecta-network
+      - network
   ui:
     build: ./ui
     container_name: conecta_ui
@@ -25,13 +25,12 @@ services:
       api:
         condition: service_started
     networks:
-      - conecta-network
+      - network
   api:
     build: ./api
-
     container_name: conecta_api
     ports:
-      - "8080"
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,17 +42,14 @@ services:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/conecta_postgres
         - SPRING_DATASOURCE_USERNAME=admin
         - SPRING_DATASOURCE_PASSWORD=admin
-
         - SPRING_DATA_MONGODB_UUID_REPRESENTATION=standard
         - MONGO_HOST=mongodb
-
         - SPRING_DATA_REDIS_HOST=redis
         - SPRING_DATA_REDIS_PORT=6379
-
         - MAIL_USERNAME=${MAIL_USERNAME}
         - MAIL_PASSWORD=${MAIL_PASSWORD}
     networks:
-      - conecta-network
+      - network
     volumes:
       - media_data:/var/www/media 
   postgres:
@@ -72,7 +68,7 @@ services:
       retries: 5
     restart: always
     networks:
-      - conecta-network
+      - network
     volumes:
       - postgres_data:/var/lib/postgresql
   mongodb:
@@ -82,7 +78,7 @@ services:
       - "27017"
     restart: always
     networks:
-      - conecta-network
+      - network
     volumes:
       - mongo_data:/data/db
   redis:
@@ -95,9 +91,32 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - conecta-network
+      - network
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: conecta_prometheus
+    restart: always
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: conecta_grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - network
+    depends_on:
+      - prometheus    
 networks:
-  conecta-network:
+  network:
     driver: bridge
 volumes:
   postgres_data:

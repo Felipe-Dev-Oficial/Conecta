@@ -16,9 +16,9 @@ public class User {
     private Tipo tipo;
     private TokenUpdater passwordUpdater;
     private TokenUpdater emailUpdater;
-    private List<UUID> turmasIds;
+    private List<String> turmasIds;
 
-    public User(String id, Name nome, Email email, PhoneNumber numero, Password senha, Tipo tipo, TokenUpdater passwordUpdater, TokenUpdater emailUpdater, List<UUID> turmasIds) {
+    public User(String id, Name nome, Email email, PhoneNumber numero, Password senha, Tipo tipo, TokenUpdater passwordUpdater, TokenUpdater emailUpdater, List<String> turmasIds) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -30,7 +30,7 @@ public class User {
         this.turmasIds = turmasIds;
     }
 
-    public User(String id, Name nome, Email email, PhoneNumber numero, Password senha, Tipo tipo, List<UUID> turmasIds) {
+    public User(String id, Name nome, Email email, PhoneNumber numero, Password senha, Tipo tipo, List<String> turmasIds) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -77,7 +77,7 @@ public class User {
         this.passwordUpdater = null;
     }
 
-    public void addTurmas(List<UUID> turmasIds) {
+    public void addTurmas(List<String> turmasIds) {
         if (this.turmasIds == null) {
             this.turmasIds = new ArrayList<>();
         }
@@ -120,7 +120,7 @@ public class User {
         return emailUpdater;
     }
 
-    public List<UUID> getTurmasIds() {
+    public List<String> getTurmasIds() {
         return turmasIds;
     }
 }

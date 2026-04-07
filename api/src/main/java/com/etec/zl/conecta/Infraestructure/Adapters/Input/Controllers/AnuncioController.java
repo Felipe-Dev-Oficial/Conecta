@@ -26,6 +26,7 @@ public class AnuncioController {
     private final GerarAnuncioPort gerarAnuncioPort;
     private final LerAnuncioSecretariaPort lerAnuncioSecretariaPort;
     private final ReduzirPrioridadeAnuncioPort reduzirPrioridadeAnuncioPort;
+    private final LerAnunciosGeraisPort lerAnunciosGeraisPort;
 
     @GetMapping()
     public PageResult<DTORetornoAnuncio> retornarAnuncios(
@@ -67,5 +68,13 @@ public class AnuncioController {
     @DeleteMapping("management/{id}")
     public void apagarAnuncio(@PathVariable UUID id) {
         apagarAnuncioPort.apagarAnuncio(id);
+    }
+
+    @GetMapping("/default")
+    public PageResult<DTORetornoAnuncio> retornarAnunciosGerais(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        var result = new PageRequest(page, size);
+        return lerAnunciosGeraisPort.lerAnuncios(result);
     }
 }

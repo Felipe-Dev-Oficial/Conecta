@@ -12,6 +12,6 @@ public record DTOCadastro(
         PhoneNumber numero,
         Password senha,
         Tipo tipo,
-        List<UUID> turmas
+        List<String> turmas
 ) {
 }

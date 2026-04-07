@@ -4,9 +4,8 @@ import com.etec.zl.conecta.Domain.Exceptions.InvalidDataException;
 import com.etec.zl.conecta.Domain.ValueObjects.Cursos;
 import com.etec.zl.conecta.Domain.ValueObjects.Status;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,63 +14,101 @@ class TurmaTest {
 
     // ─── Criação ──────────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("Deve criar Turma com status ON por padrão via construtor simples")
-    void criacao_statusOn() {
-        var turma = new Turma(Cursos.ADMINISTRACAO, 3);
-        assertEquals(Status.ON, turma.getStatus());
-    }
+    @Nested
+    @DisplayName("Criação via construtor simples")
+    class Criacao {
 
-    @Test
-    @DisplayName("Deve criar Turma com id gerado automaticamente via construtor simples")
-    void criacao_idGerado() {
-        var turma = new Turma(Cursos.ADMINISTRACAO, 3);
-        assertNotNull(turma.getId());
+        @Test
+        @DisplayName("deve iniciar com status ON")
+        void statusOn() {
+            var turma = new Turma(Cursos.ADMINISTRACAO, 3);
+            assertEquals(Status.ON, turma.getStatus());
+        }
+
+        @Test
+        @DisplayName("deve gerar id automaticamente não nulo")
+        void idGerado() {
+            var turma = new Turma(Cursos.ADMINISTRACAO, 3);
+            assertNotNull(turma.getId());
+        }
+
+        @Test
+        @DisplayName("deve iniciar no módulo 1")
+        void atualIniciaNaUm() {
+            var turma = new Turma(Cursos.ADMINISTRACAO, 3);
+            assertEquals(1, turma.getAtual());
+        }
+
+        @Test
+        @DisplayName("deve preservar o número de módulos informado")
+        void modulosPreservados() {
+            var turma = new Turma(Cursos.ADMINISTRACAO, 5);
+            assertEquals(5, turma.getModulos());
+        }
     }
 
     // ─── passarModulo() ───────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("passarModulo() deve incrementar atual quando há módulos restantes")
-    void passarModulo_incrementa() {
-        var turma = new Turma(UUID.randomUUID(), Cursos.ADMINISTRACAO, 3, 1, Status.ON);
-        turma.passarModulo();
-        assertEquals(2, turma.getAtual());
-        assertEquals(Status.ON, turma.getStatus());
-    }
+    @Nested
+    @DisplayName("passarModulo()")
+    class PassarModulo {
 
-    @Test
-    @DisplayName("passarModulo() deve desativar turma quando atual == modulos")
-    void passarModulo_desativa_quandoAtualIgualModulos() {
-        var turma = new Turma(UUID.randomUUID(), Cursos.ADMINISTRACAO, 3, 3, Status.ON);
-        turma.passarModulo();
-        assertEquals(Status.OFF, turma.getStatus());
-    }
+        @Test
+        @DisplayName("deve incrementar atual de 1 para 2 quando há módulos restantes")
+        void incrementa() {
+            var turma = new Turma(null, Cursos.ADMINISTRACAO, 3, 1, Status.ON);
+            turma.passarModulo();
+            assertEquals(2, turma.getAtual());
+            assertEquals(Status.ON, turma.getStatus());
+        }
 
-    @Test
-    @DisplayName("passarModulo() deve desativar turma quando atual > modulos")
-    void passarModulo_desativa_quandoAtualMaiorQueModulos() {
-        var turma = new Turma(UUID.randomUUID(), Cursos.ADMINISTRACAO, 3, 5, Status.ON);
-        turma.passarModulo();
-        assertEquals(Status.OFF, turma.getStatus());
-    }
+        @Test
+        @DisplayName("deve desativar quando atual == modulos")
+        void desativa_atualIgualModulos() {
+            var turma = new Turma(null, Cursos.ADMINISTRACAO, 3, 3, Status.ON);
+            turma.passarModulo();
+            assertEquals(Status.OFF, turma.getStatus());
+        }
 
-    @Test
-    @DisplayName("passarModulo() em turma já OFF deve lançar InvalidDataException")
-    void passarModulo_jaDesativada() {
-        var turma = new Turma(UUID.randomUUID(), Cursos.ADMINISTRACAO, 3, 3, Status.OFF);
-        assertThrows(InvalidDataException.class, turma::passarModulo);
-    }
+        @Test
+        @DisplayName("deve desativar quando atual > modulos")
+        void desativa_atualMaiorQueModulos() {
+            var turma = new Turma(null, Cursos.ADMINISTRACAO, 3, 5, Status.ON);
+            turma.passarModulo();
+            assertEquals(Status.OFF, turma.getStatus());
+        }
 
-    @Test
-    @DisplayName("passarModulo() múltiplas vezes deve incrementar corretamente até o limite")
-    void passarModulo_multiplas_vezes() {
-        var turma = new Turma(UUID.randomUUID(), Cursos.LOGISTICA, 3, 1, Status.ON);
-        turma.passarModulo(); // 1 -> 2
-        turma.passarModulo(); // 2 -> 3
-        assertEquals(3, turma.getAtual());
-        assertEquals(Status.ON, turma.getStatus());
-        turma.passarModulo(); // 3 == 3 -> OFF
-        assertEquals(Status.OFF, turma.getStatus());
+        @Test
+        @DisplayName("deve lançar InvalidDataException quando já está OFF")
+        void jaDesativada_lancaExcecao() {
+            var turma = new Turma(null, Cursos.ADMINISTRACAO, 3, 3, Status.OFF);
+            var ex = assertThrows(InvalidDataException.class, turma::passarModulo);
+            assertNotNull(ex.getMessage());
+        }
+
+        @Test
+        @DisplayName("sequência completa: deve incrementar até o limite e então desativar")
+        void sequenciaCompleta() {
+            var turma = new Turma(null, Cursos.LOGISTICA, 3, 1, Status.ON);
+
+            turma.passarModulo();
+            assertEquals(2, turma.getAtual());
+            assertEquals(Status.ON, turma.getStatus());
+
+            turma.passarModulo();
+            assertEquals(3, turma.getAtual());
+            assertEquals(Status.ON, turma.getStatus());
+
+            turma.passarModulo(); // atual == modulos → OFF
+            assertEquals(Status.OFF, turma.getStatus());
+        }
+
+        @Test
+        @DisplayName("não deve incrementar atual quando desativa")
+        void naoIncrementaAoDesativar() {
+            var turma = new Turma(null, Cursos.ADMINISTRACAO, 3, 3, Status.ON);
+            turma.passarModulo();
+            assertEquals(3, turma.getAtual()); // permanece 3, não vira 4
+        }
     }
 }

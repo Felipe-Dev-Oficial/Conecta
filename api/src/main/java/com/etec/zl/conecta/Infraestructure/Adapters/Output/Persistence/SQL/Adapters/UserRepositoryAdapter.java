@@ -80,7 +80,7 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     @Transactional
     @Cacheable(value = "users-lists", key = "'turma-' + #idTurma + '-' + #pageable.page()")
-    public PageResult<User> findAllByTurma(UUID idTurma, PageRequest pageable) {
+    public PageResult<User> findAllByTurma(String idTurma, PageRequest pageable) {
         return PaginationAdapter.toDomain(externalRepository.findAllPeopleByTurma(idTurma, PaginationAdapter.toSpring(pageable))
                 .map(mapper::toDomain));
     }
@@ -137,7 +137,7 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     @Transactional
     @Cacheable(value = "users-context", key = "'prof-' + #id + '-turma-' + #idTurma + '-' + #pageable.page()")
-    public PageResult<User> findAllAlunosByTurma(String id, UUID idTurma, PageRequest pageable) {
+    public PageResult<User> findAllAlunosByTurma(String id, String idTurma, PageRequest pageable) {
         return PaginationAdapter.toDomain(externalRepository.findAlunosByTurmaWhereProfessorHasAccess(id, idTurma, PaginationAdapter.toSpring(pageable))
                 .map(mapper::toDomain));
     }

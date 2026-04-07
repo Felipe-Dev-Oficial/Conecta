@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.lang.String;
 
 public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
 
@@ -53,7 +53,7 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     )
     """,
             nativeQuery = true)
-    Page<UserEntity> findAllPeopleByTurma(@Param("idTurma") UUID idTurma, Pageable pageable);
+    Page<UserEntity> findAllPeopleByTurma(@Param("idTurma") String idTurma, Pageable pageable);
 
     @Query(value = "SELECT * FROM users WHERE nome ILIKE %:nome%",
             countQuery = "SELECT count(*) FROM users WHERE nome ILIKE %:nome%",
@@ -115,7 +115,7 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
             nativeQuery = true)
     Page<UserEntity> findAlunosByTurmaWhereProfessorHasAccess(
             @Param("idProfessor") String idProfessor,
-            @Param("idTurma") UUID idTurma,
+            @Param("idTurma") String idTurma,
             Pageable pageable
     );
 

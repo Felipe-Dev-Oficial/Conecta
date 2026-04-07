@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.UUID;
 
-public interface JpaTurmaRepository extends JpaRepository<TurmaEntity, UUID> {
+public interface JpaTurmaRepository extends JpaRepository<TurmaEntity, String> {
 
     Page<TurmaEntity> findByStatus(Status status, Pageable pageable);
 

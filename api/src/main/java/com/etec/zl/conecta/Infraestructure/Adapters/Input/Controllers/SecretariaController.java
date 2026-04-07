@@ -64,7 +64,7 @@ public class SecretariaController {
 
     @GetMapping("/management/alunos/turma/{idTurma}")
     public PageResult<DTORetornoSecretaria> lerPorTurma(
-            @PathVariable UUID idTurma,
+            @PathVariable String idTurma,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
@@ -136,7 +136,7 @@ public class SecretariaController {
     }
 
     @GetMapping("/management/turmas/{id}")
-    public Turma buscarTurma(@PathVariable UUID id) {
+    public Turma buscarTurma(@PathVariable String id) {
         return encontraTurmaPorIdPort.findTurmaPorId(id);
     }
 

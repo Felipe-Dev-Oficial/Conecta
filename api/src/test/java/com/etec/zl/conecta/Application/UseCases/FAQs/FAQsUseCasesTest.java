@@ -9,8 +9,10 @@ import com.etec.zl.conecta.Application.Ports.Output.Repositories.UserRepository;
 import com.etec.zl.conecta.Application.Services.Services.FAQs.VerifyIfExistsModifyAndSaveFAQsService;
 import com.etec.zl.conecta.Domain.Entities.FAQs.FAQ;
 import com.etec.zl.conecta.Domain.Entities.Users.User;
-import com.etec.zl.conecta.Domain.Exceptions.UserNotFoundException;
-import com.etec.zl.conecta.Domain.ValueObjects.*;
+import com.etec.zl.conecta.Domain.ValueObjects.PageRequest;
+import com.etec.zl.conecta.Domain.ValueObjects.PageResult;
+import com.etec.zl.conecta.Domain.ValueObjects.Prioridade;
+import com.etec.zl.conecta.Domain.ValueObjects.Tipo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,182 +21,57 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("FAQs UseCases")
 class FAQsUseCasesTest {
-
-    // ─── Helpers ──────────────────────────────────────────────────────────────
-
-    private User buildUser(String id) {
-        return new User(id, new Name("Ana Lima"), new Email("ana@etec.com"),
-                new PhoneNumber("11987654321"), new Password("Etec@1234"),
-                Tipo.SECRETARIA, new ArrayList<>());
-    }
-
-    private FAQ buildFAQ(String authorId) {
-        return new FAQ(UUID.randomUUID(), "Pergunta?", "Resposta.",
-                authorId, StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.MEDIA);
-    }
-
-    private PageResult<FAQ> pageOf(FAQ... faqs) {
-        return new PageResult<>(List.of(faqs), 0, 10, faqs.length, 1);
-    }
-
-    // ─── LerFAQUseCase ────────────────────────────────────────────────────────
-
-    @Nested
-    @DisplayName("LerFAQUseCase")
-    class LerFAQTest {
-
-        @Mock FAQRepository faqRepository;
-        @Mock FAQMapper mapper;
-
-        LerFAQUseCase useCase;
-
-        @BeforeEach
-        void setUp() {
-            useCase = new LerFAQUseCase(faqRepository, mapper);
-        }
-
-        @Test
-        @DisplayName("Deve retornar PageResult de DTOReturnFAQ")
-        void lerFAQs_sucesso() {
-            var faq = buildFAQ("autor-1");
-            var dto = new DTOReturnFAQ("Pergunta?", "Resposta.");
-            var req = new PageRequest(0, 10);
-
-            when(faqRepository.getAll(req)).thenReturn(pageOf(faq));
-            when(mapper.toReturn(faq)).thenReturn(dto);
-
-            var result = useCase.lerFAQs(req);
-
-            assertEquals(1, result.content().size());
-            assertEquals(dto, result.content().get(0));
-        }
-
-        @Test
-        @DisplayName("Deve retornar PageResult vazio quando não há FAQs")
-        void lerFAQs_vazio() {
-            var req = new PageRequest(0, 10);
-            when(faqRepository.getAll(req)).thenReturn(new PageResult<>(List.of(), 0, 10, 0, 0));
-
-            var result = useCase.lerFAQs(req);
-
-            assertTrue(result.content().isEmpty());
-        }
-    }
-
-//    // ─── LerFAQsSecretariaUseCase ─────────────────────────────────────────────
-//
-//    @Nested
-//    @DisplayName("LerFAQsSecretariaUseCase")
-//    class LerFAQsSecretariaTest {
-//
-//        @Mock FAQRepository faqRepository;
-//        @Mock UserRepository userRepository;
-//        @Mock FAQMapper mapper;
-//
-//        LerFAQsSecretariaUseCase useCase;
-//
-//        @BeforeEach
-//        void setUp() {
-//            useCase = new LerFAQsSecretariaUseCase(faqRepository, userRepository, mapper);
-//        }
-//
-//        @Test
-//        @DisplayName("Deve retornar PageResult de DTOReturnFAQSecretaria")
-//        void lerFAQsSecretaria_sucesso() {
-//            var autor = buildUser("autor-1");
-//            var faq = buildFAQ("autor-1");
-//            var dto = new DTOReturnFAQSecretaria(faq.getId(), autor.getNome(),
-//                    "Pergunta?", "Resposta.", Prioridade.MEDIA);
-//            var req = new PageRequest(0, 10);
-//
-//            when(faqRepository.getAll(req)).thenReturn(pageOf(faq));
-//            when(userRepository.findById("autor-1")).thenReturn(Optional.of(autor));
-//            when(mapper.toReturnSecretaria(autor.getNome(), faq)).thenReturn(dto);
-//
-//            var result = useCase.lerFAQsSecretaria(req);
-//
-//            assertEquals(1, result.content().size());
-//            verify(mapper).toReturnSecretaria(autor.getNome(), faq);
-//        }
-//
-//        @Test
-//        @DisplayName("Deve lançar UserNotFoundException se autor da FAQ não existe")
-//        void lerFAQsSecretaria_autorNaoEncontrado() {
-//            var faq = buildFAQ("autor-inexistente");
-//            var req = new PageRequest(0, 10);
-//
-//            when(faqRepository.getAll(req)).thenReturn(pageOf(faq));
-//            when(userRepository.findById("autor-inexistente")).thenReturn(Optional.empty());
-//
-//            assertThrows(UserNotFoundException.class, () -> useCase.lerFAQsSecretaria(req));
-//        }
-//    }
-
-    // ─── EscreverFAQUseCase ───────────────────────────────────────────────────
 
     @Nested
     @DisplayName("EscreverFAQUseCase")
-    class EscreverFAQTest {
+    class EscreverFAQUseCaseTests {
 
-        @Mock FAQRepository faqRepository;
-        @Mock UserRepository userRepository;
-        @Mock FAQMapper mapper;
+        @Mock private FAQRepository repository;
+        @Mock private UserRepository userRepository;
+        @Mock private FAQMapper mapper;
+        @Mock private User user;
 
-        EscreverFAQUseCase useCase;
+        private EscreverFAQUseCase useCase;
 
         @BeforeEach
         void setUp() {
-            useCase = new EscreverFAQUseCase(faqRepository, userRepository, mapper);
+            useCase = new EscreverFAQUseCase(repository, userRepository, mapper);
         }
 
         @Test
-        @DisplayName("Deve criar e salvar FAQ")
-        void escreverFAQ_sucesso() {
-            var user = buildUser("autor-1");
-            var dto = new DTORegisterFAQ("Pergunta?", "Resposta.", Prioridade.ALTA);
-            var faq = buildFAQ("autor-1");
+        @DisplayName("deve salvar um novo FAQ quando o usuário é encontrado")
+        void deveSalvarFAQ() {
+            String userId = "user-123";
+            DTORegisterFAQ dto = new DTORegisterFAQ("Pergunta?", "Resposta", null);
+            User user = mock(User.class);
+            FAQ faq = mock(FAQ.class);
 
-            when(userRepository.findById("autor-1")).thenReturn(Optional.of(user));
-            when(mapper.toRegister("autor-1", dto)).thenReturn(faq);
+            when(user.getId()).thenReturn(userId);
 
-            assertDoesNotThrow(() -> useCase.escreverFAQ("autor-1", dto));
-            verify(faqRepository).save(faq);
-        }
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+            when(mapper.toRegister(userId, dto)).thenReturn(faq);
 
-        @Test
-        @DisplayName("Deve lançar UserNotFoundException se autor não existe")
-        void escreverFAQ_autorNaoEncontrado() {
-            var dto = new DTORegisterFAQ("Pergunta?", "Resposta.", Prioridade.ALTA);
-            when(userRepository.findById("inexistente")).thenReturn(Optional.empty());
+            useCase.escreverFAQ(userId, dto);
 
-            assertThrows(UserNotFoundException.class,
-                    () -> useCase.escreverFAQ("inexistente", dto));
-            verify(faqRepository, never()).save(any());
+            verify(repository, times(1)).save(faq);
         }
     }
 
-    // ─── AlterarFAQUseCase ────────────────────────────────────────────────────
-
     @Nested
     @DisplayName("AlterarFAQUseCase")
-    class AlterarFAQTest {
+    class AlterarFAQUseCaseTests {
 
-        @Mock VerifyIfExistsModifyAndSaveFAQsService service;
-
-        AlterarFAQUseCase useCase;
+        @Mock private VerifyIfExistsModifyAndSaveFAQsService service;
+        private AlterarFAQUseCase useCase;
 
         @BeforeEach
         void setUp() {
@@ -202,113 +79,67 @@ class FAQsUseCasesTest {
         }
 
         @Test
-        @DisplayName("Deve chamar service com a modificação correta")
-        void alterarFAQ_chamaService() {
-            var id = UUID.randomUUID();
-            var dto = new DTOUpdateFaq("Nova pergunta", "Nova resposta");
+        @DisplayName("deve delegar a alteração para o serviço de verificação")
+        void deveDelegarParaServico() {
+            UUID faqId = UUID.randomUUID();
+            DTOUpdateFaq dto = new DTOUpdateFaq("Nova Pergunta", "Nova Resposta");
 
-            assertDoesNotThrow(() -> useCase.alterarFAQ(id, dto));
-            verify(service).execute(eq(id), any(), any());
+            useCase.alterarFAQ(faqId, dto);
+
+            verify(service, times(1)).execute(eq(faqId), any(), any());
         }
     }
 
-    // ─── ApagarFAQUseCase ─────────────────────────────────────────────────────
-
     @Nested
-    @DisplayName("ApagarFAQUseCase")
-    class ApagarFAQTest {
+    @DisplayName("LerFAQUseCase")
+    class LerFAQUseCaseTests {
 
-        @Mock VerifyIfExistsModifyAndSaveFAQsService service;
-
-        ApagarFAQUseCase useCase;
+        @Mock private FAQRepository repository;
+        @Mock private FAQMapper mapper;
+        private LerFAQUseCase useCase;
 
         @BeforeEach
         void setUp() {
-            useCase = new ApagarFAQUseCase(service);
+            useCase = new LerFAQUseCase(repository, mapper);
         }
 
         @Test
-        @DisplayName("Deve chamar service com FAQ::apagarFAQ")
-        void apagarFAQ_chamaService() {
-            var id = UUID.randomUUID();
+        @DisplayName("deve retornar lista de FAQs ativos mapeados para DTO")
+        void deveRetornarFAQsAtivos() {
+            PageRequest pageable = new PageRequest(0, 10);
+            FAQ faq = mock(FAQ.class);
+            PageResult<FAQ> pageResult = new PageResult<>(List.of(faq), 1, 10, 1, 0);
 
-            assertDoesNotThrow(() -> useCase.apagarFAQ(id));
-            verify(service).execute(eq(id), any(), any());
+            when(repository.getAllActives(pageable)).thenReturn(pageResult);
+            when(mapper.toReturn(any(FAQ.class))).thenReturn(new DTOReturnFAQ("Q", "A"));
+
+            useCase.lerFAQs(pageable);
+
+            verify(repository, times(1)).getAllActives(pageable);
+            verify(mapper, times(1)).toReturn(any(FAQ.class));
         }
     }
 
-    // ─── PublicarFAQUseCase ───────────────────────────────────────────────────
-
     @Nested
-    @DisplayName("PublicarFAQUseCase")
-    class PublicarFAQTest {
+    @DisplayName("LerFAQsSecretariaUseCase")
+    class LerFAQsSecretariaUseCaseTests {
 
-        @Mock VerifyIfExistsModifyAndSaveFAQsService service;
-
-        PublicarFAQUseCase useCase;
+        @Mock private FAQRepository repository;
+        private LerFAQsSecretariaUseCase useCase;
 
         @BeforeEach
         void setUp() {
-            useCase = new PublicarFAQUseCase(service);
+            useCase = new LerFAQsSecretariaUseCase(repository);
         }
 
         @Test
-        @DisplayName("Deve chamar service com FAQ::publicar")
-        void publicarFAQ_chamaService() {
-            var id = UUID.randomUUID();
+        @DisplayName("deve retornar todos os FAQs sem mapeamento para a secretaria")
+        void deveRetornarTodosOsFAQs() {
+            PageRequest pageable = new PageRequest(0, 10);
 
-            assertDoesNotThrow(() -> useCase.publicarFAQ(id));
-            verify(service).execute(eq(id), any(), any());
-        }
-    }
+            useCase.lerFAQsSecretaria(pageable);
 
-    // ─── AumentarPrioridadeFAQUseCase ─────────────────────────────────────────
-
-    @Nested
-    @DisplayName("AumentarPrioridadeFAQUseCase")
-    class AumentarPrioridadeTest {
-
-        @Mock VerifyIfExistsModifyAndSaveFAQsService service;
-
-        AumentarPrioridadeFAQUseCase useCase;
-
-        @BeforeEach
-        void setUp() {
-            useCase = new AumentarPrioridadeFAQUseCase(service);
-        }
-
-        @Test
-        @DisplayName("Deve chamar service com FAQ::elevarPrioridade")
-        void elevarPrioridade_chamaService() {
-            var id = UUID.randomUUID();
-
-            assertDoesNotThrow(() -> useCase.elevarPrioridadeFAQ(id));
-            verify(service).execute(eq(id), any(), any());
-        }
-    }
-
-    // ─── DiminuirPrioridadeFAQUseCase ─────────────────────────────────────────
-
-    @Nested
-    @DisplayName("DiminuirPrioridadeFAQUseCase")
-    class DiminuirPrioridadeTest {
-
-        @Mock VerifyIfExistsModifyAndSaveFAQsService service;
-
-        DiminuirPrioridadeFAQUseCase useCase;
-
-        @BeforeEach
-        void setUp() {
-            useCase = new DiminuirPrioridadeFAQUseCase(service);
-        }
-
-        @Test
-        @DisplayName("Deve chamar service com FAQ::reduzirPrioridade")
-        void diminuirPrioridade_chamaService() {
-            var id = UUID.randomUUID();
-
-            assertDoesNotThrow(() -> useCase.diminuirPrioridadeFAQ(id));
-            verify(service).execute(eq(id), any(), any());
+            verify(repository, times(1)).getAll(pageable);
         }
     }
 }

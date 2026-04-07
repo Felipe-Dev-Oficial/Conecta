@@ -24,7 +24,7 @@ public class ProfessorListagemPorTurmaUseCase implements ProfessorListagemPorTur
     }
 
     @Override
-    public PageResult<DTORetornoNormal> professorListagemPorTurma(String id_professor, UUID id_turma, PageRequest pageable) {
+    public PageResult<DTORetornoNormal> professorListagemPorTurma(String id_professor, String id_turma, PageRequest pageable) {
         return service.execute(()-> repository.findAllAlunosByTurma(id_professor, id_turma, pageable), log);
     }
 }

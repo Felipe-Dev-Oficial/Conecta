@@ -50,6 +50,15 @@ public class StatementRepositoryAdapter implements StatementRepository {
     }
 
     @Override
+    public PageResult<Statement> findGeneralStatements(PageRequest pageable) {
+        return PaginationAdapter.toDomain(
+                externalRepository.findGeneralStatements(
+                        PaginationAdapter.toSpring(pageable)
+                ).map(mapper::toDomain)
+        );
+    }
+
+    @Override
     public PageResult<Statement> findStatements(DTOLeitura dto, PageRequest pageable) {
         Pageable springPage = PaginationAdapter.toSpring(pageable);
 

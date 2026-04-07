@@ -10,5 +10,5 @@ import java.util.UUID;
 
 public interface ProfessorListagemPorTurmaPort {
 
-    PageResult<DTORetornoNormal> professorListagemPorTurma(String id_professor, UUID id_turma, PageRequest pageable);
+    PageResult<DTORetornoNormal> professorListagemPorTurma(String id_professor, String id_turma, PageRequest pageable);
 }

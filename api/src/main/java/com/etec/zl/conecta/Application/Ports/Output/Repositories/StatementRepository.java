@@ -13,5 +13,6 @@ public interface StatementRepository {
     void save(Statement statement);
     Optional<Statement> findById(UUID id);
     PageResult<Statement> findAllStatements(PageRequest pageable);
+    PageResult<Statement> findGeneralStatements(PageRequest pageable);
     PageResult<Statement> findStatements(DTOLeitura dto, PageRequest pageable);
 }

@@ -21,7 +21,7 @@ public class TurmaEntity implements Serializable {
 
     @Id
     @Column(name = "id")
-    private UUID id;
+    private String id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "curso", length = 50, nullable = false)

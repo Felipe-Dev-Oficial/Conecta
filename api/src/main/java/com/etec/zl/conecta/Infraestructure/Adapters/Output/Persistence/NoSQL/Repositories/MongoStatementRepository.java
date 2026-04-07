@@ -16,7 +16,7 @@ public interface MongoStatementRepository extends MongoRepository<StatementEntit
     @Query(value = """
     { '$and': [ { 'announcement_status': 'ON' }, { '$or': [ { 'target_info.targetType': 'GERAL' }, { 'target_info.targetType': 'ALUNOS' }, { '$and': [ { 'target_info.targetType': { '$in': ['TURMA', 'TURMAS'] } }, { 'target_info.targetIds': { '$in': ?0 } } ] } ] } ] }
     """, sort = SORT)
-    Page<StatementEntity> findStatementsForAluno(List<UUID> turmasIds, Pageable pageable);
+    Page<StatementEntity> findStatementsForAluno(List<String> turmasIds, Pageable pageable);
 
     @Query(value = """
     { '$and': [ { 'announcement_status': 'ON' }, { '$or': [ { 'target_info.targetType': 'GERAL' }, { 'target_info.targetType': 'PROFESSORES' } ] } ] }
@@ -27,6 +27,11 @@ public interface MongoStatementRepository extends MongoRepository<StatementEntit
     { '$and': [ { 'announcement_status': 'ON' }, { '$or': [ { 'target_info.targetType': 'GERAL' }, { 'target_info.targetType': 'EX_ALUNOS' } ] } ] }
     """, sort = SORT)
     Page<StatementEntity> findStatementsForExAluno(Pageable pageable);
+
+    @Query(value = """
+    { '$and': [ { 'announcement_status': 'ON' }, { 'target_info.targetType': 'GERAL' } ] }
+    """, sort = SORT)
+    Page<StatementEntity> findGeneralStatements(Pageable pageable);
 
     @Query(value = "{}", sort = SORT)
     Page<StatementEntity> findAllStatements(Pageable pageable);

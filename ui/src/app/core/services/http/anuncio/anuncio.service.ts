@@ -22,6 +22,12 @@ export class AnuncioService {
     return this.http.get<PageResult<DTORetornoAnuncio>>(this.base, { params });
   }
 
+  /** GET /conecta/anuncios/default */
+  listarAnunciosDefault(page = 0, size = 20): Observable<PageResult<DTORetornoAnuncio>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<PageResult<DTORetornoAnuncio>>(`${this.base}/default`, { params });
+  }
+
   /** GET /conecta/anuncios/management */
   listarAnunciosSecretaria(page = 0, size = 20): Observable<PageResult<Statement>> {
     const params = new HttpParams().set('page', page).set('size', size);

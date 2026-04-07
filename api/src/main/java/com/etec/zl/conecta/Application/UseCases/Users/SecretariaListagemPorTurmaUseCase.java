@@ -24,7 +24,7 @@ public class SecretariaListagemPorTurmaUseCase implements SecretariaListagemPorT
     }
 
     @Override
-    public PageResult<DTORetornoSecretaria> secretariaListagemPorTurma(UUID id, PageRequest pageable) {
+    public PageResult<DTORetornoSecretaria> secretariaListagemPorTurma(String id, PageRequest pageable) {
         return service.execute(()-> repository.findAllByTurma(id, pageable), log);
     }
 }

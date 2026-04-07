@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     email_updater_token_expiration TIMESTAMP
     );
 CREATE TABLE IF NOT EXISTS turmas (
-    id UUID PRIMARY KEY,
+    id VARCHAR(20) PRIMARY KEY,
     curso VARCHAR(43) NOT NULL CHECK (curso IN (
         'ADMINISTRACAO',
         'CONTABILIDADE',
@@ -37,13 +37,13 @@ CREATE TABLE IF NOT EXISTS turmas (
     );
 CREATE TABLE IF NOT EXISTS aluno_turmas (
     aluno_id VARCHAR(20) REFERENCES users(id),
-    turma_id UUID REFERENCES turmas(id),
+    turma_id VARCHAR(20) REFERENCES turmas(id),
     data_matricula TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (aluno_id, turma_id)
     );
 CREATE TABLE IF NOT EXISTS professor_turmas (
     professor_id VARCHAR(20) REFERENCES users(id),
-    turma_id UUID REFERENCES turmas(id),
+    turma_id VARCHAR(20) REFERENCES turmas(id),
     data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (professor_id, turma_id)
     );

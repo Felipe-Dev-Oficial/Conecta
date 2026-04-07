@@ -22,7 +22,7 @@ public class EncontrarTurmaPorIdUseCase implements EncontraTurmaPorIdPort {
     }
 
     @Override
-    public Turma findTurmaPorId(UUID id) {
+    public Turma findTurmaPorId(String id) {
         return TryGetByService.execute(
                 ()-> repository.findById(id),
                 ()-> new InvalidDataException("Nenhuma turma encontrada"),

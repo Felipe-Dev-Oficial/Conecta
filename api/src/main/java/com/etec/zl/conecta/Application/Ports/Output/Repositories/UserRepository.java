@@ -19,7 +19,7 @@ public interface UserRepository {
     Optional<User> findById(String id);
     PageResult<User> findAllCursantes(PageRequest pageable);
     PageResult<User> findAllFuncionarios(PageRequest pageable);
-    PageResult<User> findAllByTurma(UUID idTurma, PageRequest pageable);
+    PageResult<User> findAllByTurma(String idTurma, PageRequest pageable);
     PageResult<User> findAll(PageRequest pageable);
     PageResult<User> findAllByName(Name name, PageRequest pageable);
     PageResult<User> findAllSecretaria(PageRequest pageable);
@@ -28,7 +28,7 @@ public interface UserRepository {
     //professores
     Optional<User> findByIdAlunos(String id, String id_aluno);
     PageResult<User> findAllAlunos(String id, PageRequest pageable);
-    PageResult<User> findAllAlunosByTurma(String id, UUID idTurma, PageRequest pageable);
+    PageResult<User> findAllAlunosByTurma(String id, String idTurma, PageRequest pageable);
     PageResult<User> findAllAlunosByNome(String id, Name name, PageRequest pageable);
 
     //alunos

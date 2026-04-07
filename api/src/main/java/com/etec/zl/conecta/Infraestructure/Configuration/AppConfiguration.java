@@ -341,6 +341,11 @@ class AppConfiguration {
     }
 
     @Bean
+    public LerAnunciosGeraisUseCase lerAnunciosGeraisUseCase(StatementMapper statementRepository, TryGetByUserService userService, StatementRepository statementMapper, UserRepository userRepository){
+        return new LerAnunciosGeraisUseCase(statementRepository, userService, statementMapper, userRepository);
+    }
+
+    @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

@@ -42,7 +42,7 @@ public class UserAdapterMapper {
                 turmas
         );
     }
-    private List<UUID> extrairIdsTurmas(UserEntity entity) {
+    private List<String> extrairIdsTurmas(UserEntity entity) {
         List<TurmaEntity> turmas = switch (entity.getTipo()) {
             case ALUNO -> entity.getTurmasComoAluno();
             case PROFESSOR -> entity.getTurmasComoProfessor();

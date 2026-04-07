@@ -22,9 +22,9 @@ export const routes: Routes = [
     ],
   },
 
+  // ── Rotas públicas (sem authGuard, com shell) ──────────────────────────
   {
     path: '',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./shared/components/shell/shell.component').then(m => m.ShellComponent),
     children: [
@@ -34,14 +34,24 @@ export const routes: Routes = [
           import('./features/anuncios/anuncios.component').then(m => m.AnunciosComponent),
       },
       {
-        path: 'mensagens',
-        loadComponent: () =>
-          import('./features/mensagens/mensagens.component').then(m => m.MensagensComponent),
-      },
-      {
         path: 'faqs',
         loadComponent: () =>
           import('./features/faqs/faqs.component').then(m => m.FaqsComponent),
+      },
+    ],
+  },
+
+  // ── Rotas privadas (com authGuard, com shell) ──────────────────────────
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./shared/components/shell/shell.component').then(m => m.ShellComponent),
+    children: [
+      {
+        path: 'mensagens',
+        loadComponent: () =>
+          import('./features/mensagens/mensagens.component').then(m => m.MensagensComponent),
       },
       {
         path: 'perfil',

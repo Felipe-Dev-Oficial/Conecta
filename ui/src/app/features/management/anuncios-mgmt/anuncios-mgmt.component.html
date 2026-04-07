@@ -94,11 +94,11 @@
         @if (fTarget === 'TURMA' || fTarget === 'TURMAS') {
           <div class="field">
             <label>
-              {{ fTarget === 'TURMA' ? 'UUID da turma' : 'UUIDs das turmas' }}
+              {{ fTarget === 'TURMA' ? 'ID da turma' : 'IDs das turmas' }}
               @if (fTarget === 'TURMAS') { <span class="text-muted">(separados por vírgula)</span> }
             </label>
             <input class="input" [(ngModel)]="fTargetsId"
-              [placeholder]="fTarget === 'TURMA' ? 'ex: 550e8400-e29b-41d4-a716-...' : 'ex: uuid1, uuid2, uuid3'" />
+              [placeholder]="fTarget === 'TURMA' ? 'ex: DS-N-2026-1' : 'ex: DS-N-2026-1, ADM-N-2026-2'" />
           </div>
         }
         <div class="field">

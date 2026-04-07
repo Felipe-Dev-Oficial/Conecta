@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/http/auth/auth.service';
 import { ThemeService } from '../../../core/services/theme/theme.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-shell',
@@ -18,6 +20,11 @@ export class ShellComponent {
   toastService = inject(ToastService);
   router = inject(Router);
   mobileOpen = signal(false);
+  platformId = inject(PLATFORM_ID);
+
+  isLogado = computed(() => {
+    return isPlatformBrowser(this.platformId) && !!localStorage.getItem('token');
+  });
 
   private userData = computed(() => this.auth.getUserData());
   nome = computed(() => this.userData()?.nome ?? '');

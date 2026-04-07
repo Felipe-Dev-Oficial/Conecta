@@ -11,7 +11,7 @@ public interface TurmaRepository {
 
     void save(Turma turma);
     void passaModulo();
-    Optional<Turma> findById(UUID id);
+    Optional<Turma> findById(String id);
     PageResult<Turma> findAllTurmas(PageRequest pageable);
     PageResult<Turma> findAllTurmasAtuais(PageRequest pageable);
     PageResult<Turma> findAllTurmasByCurso(Cursos curso, PageRequest pageable);

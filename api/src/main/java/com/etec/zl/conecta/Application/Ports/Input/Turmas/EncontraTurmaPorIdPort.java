@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface EncontraTurmaPorIdPort {
 
-    Turma findTurmaPorId(UUID id);
+    Turma findTurmaPorId(String id);
 }

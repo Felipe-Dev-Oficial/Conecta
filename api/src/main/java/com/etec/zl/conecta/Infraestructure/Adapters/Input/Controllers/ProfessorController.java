@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("conecta/professores")
 @RequiredArgsConstructor
@@ -52,7 +50,7 @@ public class ProfessorController {
     @GetMapping("/turma/{id}")
     public PageResult<DTORetornoNormal> retornarTurma(
             @AuthenticationPrincipal UserPrincipal user,
-            @PathVariable UUID id,
+            @PathVariable String id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         var result = new PageRequest(page, size);

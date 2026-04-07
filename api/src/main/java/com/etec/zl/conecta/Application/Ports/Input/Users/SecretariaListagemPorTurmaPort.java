@@ -10,5 +10,5 @@ import java.util.UUID;
 
 public interface SecretariaListagemPorTurmaPort {
 
-    PageResult<DTORetornoSecretaria> secretariaListagemPorTurma(UUID id, PageRequest pageable);
+    PageResult<DTORetornoSecretaria> secretariaListagemPorTurma(String id, PageRequest pageable);
 }

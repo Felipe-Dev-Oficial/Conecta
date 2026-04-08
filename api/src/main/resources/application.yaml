@@ -49,11 +49,3 @@ midia:
     path: /var/www/media/
   public:
     base-url: http://localhost
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, prometheus
-  endpoint:
-    prometheus:
-      enabled: true

@@ -39,7 +39,9 @@ class SecurityTests {
 
     @BeforeEach
     void setup() {
-        ReflectionTestUtils.setField(tokenService, "secret", "secret-de-teste-com-mais-de-32-caracteres-para-jwt");
+        ReflectionTestUtils.setField(tokenService, "secret", "uma-secret-muito-longa-e-segura-para-os-testes-de-integracao-123");
+
+        ReflectionTestUtils.setField(encryptor, "KEY", "12345678901234567890123456789012");
     }
 
     @Nested

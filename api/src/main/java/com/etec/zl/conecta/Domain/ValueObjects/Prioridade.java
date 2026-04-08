@@ -1,5 +1,7 @@
 package com.etec.zl.conecta.Domain.ValueObjects;
 
+import com.etec.zl.conecta.Domain.Exceptions.ProcessingErrorException;
+
 public enum Prioridade {
 
     URGENTE(3),
@@ -26,6 +28,16 @@ public enum Prioridade {
             case URGENTE -> ALTA;
             case ALTA -> MEDIA;
             case MEDIA, BAIXA -> BAIXA;
+        };
+    }
+
+    public static Prioridade fromPeso(int peso) {
+        return switch (peso) {
+            case 3 -> URGENTE;
+            case 2 -> ALTA;
+            case 1 -> MEDIA;
+            case 0 -> BAIXA;
+            default -> throw new ProcessingErrorException("Peso de prioridade inválido: " + peso);
         };
     }
 

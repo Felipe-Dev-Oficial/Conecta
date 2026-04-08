@@ -43,10 +43,14 @@ class StatementRepositoryAdapterIntegrationTest {
     private StatementEntity buildEntity(Status status, TargetType targetType, List<String> targetIds, Prioridade priority) {
         StatementEntity e = new StatementEntity();
         e.setId(UUID.randomUUID());
+        e.setIdSender("sender-id");
+        e.setTitle(new Content("Título"));
+        e.setContent(new Content("Corpo"));
         e.setStatus(status);
-        e.setPriority(priority);
+        e.setPriority(priority.getPeso());
         e.setTimestamp(Instant.now());
         e.setTargetVO(new TargetVO(targetType, targetIds));
+        e.setEdited(false);
         return e;
     }
 
@@ -226,31 +230,31 @@ class StatementRepositoryAdapterIntegrationTest {
 //        assertThat(result.content()).hasSize(2);
 //    }
 //
-//    @Test
-//    @Order(11)
-//    @DisplayName("findStatements() deve respeitar ordenação por priority desc")
-//    void findStatements_shouldBeOrderedByPriorityDesc() {
-//        StatementEntity baixa = buildEntity(Status.ON, TargetType.GERAL, List.of(), Prioridade.BAIXA);
-//        StatementEntity alta  = buildEntity(Status.ON, TargetType.GERAL, List.of(), Prioridade.ALTA);
-//        StatementEntity media = buildEntity(Status.ON, TargetType.GERAL, List.of(), Prioridade.MEDIA);
-//
-//        baixa.setTimestamp(Instant.now().minusSeconds(10));
-//        alta.setTimestamp(Instant.now().minusSeconds(5));
-//        media.setTimestamp(Instant.now());
-//
-//        mongoRepository.save(baixa);
-//        mongoRepository.save(alta);
-//        mongoRepository.save(media);
-//
-//        PageResult<Statement> result = adapter.findGeneralStatements(new PageRequest(0, 10));
-//
-//        List<Statement> content = result.content();
-//        assertThat(content.get(0).getPriority().getPeso()).isGreaterThanOrEqualTo(content.get(1).getPriority().getPeso());
-//        assertThat(content.get(1).getPriority().getPeso()).isGreaterThanOrEqualTo(content.get(2).getPriority().getPeso());
-//    }
-
     @Test
     @Order(11)
+    @DisplayName("findStatements() deve respeitar ordenação por priority desc")
+    void findStatements_shouldBeOrderedByPriorityDesc() {
+        StatementEntity baixa = buildEntity(Status.ON, TargetType.GERAL, List.of(), Prioridade.BAIXA);
+        StatementEntity alta  = buildEntity(Status.ON, TargetType.GERAL, List.of(), Prioridade.ALTA);
+        StatementEntity media = buildEntity(Status.ON, TargetType.GERAL, List.of(), Prioridade.MEDIA);
+
+        baixa.setTimestamp(Instant.now().minusSeconds(10));
+        alta.setTimestamp(Instant.now().minusSeconds(5));
+        media.setTimestamp(Instant.now());
+
+        mongoRepository.save(baixa);
+        mongoRepository.save(alta);
+        mongoRepository.save(media);
+
+        PageResult<Statement> result = adapter.findGeneralStatements(new PageRequest(0, 10));
+
+        List<Statement> content = result.content();
+        assertThat(content.get(0).getPriority().getPeso()).isGreaterThanOrEqualTo(content.get(1).getPriority().getPeso());
+        assertThat(content.get(1).getPriority().getPeso()).isGreaterThanOrEqualTo(content.get(2).getPriority().getPeso());
+    }
+
+    @Test
+    @Order(12)
     @DisplayName("findStatements() para ALUNO sem turmas deve retornar GERAL e ALUNOS")
     void findStatements_forAluno_withNoTurmas_shouldReturnGeneralAndAlunos() {
         mongoRepository.save(buildEntity(Status.ON, TargetType.GERAL,  List.of(),           Prioridade.BAIXA));
@@ -264,7 +268,7 @@ class StatementRepositoryAdapterIntegrationTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     @DisplayName("findStatements() deve retornar vazio quando não há statements ativos")
     void findStatements_shouldReturnEmpty_whenNoActiveStatements() {
         mongoRepository.save(buildEntity(Status.OFF, TargetType.GERAL, List.of(), Prioridade.BAIXA));

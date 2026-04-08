@@ -17,12 +17,13 @@ public class TokenService {
 
     private static final Logger log = LoggerFactory.getLogger(TokenService.class);
 
-    @Value("valor_que_vai_ser_substituido_em_produção")
+    @Value("${JWT_SECRET}")
     private String secret;
 
     private Instant expirationDate() {
         return Instant.now().plusSeconds(604800);
     }
+
 
     public String generateToken(User user) {
 

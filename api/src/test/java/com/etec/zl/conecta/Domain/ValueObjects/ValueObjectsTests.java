@@ -1,6 +1,7 @@
 package com.etec.zl.conecta.Domain.ValueObjects;
 
 import com.etec.zl.conecta.Domain.Exceptions.InvalidDataException;
+import com.etec.zl.conecta.Domain.Exceptions.ProcessingErrorException;
 import com.etec.zl.conecta.Domain.Exceptions.ValidationFailedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Value Objects")
-class ValueObjectsTest {
+class ValueObjectsTests {
 
     // ─── Email ────────────────────────────────────────────────────────────────
 
@@ -378,6 +379,23 @@ class ValueObjectsTest {
             assertEquals(1, Prioridade.MEDIA.getPeso());
             assertEquals(2, Prioridade.ALTA.getPeso());
             assertEquals(3, Prioridade.URGENTE.getPeso());
+        }
+
+        @Test
+        @DisplayName("fromPeso() deve retornar o Enum correto para pesos de 0 a 3")
+        void fromPeso_valido() {
+            assertEquals(Prioridade.BAIXA,   Prioridade.fromPeso(0));
+            assertEquals(Prioridade.MEDIA,   Prioridade.fromPeso(1));
+            assertEquals(Prioridade.ALTA,    Prioridade.fromPeso(2));
+            assertEquals(Prioridade.URGENTE, Prioridade.fromPeso(3));
+        }
+
+        @Test
+        @DisplayName("fromPeso() deve lançar ProcessingErrorException para pesos inválidos")
+        void fromPeso_invalido() {
+            assertThrows(ProcessingErrorException.class, () -> Prioridade.fromPeso(-1));
+            assertThrows(ProcessingErrorException.class, () -> Prioridade.fromPeso(4));
+            assertThrows(ProcessingErrorException.class, () -> Prioridade.fromPeso(99));
         }
 
         @Test

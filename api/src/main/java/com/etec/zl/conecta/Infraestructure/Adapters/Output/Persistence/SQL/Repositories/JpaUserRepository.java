@@ -23,17 +23,17 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     List<String> findRelatedTurmasIds(@Param("userId") String userId);
 
     @Query(value = """
-        SELECT u.* FROM users u
-        INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-        INNER JOIN turmas t ON at.turma_id = t.id
-        WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
-        """,
+    SELECT DISTINCT u.* FROM users u
+    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+    INNER JOIN turmas t ON at.turma_id = t.id
+    WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
+    """,
             countQuery = """
-        SELECT count(*) FROM users u
-        INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-        INNER JOIN turmas t ON at.turma_id = t.id
-        WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
-        """,
+    SELECT count(DISTINCT u.id) FROM users u
+    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+    INNER JOIN turmas t ON at.turma_id = t.id
+    WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
+    """,
             nativeQuery = true)
     Page<UserEntity> findAllCursantes(Pageable pageable);
 

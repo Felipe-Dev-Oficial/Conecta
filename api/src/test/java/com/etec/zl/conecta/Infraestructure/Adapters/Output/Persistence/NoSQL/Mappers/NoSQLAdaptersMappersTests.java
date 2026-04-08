@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class NoSQLAdaptersMappersTest {
+class NoSQLAdaptersMappersTests {
 
     private final FAQAdapterMapper faqMapper = new FAQAdapterMapper();
     private final MessageAdapterMapper msgMapper = new MessageAdapterMapper();
@@ -41,7 +41,7 @@ class NoSQLAdaptersMappersTest {
     void deveMapearStatement() {
         StatementEntity entity = new StatementEntity();
         entity.setId(UUID.randomUUID());
-        entity.setPriority(Prioridade.MEDIA);
+        entity.setPriority(Prioridade.MEDIA.getPeso());
 
         Statement domain = stMapper.toDomain(entity);
         assertEquals(Prioridade.MEDIA, domain.getPriority());

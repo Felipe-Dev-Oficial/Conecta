@@ -1,4 +1,4 @@
-<div class="mensagens-layout">
+<div class="mensagens-layout" [class.chat-ativo]="!!contatoAtivo()">
 
   <!-- ── Painel de contatos ───────────────────────────────────────────────── -->
   <aside class="contatos-panel">
@@ -39,6 +39,8 @@
       </div>
     } @else {
       <div class="chat-header">
+        <!-- Botão voltar: só aparece no mobile via CSS (display:none no desktop) -->
+        <button class="btn-back" (click)="contatoAtivo.set(null)" title="Voltar">‹</button>
         <div class="contato-avatar">{{ contatoAtivo()!.nome.name[0]?.toUpperCase() }}</div>
         <span class="font-display" style="font-size: 16px; font-weight: 600">{{ contatoAtivo()!.nome.name }}</span>
       </div>
@@ -138,7 +140,6 @@
           ></textarea>
         </div>
 
-        <!-- Upload de mídia opcional -->
         <div class="field">
           @if (!showNovaUpload()) {
             <button class="btn btn-ghost btn-sm" (click)="toggleNovaUpload()">

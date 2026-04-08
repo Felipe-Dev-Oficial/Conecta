@@ -5,7 +5,7 @@ COPY pom.xml .
 
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 FROM maven:3.9.6-eclipse-temurin-21
 

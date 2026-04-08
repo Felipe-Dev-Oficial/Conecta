@@ -19,7 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
 
     @Autowired
@@ -28,7 +28,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOrigins(List.of("http://localhost", "http://localhost:80"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));
@@ -44,11 +44,24 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(c -> c.disable())
-                .cors(c -> c.configurationSource(corsConfigurationSource())) // ← aqui
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("conecta/management/**").hasRole("SECRETARIA")
+                        .requestMatchers("conecta/anuncios/management/**").hasRole("SECRETARIA")
+                        .requestMatchers("conecta/aluno/**").hasRole("ALUNO")
+                        .requestMatchers("conecta/professores/**").hasRole("PROFESSOR")
+                        .requestMatchers("conecta/alterador/**").permitAll()
+                        .requestMatchers("conecta/secretaria").authenticated()
+                        .requestMatchers("conecta/anuncios/default").permitAll()
+                        .requestMatchers("conecta/anuncio/**").authenticated()
+                        .requestMatchers("conecta/arquivos/**").authenticated()
+                        .requestMatchers("conecta/auth/login").permitAll()
+                        .requestMatchers("conecta/faqs/**").permitAll()
+                        .requestMatchers("conecta/mensagens/**").authenticated()
+                        .requestMatchers("conecta/auth").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -1,16 +1,19 @@
 package com.etec.zl.conecta.Infraestructure.Security.Service;
 
 import jakarta.persistence.AttributeConverter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
+@Service
 public class EncryptorService implements AttributeConverter<String, String> {
 
     private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
-    // IMPORTANTE: Em produção essa chave vai ser trocada por uma variavel de ambiente!
-    private static final String KEY = "1234567890123456";
+    @Value("${ENCRYPTOR_KEY}")
+    private String KEY;
 
     @Override
     public String convertToDatabaseColumn(String attribute) {

@@ -1,6 +1,7 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Mappers;
 
 import com.etec.zl.conecta.Domain.Entities.Statements.Statement;
+import com.etec.zl.conecta.Domain.ValueObjects.Prioridade;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Entities.StatementEntity;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ public class StatementAdapterMapper {
                 entity.getTimestamp(),
                 entity.getContent(),
                 entity.getMidia(),
-                entity.getPriority(),
+                Prioridade.fromPeso(entity.getPriority()),
                 entity.isEdited(),
                 entity.getStatus(),
                 entity.getTargetVO()
@@ -29,7 +30,7 @@ public class StatementAdapterMapper {
                 domain.getTimestamp(),
                 domain.getContent(),
                 domain.getMidia(),
-                domain.getPriority(),
+                domain.getPriority().getPeso(),
                 domain.isEdited(),
                 domain.getStatus(),
                 domain.getTargetVO()

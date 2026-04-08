@@ -38,7 +38,7 @@ public class StatementEntity implements Serializable {
     @Field("attachment")
     private Midia midia;
     @Field("priority")
-    private Prioridade priority;
+    private int priority;
     @Field("is_edited")
     private boolean edited;
     @Field("announcement_status")

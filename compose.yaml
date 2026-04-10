@@ -20,7 +20,7 @@ services:
     networks:
       - network
   ui:
-    build: ./ui
+    image: henriquearthur/conecta-ui:latest
     container_name: conecta_ui
     restart: always
     environment:
@@ -33,8 +33,9 @@ services:
         condition: service_started
     networks:
       - network
+
   api:
-    build: ./api
+    image: henriquearthur/conecta-api:latest
     container_name: conecta_api
     ports:
       - 8080:8080
@@ -106,6 +107,7 @@ services:
 networks:
   network:
     driver: bridge
+
 volumes:
   postgres_data:
   mongo_data:

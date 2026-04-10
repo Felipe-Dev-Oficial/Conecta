@@ -1,11 +1,4 @@
 services:
-  tunnel:
-    image: cloudflare/cloudflared:latest
-    container_name: conecta_tunnel_quick
-    restart: always
-    command: tunnel --url http://nginx:80
-    networks:
-      - network
   nginx:
     image: nginx:latest
     container_name: conecta_nginx

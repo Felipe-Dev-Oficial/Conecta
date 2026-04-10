@@ -5,6 +5,7 @@ de:
         version: 6.0.6
 JWT_SECRET: "uma-secret-de-teste-com-pelo-menos-32-caracteres-gerada-agora"
 ENCRYPTOR_KEY: "12345678901234567890123456789012"
+IP: "olhaoipsecreto"
 spring:
   cache:
     type: caffeine

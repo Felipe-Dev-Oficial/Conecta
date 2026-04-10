@@ -30,6 +30,8 @@ services:
   api:
     image: henriquearthur/conecta-api:latest
     container_name: conecta_api
+    env_file:
+      - .env
     ports:
       - 8080:8080
     depends_on:
@@ -52,6 +54,7 @@ services:
         - MAIL_USERNAME=${MAIL_USERNAME}
         - MAIL_PASSWORD=${MAIL_PASSWORD}
         - JWT_SECRET=${JWT_SECRET}
+        - IP=${IP}
     networks:
       - network
     volumes:

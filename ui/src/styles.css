@@ -165,12 +165,22 @@ tbody tr:hover td { background: var(--bg-2); }
 .toast-error { border-left: 3px solid var(--danger); }
 .toast-info { border-left: 3px solid var(--info); }
 
-.shell { display: flex; min-height: 100vh; }
+/* ── Shell / layout principal ───────────────────────────────────── */
+.shell { display: flex; height: 100vh; overflow: hidden; }
 .sidebar { width: var(--sidebar-w); background: var(--bg-1); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; transition: background var(--transition), border-color var(--transition); }
-.main-content { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-.page-body { flex: 1; padding: 28px; max-width: 1200px; }
+.main-content { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.page-body { flex: 1; padding: 28px; max-width: 1200px; overflow-y: auto; }
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .page-title { font-family: var(--font-display); font-size: 26px; font-weight: 700; }
+
+/* ── Componente de mensagens ────────────────────────────────────── */
+app-mensagens {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
@@ -204,6 +214,10 @@ tbody tr:hover td { background: var(--bg-2); }
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-220px); transition: transform var(--transition); }
   .sidebar.open { transform: translateX(0); }
-  .main-content { margin-left: 0; }
+  .main-content { margin-left: 0; height: 100dvh; }
   .page-body { padding: 16px; }
+
+  app-mensagens {
+    height: 100dvh;
+  }
 }

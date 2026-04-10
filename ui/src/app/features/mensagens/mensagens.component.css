@@ -1,7 +1,7 @@
 /* ── Layout raiz ─────────────────────────────────────────────────────────── */
 .mensagens-layout {
   display: flex;
-  height: calc(100dvh - var(--topbar-h));   /* dvh: desconta barras do browser mobile */
+  height: 100dvh;   /* dvh: desconta barras do browser mobile */
   overflow: hidden;
   position: relative;
 }

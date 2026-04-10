@@ -58,7 +58,7 @@
 
       <div class="sidebar-actions">
         <button class="btn btn-ghost btn-icon btn-sm" (click)="themeService.toggle()" title="Alternar tema">
-          {{ themeService.theme() === 'dark' ? '☀️' : '🌙' }}
+          {{ themeService.theme() === 'dark' ? '⬜' : '⬛' }}
         </button>
         @if (isLogado()) {
           <button class="btn btn-ghost btn-sm" style="flex:1" (click)="logout()">Sair</button>
@@ -74,7 +74,7 @@
       <button class="btn btn-ghost btn-icon" (click)="mobileOpen.update(v => !v)">☰</button>
       <span class="topbar-title font-display">CONECTA</span>
       <button class="btn btn-ghost btn-icon" (click)="themeService.toggle()">
-        {{ themeService.theme() === 'dark' ? '☀️' : '🌙' }}
+        {{ themeService.theme() === 'dark' ? '⬜' : '⬛' }}
       </button>
     </header>
 

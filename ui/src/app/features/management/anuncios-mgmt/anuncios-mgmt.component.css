@@ -12,3 +12,8 @@
   .modal-row { grid-template-columns: 1fr; }
   .anuncio-item-acoes { flex-direction: row; flex-wrap: wrap; }
 }
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}

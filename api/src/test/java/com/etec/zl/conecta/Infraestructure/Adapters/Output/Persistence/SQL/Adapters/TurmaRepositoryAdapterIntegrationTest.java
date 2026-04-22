@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -29,19 +30,18 @@ class TurmaRepositoryAdapterIntegrationTest {
     @Autowired
     private CacheManager cacheManager;
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
     private EntityManager entityManager;
 
     @BeforeEach
     void setUp() {
-        jpaRepository.deleteAll();
+        jdbcTemplate.execute("DELETE FROM aluno_turmas");
+        jdbcTemplate.execute("DELETE FROM turmas");
         cacheManager.getCacheNames().forEach(name -> {
             var cache = cacheManager.getCache(name);
             if (cache != null) cache.clear();
         });
-    }
-
-    public static java.sql.Timestamp dataFake() {
-        return java.sql.Timestamp.valueOf("2026-01-15 10:00:00");
     }
 
     private TurmaEntity buildTurmaEntity(Cursos curso, Status status, int atual, int modulos) {

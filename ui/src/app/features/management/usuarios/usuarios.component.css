@@ -85,3 +85,8 @@
   color: var(--accent);
   background: var(--accent-glow);
 }
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}

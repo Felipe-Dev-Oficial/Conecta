@@ -1,10 +1,8 @@
 package com.etec.zl.conecta.Application.Ports.Output.Repositories;
 
 import com.etec.zl.conecta.Domain.Entities.Users.User;
-import com.etec.zl.conecta.Domain.ValueObjects.Email;
-import com.etec.zl.conecta.Domain.ValueObjects.Name;
-import com.etec.zl.conecta.Domain.ValueObjects.PageRequest;
-import com.etec.zl.conecta.Domain.ValueObjects.PageResult;
+import com.etec.zl.conecta.Domain.ValueObjects.*;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +12,9 @@ public interface UserRepository {
     void save(User user);
     Optional<User> findByEmail(Email email);
     List<UUID> retornarTurmasRelacionadas(String id);
+    List<Notificador> findAllNotificadores(TargetType targetType, List<String> targetIds);
+    List<Notificador> findNotificadoresByUserId(String userId);
+    void saveNotificador(String userId, String endpoint, String p256dh, String auth);
 
     //secretaria
     Optional<User> findById(String id);

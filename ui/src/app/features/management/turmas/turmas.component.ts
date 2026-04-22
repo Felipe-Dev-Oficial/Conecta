@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SecretariaService } from '../../../core/services/http/secretaria/secretaria.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
-import { Turma, DTOCadastroTurma, Cursos } from '../../../core/models/models';
+import { Turma, Cursos } from '../../../core/models/models';
 
 const CURSOS: Cursos[] = [
   'ADMINISTRACAO', 'CONTABILIDADE', 'DESENVOLVIMENTO_DE_SISTEMAS', 'LOGISTICA',
@@ -15,10 +15,6 @@ const CURSOS: Cursos[] = [
   'VESPERTINO_LOGISTICA_MTEC', 'VESPERTINO_RECURSOS_HUMANOS_MTEC',
   'LOGISTICA_MTEC_N', 'DESENVOLVIMENTO_DE_SISTEMAS_AMS',
 ];
-
-function itemVazio(): DTOCadastroTurma {
-  return { curso: 'DESENVOLVIMENTO_DE_SISTEMAS', modulos: 6 };
-}
 
 @Component({
   selector: 'app-turmas',
@@ -41,19 +37,21 @@ export class TurmasComponent implements OnInit {
   apenasAtuais = true;
   filtroCurso = '';
   cursos = CURSOS;
-  lote: DTOCadastroTurma[] = [itemVazio()];
+  lote: Cursos[] = [];
 
   ngOnInit() { this.listar(); }
 
   abrirNova() {
-    this.lote = [itemVazio()];
+    this.lote = [];
     this.showNova.set(true);
   }
 
-  adicionar() { this.lote.push(itemVazio()); }
+  adicionar() { this.lote.push('' as Cursos); }
 
-  remover(i: number) {
-    if (this.lote.length > 1) this.lote.splice(i, 1);
+  remover(i: number) { this.lote.splice(i, 1); }
+
+  loteValido(): boolean {
+    return this.lote.length > 0 && !this.lote.includes('' as Cursos);
   }
 
   listar() {

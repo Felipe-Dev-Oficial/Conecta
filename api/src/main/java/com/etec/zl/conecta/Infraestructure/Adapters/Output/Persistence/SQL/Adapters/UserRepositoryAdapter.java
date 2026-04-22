@@ -2,12 +2,11 @@ package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adap
 
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.UserRepository;
 import com.etec.zl.conecta.Domain.Entities.Users.User;
-import com.etec.zl.conecta.Domain.ValueObjects.Email;
-import com.etec.zl.conecta.Domain.ValueObjects.Name;
-import com.etec.zl.conecta.Domain.ValueObjects.PageRequest;
-import com.etec.zl.conecta.Domain.ValueObjects.PageResult;
+import com.etec.zl.conecta.Domain.ValueObjects.*;
+import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Entities.NotificadorEntity;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Mappers.UserAdapterMapper;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories.JpaUserRepository;
+import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories.NotificadorProjection;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.Services.PaginationAdapter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,8 @@ public class UserRepositoryAdapter implements UserRepository {
     @Caching(evict = {
             @CacheEvict(value = "users", key = "#user.id"),
             @CacheEvict(value = "users-lists", allEntries = true),
-            @CacheEvict(value = "users-context", allEntries = true)
+            @CacheEvict(value = "users-context", allEntries = true),
+            @CacheEvict(value = "users-tokens", allEntries = true)
     })
     public void save(User user) {
         externalRepository.save(mapper.toEntity(user));
@@ -52,6 +52,47 @@ public class UserRepositoryAdapter implements UserRepository {
                 .stream()
                 .map(UUID::fromString)
                 .toList();
+    }
+
+    @Override
+    @Cacheable(value = "users-tokens", key = "#targetType.name() + '-' + (#targetIds != null ? #targetIds.toString() : 'all')")
+    public List<Notificador> findAllNotificadores(TargetType targetType, List<String> targetIds) {
+        List<NotificadorProjection> projections = switch (targetType) {
+            case GERAL       -> externalRepository.findAllNotificadoresForGeneral();
+            case ALUNOS      -> externalRepository.findAllNotificadoresForAlunos();
+            case PROFESSORES -> externalRepository.findAllNotificadoresForProfessores();
+            case EX_ALUNOS   -> externalRepository.findAllNotificadoresForExAlunos();
+            case TURMA, TURMAS -> externalRepository.findAllNotificadoresForTurmas(targetIds);
+        };
+        return projections.stream()
+                .map(p -> new Notificador(p.getId(), p.getEndpoint(), p.getP256dh(), p.getAuth()))
+                .toList();
+    }
+
+    @Override
+    public List<Notificador> findNotificadoresByUserId(String userId) {
+        return externalRepository.findNotificadoresByUserId(userId)
+                .stream()
+                .map(p -> new Notificador(p.getId(), p.getEndpoint(), p.getP256dh(), p.getAuth()))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void saveNotificador(String userId, String endpoint, String p256dh, String auth) {
+        var user = externalRepository.findById(userId).orElseThrow();
+
+        boolean jaExiste = user.getNotificadores().stream()
+                .anyMatch(n -> n.getEndpoint().equals(endpoint));
+        if (jaExiste) return;
+
+        var entity = new NotificadorEntity();
+        entity.setUser(user);
+        entity.setEndpoint(endpoint);
+        entity.setP256dh(p256dh);
+        entity.setAuth(auth);
+        user.getNotificadores().add(entity);
+        externalRepository.save(user);
     }
 
     @Override

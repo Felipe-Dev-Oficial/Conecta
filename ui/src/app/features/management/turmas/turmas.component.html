@@ -85,29 +85,28 @@
       </div>
 
       <div class="modal-body">
+        @if (lote.length === 0) {
+          <p style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 16px 0">
+            Nenhuma turma adicionada.
+          </p>
+        }
+
         @for (item of lote; track $index; let i = $index) {
           <div class="lote-card">
             <div class="lote-card-header">
               <span class="font-display" style="font-size: 13px; font-weight: 600; color: var(--text-muted)">
                 Turma {{ i + 1 }}
               </span>
-              @if (lote.length > 1) {
-                <button class="btn btn-ghost btn-icon btn-sm" (click)="remover(i)" title="Remover">✕</button>
-              }
+              <button class="btn btn-ghost btn-icon btn-sm" (click)="remover(i)" title="Remover">✕</button>
             </div>
-            <div class="lote-grid">
-              <div class="field">
-                <label>Curso</label>
-                <select class="input" [(ngModel)]="item.curso">
-                  @for (c of cursos; track c) {
-                    <option [value]="c">{{ c }}</option>
-                  }
-                </select>
-              </div>
-              <div class="field">
-                <label>Qtd. de Módulos</label>
-                <input class="input" type="number" [(ngModel)]="item.modulos" min="1" placeholder="Ex: 6" />
-              </div>
+            <div class="field">
+              <label>Curso</label>
+              <select class="input" [(ngModel)]="lote[i]">
+                <option value="" disabled>Selecione um curso</option>
+                @for (c of cursos; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
             </div>
           </div>
         }
@@ -125,7 +124,7 @@
       <div class="modal-footer">
         <span class="text-muted" style="font-size: 13px">{{ lote.length }} turma(s)</span>
         <button class="btn btn-ghost" (click)="showNova.set(false)">Cancelar</button>
-        <button class="btn btn-primary" (click)="criar()" [disabled]="saving()">
+        <button class="btn btn-primary" (click)="criar()" [disabled]="saving() || !loteValido()">
           @if (saving()) { <span class="spinner"></span> } Criar
         </button>
       </div>

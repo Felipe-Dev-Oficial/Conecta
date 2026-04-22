@@ -5,6 +5,7 @@ import com.etec.zl.conecta.Application.Mappers.Messages.MessageMapper;
 import com.etec.zl.conecta.Application.Ports.Input.Messages.EnviarMensagemPort;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.MessageRepository;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.UserRepository;
+import com.etec.zl.conecta.Application.Ports.Output.Services.NotificationService;
 import com.etec.zl.conecta.Application.Services.Utilities.TryGetByService;
 import com.etec.zl.conecta.Application.Services.Utilities.TrySaveService;
 import com.etec.zl.conecta.Domain.Exceptions.UserNotFoundException;
@@ -13,6 +14,8 @@ import com.etec.zl.conecta.Domain.ValueObjects.Tipo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class EnviarMensagemUseCase implements EnviarMensagemPort {
 
     private static final Logger log = LoggerFactory.getLogger(EnviarMensagemUseCase.class);
@@ -20,11 +23,13 @@ public class EnviarMensagemUseCase implements EnviarMensagemPort {
     private final MessageRepository repository;
     private final UserRepository userRepository;
     private final MessageMapper mapper;
+    private final NotificationService notificationService;
 
-    public EnviarMensagemUseCase(MessageRepository repository, UserRepository userRepository, MessageMapper mapper) {
+    public EnviarMensagemUseCase(MessageRepository repository, UserRepository userRepository, MessageMapper mapper, NotificationService notificationService) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.mapper = mapper;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -39,6 +44,12 @@ public class EnviarMensagemUseCase implements EnviarMensagemPort {
             throw e;
         }
         TrySaveService.execute(mapper.toRegister(dto), repository::save, log);
+
+        notificationService.sendNotifications(
+                userRepository.findNotificadoresByUserId(dto.idReceiver()),
+                sender.getNome().name(),
+                dto.dto().content().content()
+        );
     }
 
     private boolean validaMensagem(Tipo sender, Tipo receiver) {

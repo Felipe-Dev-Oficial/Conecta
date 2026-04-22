@@ -25,19 +25,21 @@ public interface JpaTurmaRepository extends JpaRepository<TurmaEntity, String> {
     @Modifying
     @Transactional
     @Query(value = """
-    UPDATE turmas 
-    SET atual = atual + 1 
-    WHERE status = 'ON' 
-    AND atual < modulos
-    AND (
-        (extract(month from now()) BETWEEN 7 AND 8 
-        AND curso NOT LIKE '%M_TEC' 
-        AND curso NOT LIKE '%AMS')
-        
-        OR 
-        
-        (extract(month from now()) IN (12, 1, 2))
-    )
-    """, nativeQuery = true)
+        UPDATE turmas
+        SET
+            status = CASE
+                        WHEN atual >= modulos THEN 'OFF'
+                        ELSE status
+                     END,
+            atual = CASE
+                        WHEN atual < modulos THEN atual + 1
+                        ELSE atual
+                    END
+        WHERE status = 'ON'
+        AND (
+            (extract(month from now()) BETWEEN 7 AND 8 AND curso NOT LIKE '%MTEC' AND curso NOT LIKE '%AMS')
+            OR (extract(month from now()) IN (12, 1, 2))
+        )
+        """, nativeQuery = true)
     void passaModuloBaseadoNoCalendario();
 }

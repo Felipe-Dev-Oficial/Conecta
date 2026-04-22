@@ -6,7 +6,6 @@ import com.etec.zl.conecta.Application.DTOs.Messages.*;
 import com.etec.zl.conecta.Application.DTOs.Statements.DTOAnuncio;
 import com.etec.zl.conecta.Application.DTOs.Statements.DTOLeitura;
 import com.etec.zl.conecta.Application.DTOs.Statements.DTORetornoAnuncio;
-import com.etec.zl.conecta.Application.DTOs.Turmas.DTOCadastroTurma;
 import com.etec.zl.conecta.Application.DTOs.Users.DTOCadastro;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoNormal;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoSecretaria;
@@ -308,8 +307,8 @@ class MappersTest {
         @Test
         @DisplayName("toRegister deve mapear curso e modulos corretamente")
         void toRegister() {
-            var dto = new DTOCadastroTurma(Cursos.ADMINISTRACAO, 3);
-            Turma turma = mapper.toRegister(dto);
+            var curso = Cursos.ADMINISTRACAO;
+            Turma turma = mapper.toRegister(curso);
 
             assertEquals(Cursos.ADMINISTRACAO, turma.getCurso());
             assertEquals(3, turma.getModulos());

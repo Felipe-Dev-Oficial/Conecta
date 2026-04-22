@@ -4,12 +4,12 @@ import com.etec.zl.conecta.Application.DTOs.Statements.DTOAnuncio;
 import com.etec.zl.conecta.Application.Mappers.Statements.StatementMapper;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.StatementRepository;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.UserRepository;
+import com.etec.zl.conecta.Application.Ports.Output.Services.NotificationService;
 import com.etec.zl.conecta.Application.Services.Services.Users.TryGetByUserService;
 import com.etec.zl.conecta.Application.Services.Services.Statements.VerifyIfExistsModifyAndSaveStatementsService;
 import com.etec.zl.conecta.Domain.Entities.Statements.Statement;
 import com.etec.zl.conecta.Domain.Entities.Users.User;
-import com.etec.zl.conecta.Domain.ValueObjects.PageRequest;
-import com.etec.zl.conecta.Domain.ValueObjects.PageResult;
+import com.etec.zl.conecta.Domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -34,30 +34,61 @@ class StatementsUseCasesTest {
     class GerarAnuncioTests {
         private StatementRepository repository;
         private StatementMapper mapper;
+        private UserRepository userRepository;
+        private NotificationService notificationService;
         private GerarAnuncioUseCase useCase;
 
         @BeforeEach
         void setUp() {
-            repository = mock(StatementRepository.class);
-            mapper = mock(StatementMapper.class);
-            useCase = new GerarAnuncioUseCase(repository, mapper);
+            repository           = mock(StatementRepository.class);
+            mapper               = mock(StatementMapper.class);
+            userRepository       = mock(UserRepository.class);
+            notificationService  = mock(NotificationService.class);
+            useCase              = new GerarAnuncioUseCase(repository, mapper, userRepository, notificationService);
         }
 
         @Test
-        @DisplayName("Deve mapear DTO e salvar o anúncio no repositório")
+        @DisplayName("deve mapear DTO, salvar o anúncio e enviar notificações")
         void geraAnuncioComSucesso() {
-            var dto = mock(DTOAnuncio.class);
-            var statement = mock(Statement.class);
-            String senderId = "user-123";
+            var senderId    = "user-123";
+            var dto         = mock(DTOAnuncio.class);
+            var statement   = mock(Statement.class);
+            var title       = mock(Content.class);
+            var content     = mock(Content.class);
+            var notificadores = List.of(mock(Notificador.class));
 
-            when(mapper.toStatement(eq(senderId), eq(dto))).thenReturn(statement);
+            when(dto.targetType()).thenReturn(mock(TargetType.class));
+            when(dto.targetsId()).thenReturn(List.of("turma-1"));
+            when(dto.title()).thenReturn(title);
+            when(dto.content()).thenReturn(content);
+            when(title.content()).thenReturn("Título do anúncio");
+            when(content.content()).thenReturn("Corpo do anúncio");
+            when(mapper.toStatement(senderId, dto)).thenReturn(statement);
+            when(userRepository.findAllNotificadores(dto.targetType(), dto.targetsId()))
+                    .thenReturn(notificadores);
 
             useCase.gerarAnuncio(senderId, dto);
 
-            verify(repository, times(1)).save(eq(statement));
+            verify(repository, times(1)).save(statement);
+            verify(notificationService, times(1))
+                    .sendNotifications(notificadores, "Título do anúncio", "Corpo do anúncio");
+        }
+
+        @Test
+        @DisplayName("não deve enviar notificação quando save lança exceção")
+        void naoEnviaNotificacaoComFalhaNaSave() {
+            var senderId  = "user-123";
+            var dto       = mock(DTOAnuncio.class);
+            var statement = mock(Statement.class);
+
+            when(mapper.toStatement(senderId, dto)).thenReturn(statement);
+            doThrow(new RuntimeException("falha no banco")).when(repository).save(statement);
+
+            assertThrows(RuntimeException.class, () -> useCase.gerarAnuncio(senderId, dto));
+
+            verify(notificationService, never()).sendNotifications(any(), any(), any());
         }
     }
-
     // ══════════════════════════════════════════════════════════════════════════
     // LerAnuncioUseCase
     // ══════════════════════════════════════════════════════════════════════════

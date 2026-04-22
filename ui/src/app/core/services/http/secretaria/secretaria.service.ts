@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   DTOCadastro,
-  DTOCadastroTurma,
   DTORetornoSecretaria,
   DTOReturnMessageSecretaria,
   DTORetornoNormal,
@@ -118,8 +117,8 @@ export class SecretariaService {
   }
 
   /** POST /conecta/management/turmas */
-  criarTurmas(dtos: DTOCadastroTurma[]): Observable<void> {
-    return this.http.post<void>(`${this.base}/turmas`, dtos);
+  criarTurmas(cursos: Cursos[]): Observable<void> {
+    return this.http.post<void>(`${this.base}/turmas`, cursos);
   }
 
   /** POST /conecta/management/turmas/passar-modulo */

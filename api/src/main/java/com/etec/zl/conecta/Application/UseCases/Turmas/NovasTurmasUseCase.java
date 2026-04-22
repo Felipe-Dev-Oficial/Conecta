@@ -1,10 +1,10 @@
 package com.etec.zl.conecta.Application.UseCases.Turmas;
 
-import com.etec.zl.conecta.Application.DTOs.Turmas.DTOCadastroTurma;
 import com.etec.zl.conecta.Application.Mappers.Turmas.TurmaMapper;
 import com.etec.zl.conecta.Application.Ports.Input.Turmas.NovasTurmasPort;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.TurmaRepository;
 import com.etec.zl.conecta.Application.Services.Utilities.TrySaveService;
+import com.etec.zl.conecta.Domain.ValueObjects.Cursos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class NovasTurmasUseCase implements NovasTurmasPort {
     }
 
     @Override
-    public void cadastroTurmas(List<DTOCadastroTurma> cadastros) {
+    public void cadastroTurmas(List<Cursos> cadastros) {
         cadastros.forEach(t -> {
             TrySaveService.execute(mapper.toRegister(t), repository::save, log);
         });

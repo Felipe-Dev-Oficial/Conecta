@@ -6,6 +6,9 @@ de:
 JWT_SECRET: "uma-secret-de-teste-com-pelo-menos-32-caracteres-gerada-agora"
 ENCRYPTOR_KEY: "12345678901234567890123456789012"
 IP: "olhaoipsecreto"
+VAPID_PUBLIC_KEY: "BC03PIz5WJAUDPeQDtEUTJvuiPoSrGp2li0XOKZ8CXxzg76H7acJEqW9xnulfNJmQvem0ZYtnr1jb3mdpvqq8lU"
+VAPID_PRIVATE_KEY: "sb3xsUd0cSGpwFOXRUUTnBmZDXPzEOjV-9RJ8CMTL3Y"
+VAPID_SUBJECT: "mailto:test@test.com"
 spring:
   cache:
     type: caffeine

@@ -33,4 +33,9 @@ public class AuthController {
 
         return ResponseEntity.ok(tokenJWT);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logOut() {
+        return ResponseEntity.ok("Logout successful");
+    }
 }

@@ -1,7 +1,6 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Input.Controllers;
 
 import com.etec.zl.conecta.Application.DTOs.Messages.DTOReturnMessageSecretaria;
-import com.etec.zl.conecta.Application.DTOs.Turmas.DTOCadastroTurma;
 import com.etec.zl.conecta.Application.DTOs.Users.DTOCadastro;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoNormal;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoSecretaria;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("conecta")
@@ -160,8 +158,8 @@ public class SecretariaController {
 
     @PostMapping("/management/turmas")
     @ResponseStatus(HttpStatus.CREATED)
-    public void criarTurmas(@RequestBody List<DTOCadastroTurma> dtos) {
-        novasTurmasPort.cadastroTurmas(dtos);
+    public void criarTurmas(@RequestBody List<Cursos> cursos) {
+        novasTurmasPort.cadastroTurmas(cursos);
     }
 
     @PostMapping("/management/turmas/passar-modulo")

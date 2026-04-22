@@ -1,5 +1,10 @@
 package com.etec.zl.conecta.Domain.ValueObjects;
 
+import com.etec.zl.conecta.Domain.Exceptions.InvalidDataException;
+import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adapters.TurmaRepositoryAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public enum Cursos {
 
     MATUTINO_ADMINISTRACAO_MTEC("ADM-MTEC-M"),
@@ -23,6 +28,8 @@ public enum Cursos {
 
     DESENVOLVIMENTO_DE_SISTEMAS_AMS("DS-AMS");
 
+    private static final Logger log = LoggerFactory.getLogger(TurmaRepositoryAdapter.class);
+
     private final String sigla;
 
     Cursos(String sigla) {
@@ -31,5 +38,19 @@ public enum Cursos {
 
     public String getSigla() {
         return sigla;
+    }
+
+    public int getModulosTotais(){
+        if (this.sigla.contains("MTEC")) {
+            return 6;
+        } else if (this.sigla.contains("-N")) {
+            return 3;
+        } else if (this.sigla.contains("AMS")) {
+            return 12;
+        } else {
+            var e = new InvalidDataException("Erro durante processamento da turma " + this.sigla);
+            log.warn(e.getMessage(), e);
+            throw e;
+        }
     }
 }

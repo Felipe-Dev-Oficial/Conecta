@@ -1,6 +1,5 @@
 package com.etec.zl.conecta.Application.UseCases.Turmas;
 
-import com.etec.zl.conecta.Application.DTOs.Turmas.DTOCadastroTurma;
 import com.etec.zl.conecta.Application.Mappers.Turmas.TurmaMapper;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.TurmaRepository;
 import com.etec.zl.conecta.Domain.Entities.Turmas.Turma;
@@ -44,14 +43,14 @@ class TurmasUseCasesTest {
         @Test
         @DisplayName("Deve mapear e salvar cada turma da lista")
         void cadastraListaDeTurmas() {
-            var dto = new DTOCadastroTurma(Cursos.DESENVOLVIMENTO_DE_SISTEMAS, 3);
+            var curso = Cursos.DESENVOLVIMENTO_DE_SISTEMAS;
             var turma = mock(Turma.class);
 
-            when(mapper.toRegister(any(DTOCadastroTurma.class))).thenReturn(turma);
+            when(mapper.toRegister(any(Cursos.class))).thenReturn(turma);
 
-            useCase.cadastroTurmas(List.of(dto));
+            useCase.cadastroTurmas(List.of(curso));
 
-            verify(mapper, times(1)).toRegister(eq(dto));
+            verify(mapper, times(1)).toRegister(eq(curso));
             verify(repository, times(1)).save(eq(turma));
         }
     }

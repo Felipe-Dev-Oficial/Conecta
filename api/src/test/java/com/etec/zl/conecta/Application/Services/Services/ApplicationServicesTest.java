@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Application Services")
-class ApplicationServiceTest {
+class ApplicationServicesTest {
 
     // ══════════════════════════════════════════════════════════════════════════
     // VerifyIfExistsModifyAndSaveFAQsService
@@ -57,10 +57,10 @@ class ApplicationServiceTest {
         @BeforeEach
         void setUp() {
             repository = mock(FAQRepository.class);
-            log        = mock(Logger.class);
-            service    = new VerifyIfExistsModifyAndSaveFAQsService(repository);
-            id         = UUID.randomUUID();
-            faq        = new FAQ(id, "Pergunta?", "Resposta.", "autor",
+            log = mock(Logger.class);
+            service = new VerifyIfExistsModifyAndSaveFAQsService(repository);
+            id = UUID.randomUUID();
+            faq = new FAQ(id, "Pergunta?", "Resposta.", "autor",
                     StatusFAQ.RASCUNHO, Instant.now(), null, Prioridade.MEDIA);
         }
 
@@ -102,14 +102,19 @@ class ApplicationServiceTest {
             void lancaInvalidData() {
                 when(repository.getById(id)).thenReturn(Optional.empty());
                 assertThrows(InvalidDataException.class,
-                        () -> service.execute(id, f -> {}, log));
+                        () -> service.execute(id, f -> {
+                        }, log));
             }
 
             @Test
             @DisplayName("não deve salvar nada quando FAQ não existe")
             void naoSalva() {
                 when(repository.getById(id)).thenReturn(Optional.empty());
-                try { service.execute(id, f -> {}, log); } catch (InvalidDataException ignored) {}
+                try {
+                    service.execute(id, f -> {
+                    }, log);
+                } catch (InvalidDataException ignored) {
+                }
                 verify(repository, never()).save(any());
             }
         }
@@ -125,7 +130,8 @@ class ApplicationServiceTest {
                 doThrow(new RuntimeException("DB down")).when(repository).save(any());
 
                 assertThrows(ProcessingErrorException.class,
-                        () -> service.execute(id, f -> {}, log));
+                        () -> service.execute(id, f -> {
+                        }, log));
             }
         }
     }
@@ -147,10 +153,10 @@ class ApplicationServiceTest {
         @BeforeEach
         void setUp() {
             repository = mock(StatementRepository.class);
-            log        = mock(Logger.class);
-            service    = new VerifyIfExistsModifyAndSaveStatementsService(repository);
-            id         = UUID.randomUUID();
-            statement  = new Statement(
+            log = mock(Logger.class);
+            service = new VerifyIfExistsModifyAndSaveStatementsService(repository);
+            id = UUID.randomUUID();
+            statement = new Statement(
                     id, "sender",
                     new Content("Título"), Instant.now(),
                     new Content("Conteúdo"), null,
@@ -196,14 +202,19 @@ class ApplicationServiceTest {
             void lancaInvalidData() {
                 when(repository.findById(id)).thenReturn(Optional.empty());
                 assertThrows(InvalidDataException.class,
-                        () -> service.execute(id, s -> {}, log));
+                        () -> service.execute(id, s -> {
+                        }, log));
             }
 
             @Test
             @DisplayName("não deve salvar nada quando statement não existe")
             void naoSalva() {
                 when(repository.findById(id)).thenReturn(Optional.empty());
-                try { service.execute(id, s -> {}, log); } catch (InvalidDataException ignored) {}
+                try {
+                    service.execute(id, s -> {
+                    }, log);
+                } catch (InvalidDataException ignored) {
+                }
                 verify(repository, never()).save(any());
             }
         }
@@ -219,7 +230,8 @@ class ApplicationServiceTest {
                 doThrow(new RuntimeException("DB down")).when(repository).save(any());
 
                 assertThrows(ProcessingErrorException.class,
-                        () -> service.execute(id, s -> {}, log));
+                        () -> service.execute(id, s -> {
+                        }, log));
             }
         }
     }
@@ -240,11 +252,11 @@ class ApplicationServiceTest {
 
         @BeforeEach
         void setUp() {
-            repository   = mock(UserRepository.class);
+            repository = mock(UserRepository.class);
             emailService = mock(EmailService.class);
-            log          = mock(Logger.class);
-            service      = new StartChangeService(repository, emailService);
-            userPadrao   = new User(
+            log = mock(Logger.class);
+            service = new StartChangeService(repository, emailService);
+            userPadrao = new User(
                     "user-1",
                     new Name("João Silva"),
                     new Email("joao@etec.com"),
@@ -269,9 +281,9 @@ class ApplicationServiceTest {
 
                 service.execute("user-1", action, tokenExtractor, "Assunto", log);
 
-                verify(action,       times(1)).accept(userPadrao);
+                verify(action, times(1)).accept(userPadrao);
                 verify(emailService, times(1)).send(anyString(), any(Email.class), eq("Assunto"));
-                verify(repository,   times(1)).save(userPadrao);
+                verify(repository, times(1)).save(userPadrao);
             }
 
             @Test
@@ -280,7 +292,8 @@ class ApplicationServiceTest {
                 when(repository.findById("user-1")).thenReturn(Optional.of(userPadrao));
                 var updater = TokenUpdater.Start();
 
-                service.execute("user-1", u -> {}, u -> updater, "Assunto", log);
+                service.execute("user-1", u -> {
+                }, u -> updater, "Assunto", log);
 
                 verify(emailService).send(contains(updater.token()), any(Email.class), anyString());
             }
@@ -296,7 +309,8 @@ class ApplicationServiceTest {
                 when(repository.findById("x")).thenReturn(Optional.empty());
 
                 assertThrows(UserNotFoundException.class, () ->
-                        service.execute("x", u -> {}, u -> TokenUpdater.Start(), "Assunto", log));
+                        service.execute("x", u -> {
+                        }, u -> TokenUpdater.Start(), "Assunto", log));
 
                 verifyNoInteractions(emailService);
                 verify(repository, never()).save(any());
@@ -313,7 +327,8 @@ class ApplicationServiceTest {
                 when(repository.findById("user-1")).thenReturn(Optional.of(userPadrao));
 
                 assertThrows(ProcessingErrorException.class, () ->
-                        service.execute("user-1", u -> {}, u -> null, "Assunto", log));
+                        service.execute("user-1", u -> {
+                        }, u -> null, "Assunto", log));
             }
 
             @Test
@@ -321,8 +336,11 @@ class ApplicationServiceTest {
             void naoSalvaComTokenNulo() {
                 when(repository.findById("user-1")).thenReturn(Optional.of(userPadrao));
 
-                try { service.execute("user-1", u -> {}, u -> null, "Assunto", log); }
-                catch (ProcessingErrorException ignored) {}
+                try {
+                    service.execute("user-1", u -> {
+                    }, u -> null, "Assunto", log);
+                } catch (ProcessingErrorException ignored) {
+                }
 
                 verify(repository, never()).save(any());
             }
@@ -340,7 +358,8 @@ class ApplicationServiceTest {
                 var updater = TokenUpdater.Start();
 
                 assertThrows(ProcessingErrorException.class, () ->
-                        service.execute("user-1", u -> {}, u -> updater, "Assunto", log));
+                        service.execute("user-1", u -> {
+                        }, u -> updater, "Assunto", log));
             }
 
             @Test
@@ -350,8 +369,11 @@ class ApplicationServiceTest {
                 doThrow(new RuntimeException("SMTP down")).when(emailService).send(anyString(), any(), anyString());
                 var updater = TokenUpdater.Start();
 
-                try { service.execute("user-1", u -> {}, u -> updater, "Assunto", log); }
-                catch (ProcessingErrorException ignored) {}
+                try {
+                    service.execute("user-1", u -> {
+                    }, u -> updater, "Assunto", log);
+                } catch (ProcessingErrorException ignored) {
+                }
 
                 verify(repository, never()).save(any());
             }
@@ -374,11 +396,11 @@ class ApplicationServiceTest {
 
         @BeforeEach
         void setUp() {
-            userRepository  = mock(UserRepository.class);
+            userRepository = mock(UserRepository.class);
             turmaRepository = mock(TurmaRepository.class);
-            mapper          = mock(UserMapper.class);
-            log             = mock(Logger.class);
-            service         = new TrySaveUserService(userRepository, mapper, turmaRepository);
+            mapper = mock(UserMapper.class);
+            log = mock(Logger.class);
+            service = new TrySaveUserService(userRepository, mapper, turmaRepository);
         }
 
         private DTOCadastro dtoCom(Tipo tipo, List<String> turmas) {
@@ -400,7 +422,7 @@ class ApplicationServiceTest {
             @Test
             @DisplayName("deve salvar sem consultar turmaRepository")
             void salvaSemConsultarTurma() {
-                var dto  = dtoCom(Tipo.SECRETARIA, List.of());
+                var dto = dtoCom(Tipo.SECRETARIA, List.of());
                 var user = userPadrao();
                 when(mapper.toRegister(dto)).thenReturn(user);
 
@@ -418,7 +440,7 @@ class ApplicationServiceTest {
             @Test
             @DisplayName("deve consultar turmaRepository para cada turma da lista")
             void consultaTurmasInformadas() {
-                var dto  = dtoCom(Tipo.ALUNO, List.of("t1", "t2"));
+                var dto = dtoCom(Tipo.ALUNO, List.of("t1", "t2"));
                 var user = userPadrao();
                 when(mapper.toRegister(dto)).thenReturn(user);
                 when(turmaRepository.findById("t1")).thenReturn(Optional.of(mock(Turma.class)));
@@ -433,7 +455,7 @@ class ApplicationServiceTest {
             @Test
             @DisplayName("deve salvar o usuário quando todas as turmas existem")
             void salvaQuandoTurmasExistem() {
-                var dto  = dtoCom(Tipo.PROFESSOR, List.of("t1"));
+                var dto = dtoCom(Tipo.PROFESSOR, List.of("t1"));
                 var user = userPadrao();
                 when(mapper.toRegister(dto)).thenReturn(user);
                 when(turmaRepository.findById("t1")).thenReturn(Optional.of(mock(Turma.class)));
@@ -458,7 +480,10 @@ class ApplicationServiceTest {
                 var dto = dtoCom(Tipo.ALUNO, List.of("turma-inexistente"));
                 when(turmaRepository.findById("turma-inexistente")).thenReturn(Optional.empty());
 
-                try { service.execute(dto, log); } catch (InvalidDataException ignored) {}
+                try {
+                    service.execute(dto, log);
+                } catch (InvalidDataException ignored) {
+                }
 
                 verify(userRepository, never()).save(any());
             }
@@ -471,7 +496,7 @@ class ApplicationServiceTest {
             @Test
             @DisplayName("deve relançar como ProcessingErrorException")
             void relancaComoProcessingError() {
-                var dto  = dtoCom(Tipo.SECRETARIA, List.of());
+                var dto = dtoCom(Tipo.SECRETARIA, List.of());
                 var user = userPadrao();
                 when(mapper.toRegister(dto)).thenReturn(user);
                 doThrow(new RuntimeException("DB down")).when(userRepository).save(any());
@@ -497,8 +522,8 @@ class ApplicationServiceTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            log        = mock(Logger.class);
-            service    = new VerifyIfExistsModifyAndSaveUsersService(repository);
+            log = mock(Logger.class);
+            service = new VerifyIfExistsModifyAndSaveUsersService(repository);
             userPadrao = new User(
                     "user-1", new Name("João Silva"), new Email("joao@etec.com"),
                     new PhoneNumber("11987654321"), new Password("Etec@1234"),
@@ -544,14 +569,19 @@ class ApplicationServiceTest {
             void lancaUserNotFound() {
                 when(repository.findById("x")).thenReturn(Optional.empty());
                 assertThrows(UserNotFoundException.class,
-                        () -> service.execute("x", log, u -> {}));
+                        () -> service.execute("x", log, u -> {
+                        }));
             }
 
             @Test
             @DisplayName("não deve salvar nada quando usuário não existe")
             void naoSalva() {
                 when(repository.findById("x")).thenReturn(Optional.empty());
-                try { service.execute("x", log, u -> {}); } catch (UserNotFoundException ignored) {}
+                try {
+                    service.execute("x", log, u -> {
+                    });
+                } catch (UserNotFoundException ignored) {
+                }
                 verify(repository, never()).save(any());
             }
         }
@@ -567,7 +597,8 @@ class ApplicationServiceTest {
                 doThrow(new RuntimeException("DB down")).when(repository).save(any());
 
                 assertThrows(ProcessingErrorException.class,
-                        () -> service.execute("user-1", log, u -> {}));
+                        () -> service.execute("user-1", log, u -> {
+                        }));
             }
         }
     }

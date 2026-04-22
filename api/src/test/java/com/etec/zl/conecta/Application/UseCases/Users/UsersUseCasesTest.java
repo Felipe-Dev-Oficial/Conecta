@@ -14,6 +14,7 @@ import com.etec.zl.conecta.Application.Services.Services.Users.TrySaveUserServic
 import com.etec.zl.conecta.Application.Services.Services.Users.VerifyIfExistsModifyAndSaveUsersService;
 import com.etec.zl.conecta.Domain.Entities.Users.User;
 import com.etec.zl.conecta.Domain.Exceptions.ProcessingErrorException;
+import com.etec.zl.conecta.Domain.Exceptions.UserNotFoundException;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -130,8 +131,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(VerifyIfExistsModifyAndSaveUsersService.class);
-            useCase    = new AlterarTipoUseCase(repository, service);
+            service = mock(VerifyIfExistsModifyAndSaveUsersService.class);
+            useCase = new AlterarTipoUseCase(repository, service);
         }
 
         @Test
@@ -159,16 +160,16 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetByUserService.class);
-            mapper     = mock(UserMapper.class);
-            useCase    = new AlunoBuscaProfessorPorIdUseCase(repository, service, mapper);
+            service = mock(TryGetByUserService.class);
+            mapper = mock(UserMapper.class);
+            useCase = new AlunoBuscaProfessorPorIdUseCase(repository, service, mapper);
         }
 
         @Test
         @DisplayName("deve retornar o DTORetornoNormal mapeado pelo mapper")
         void retornaDTOMapeado() {
             var user = userPadrao("prof-1");
-            var dto  = new DTORetornoNormal("prof-1", user.getNome(), Tipo.PROFESSOR);
+            var dto = new DTORetornoNormal("prof-1", user.getNome(), Tipo.PROFESSOR);
             when(service.execute(any(), any())).thenReturn(user);
             when(mapper.toDTOReturn(user)).thenReturn(dto);
 
@@ -210,8 +211,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersService.class);
-            useCase    = new AlunoListagemProfessorUseCase(repository, service);
+            service = mock(TryGetUsersService.class);
+            useCase = new AlunoListagemProfessorUseCase(repository, service);
         }
 
         @Test
@@ -337,16 +338,16 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetByUserService.class);
-            mapper     = mock(UserMapper.class);
-            useCase    = new ProfessorBuscaPorIdUseCase(repository, service, mapper);
+            service = mock(TryGetByUserService.class);
+            mapper = mock(UserMapper.class);
+            useCase = new ProfessorBuscaPorIdUseCase(repository, service, mapper);
         }
 
         @Test
         @DisplayName("deve retornar o DTORetornoNormal mapeado pelo mapper")
         void retornaDTOMapeado() {
             var user = userPadrao("aluno-1");
-            var dto  = new DTORetornoNormal("aluno-1", user.getNome(), Tipo.ALUNO);
+            var dto = new DTORetornoNormal("aluno-1", user.getNome(), Tipo.ALUNO);
             when(service.execute(any(), any())).thenReturn(user);
             when(mapper.toDTOReturn(user)).thenReturn(dto);
 
@@ -388,8 +389,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersService.class);
-            useCase    = new ProfessorListagemUseCase(repository, service);
+            service = mock(TryGetUsersService.class);
+            useCase = new ProfessorListagemUseCase(repository, service);
         }
 
         @Test
@@ -432,8 +433,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersService.class);
-            useCase    = new ProfessorListagemPorNomeUseCase(repository, service);
+            service = mock(TryGetUsersService.class);
+            useCase = new ProfessorListagemPorNomeUseCase(repository, service);
         }
 
         @Test
@@ -477,8 +478,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersService.class);
-            useCase    = new ProfessorListagemPorTurmaUseCase(repository, service);
+            service = mock(TryGetUsersService.class);
+            useCase = new ProfessorListagemPorTurmaUseCase(repository, service);
         }
 
         @Test
@@ -521,8 +522,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersService.class);
-            useCase    = new RetornarSecretariaUseCase(repository, service);
+            service = mock(TryGetUsersService.class);
+            useCase = new RetornarSecretariaUseCase(repository, service);
         }
 
         @Test
@@ -569,12 +570,12 @@ class UsersUseCasesTest {
 
         @BeforeEach
         void setUp() {
-            service    = mock(TrySaveUserService.class);
+            service = mock(TrySaveUserService.class);
             repository = mock(UserRepository.class);
             getService = mock(TryGetByUserService.class);
-            useCase    = new SalvarUsuarioUseCase(service, repository, getService);
+            useCase = new SalvarUsuarioUseCase(service, repository, getService);
 
-            dto  = new DTOCadastro("user-1", new Name("João"), new Email("joao@etec.com"),
+            dto = new DTOCadastro("user-1", new Name("João"), new Email("joao@etec.com"),
                     new PhoneNumber("11999999999"), new Password("SenhaSegura123!"), Tipo.ALUNO, List.of());
             user = userPadrao("user-1");
         }
@@ -630,8 +631,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetByUserSecretariaService.class);
-            useCase    = new SecretariaBuscaPorIdUseCase(repository, service);
+            service = mock(TryGetByUserSecretariaService.class);
+            useCase = new SecretariaBuscaPorIdUseCase(repository, service);
         }
 
         @Test
@@ -675,8 +676,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersSecretariaService.class);
-            useCase    = new SecretariaListagemUseCase(repository, service);
+            service = mock(TryGetUsersSecretariaService.class);
+            useCase = new SecretariaListagemUseCase(repository, service);
         }
 
         @Test
@@ -720,8 +721,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersSecretariaService.class);
-            useCase    = new SecretariaListagemPorCursantesUseCase(repository, service);
+            service = mock(TryGetUsersSecretariaService.class);
+            useCase = new SecretariaListagemPorCursantesUseCase(repository, service);
         }
 
         @Test
@@ -765,8 +766,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersSecretariaService.class);
-            useCase    = new SecretariaListagemPorFuncionariosUseCase(repository, service);
+            service = mock(TryGetUsersSecretariaService.class);
+            useCase = new SecretariaListagemPorFuncionariosUseCase(repository, service);
         }
 
         @Test
@@ -810,8 +811,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersSecretariaService.class);
-            useCase    = new SecretariaListagemPorNomeUseCase(repository, service);
+            service = mock(TryGetUsersSecretariaService.class);
+            useCase = new SecretariaListagemPorNomeUseCase(repository, service);
         }
 
         @Test
@@ -827,7 +828,7 @@ class UsersUseCasesTest {
         @DisplayName("deve consultar findAllByName com o nome informado")
         void consultaFindAllByName() {
             var nome = new Name("João");
-            var p    = pageable();
+            var p = pageable();
             when(repository.findAllByName(nome, p)).thenReturn(new PageResult<>(List.of(), 0, 10, 0L, 0));
             when(service.execute(any(), any())).thenAnswer(inv -> {
                 Supplier<?> supplier = inv.getArgument(0);
@@ -856,8 +857,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(TryGetUsersSecretariaService.class);
-            useCase    = new SecretariaListagemPorTurmaUseCase(repository, service);
+            service = mock(TryGetUsersSecretariaService.class);
+            useCase = new SecretariaListagemPorTurmaUseCase(repository, service);
         }
 
         @Test
@@ -901,8 +902,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(StartChangeService.class);
-            useCase    = new SolicitarAlteracaoEmailUseCase(repository, service);
+            service = mock(StartChangeService.class);
+            useCase = new SolicitarAlteracaoEmailUseCase(repository, service);
         }
 
         @Test
@@ -929,8 +930,8 @@ class UsersUseCasesTest {
         @BeforeEach
         void setUp() {
             repository = mock(UserRepository.class);
-            service    = mock(StartChangeService.class);
-            useCase    = new SolicitarAlteracaoSenhaUseCase(repository, service);
+            service = mock(StartChangeService.class);
+            useCase = new SolicitarAlteracaoSenhaUseCase(repository, service);
         }
 
         @Test
@@ -939,6 +940,98 @@ class UsersUseCasesTest {
             useCase.solicitarAlteracaoSenha("user-1");
 
             verify(service, times(1)).execute(eq("user-1"), any(), any(), eq("Alteração de senha"), any());
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // VincularNotificadorUseCase
+    // ══════════════════════════════════════════════════════════════════════════
+
+    @Nested
+    @DisplayName("VincularNotificadorUseCase")
+    class VincularNotificadorUseCaseTests {
+
+        private UserRepository repository;
+        private TryGetByUserService tryGetByUserService;
+        private VincularNotificadorUseCase useCase;
+
+        private static final String USER_ID = "user-123";
+        private static final String ENDPOINT = "https://push.example.com/endpoint";
+        private static final String P256DH = "chave-p256dh";
+        private static final String AUTH = "chave-auth";
+
+        @BeforeEach
+        void setUp() {
+            repository = mock(UserRepository.class);
+            tryGetByUserService = mock(TryGetByUserService.class);
+            useCase = new VincularNotificadorUseCase(repository, tryGetByUserService);
+        }
+
+        @Test
+        @DisplayName("deve chamar tryGetByUserService com o supplier correto")
+        void chamaTryGetByUserServiceComSupplierCorreto() {
+            var user = userPadrao(USER_ID);
+            when(repository.findById(USER_ID)).thenReturn(Optional.of(user));
+            when(tryGetByUserService.execute(any(), any())).thenAnswer(inv -> {
+                Supplier<?> supplier = inv.getArgument(0);
+                supplier.get();
+                return user;
+            });
+
+            useCase.vincular(USER_ID, ENDPOINT, P256DH, AUTH);
+
+            verify(repository, times(1)).findById(USER_ID);
+        }
+
+        @Test
+        @DisplayName("deve chamar saveNotificador com os parâmetros corretos após encontrar o usuário")
+        void chamaSaveNotificadorComParametrosCorretos() {
+            var user = userPadrao(USER_ID);
+            when(tryGetByUserService.execute(any(), any())).thenReturn(user);
+
+            useCase.vincular(USER_ID, ENDPOINT, P256DH, AUTH);
+
+            verify(repository, times(1)).saveNotificador(USER_ID, ENDPOINT, P256DH, AUTH);
+        }
+
+        @Test
+        @DisplayName("não deve chamar saveNotificador quando tryGetByUserService lança UserNotFoundException")
+        void naoDeveSalvarQuandoUsuarioNaoEncontrado() {
+            when(tryGetByUserService.execute(any(), any()))
+                    .thenThrow(new UserNotFoundException());
+
+            assertThrows(UserNotFoundException.class,
+                    () -> useCase.vincular(USER_ID, ENDPOINT, P256DH, AUTH));
+
+            verify(repository, never()).saveNotificador(any(), any(), any(), any());
+        }
+
+        @Test
+        @DisplayName("não deve chamar saveNotificador quando tryGetByUserService lança ProcessingErrorException")
+        void naoDeveSalvarQuandoErroDeInfraestrutura() {
+            when(tryGetByUserService.execute(any(), any()))
+                    .thenThrow(new ProcessingErrorException());
+
+            assertThrows(ProcessingErrorException.class,
+                    () -> useCase.vincular(USER_ID, ENDPOINT, P256DH, AUTH));
+
+            verify(repository, never()).saveNotificador(any(), any(), any(), any());
+        }
+
+        @Test
+        @DisplayName("deve propagar UserNotFoundException sem chamar saveNotificador")
+        void propagaUserNotFoundException() {
+            when(repository.findById(USER_ID)).thenReturn(Optional.empty());
+            when(tryGetByUserService.execute(any(), any())).thenAnswer(inv -> {
+                Supplier<?> supplier = inv.getArgument(0);
+                supplier.get();
+                throw new UserNotFoundException();
+            });
+
+            assertThrows(UserNotFoundException.class,
+                    () -> useCase.vincular(USER_ID, ENDPOINT, P256DH, AUTH));
+
+            verify(repository, never()).saveNotificador(any(), any(), any(), any());
         }
     }
 }

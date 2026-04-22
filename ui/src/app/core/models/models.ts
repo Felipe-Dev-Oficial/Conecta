@@ -128,11 +128,8 @@ export interface Turma {
   status: Status;
 }
 
-/** POST /conecta/management/turmas */
-export interface DTOCadastroTurma {
-  curso: Cursos;
-  modulos: number;
-}
+/** POST /conecta/management/turmas — agora só o curso; módulos calculados pelo backend */
+export type DTOCadastroTurma = Cursos;
 
 // ─── Mensagens ────────────────────────────────────────────────────────────────
 

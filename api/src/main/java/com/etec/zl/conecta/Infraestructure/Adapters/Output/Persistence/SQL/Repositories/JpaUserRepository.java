@@ -16,42 +16,42 @@ import java.lang.String;
 public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
 
     @Query(value = """
-        SELECT CAST(turma_id AS TEXT) FROM aluno_turmas WHERE aluno_id = :userId
-        UNION
-        SELECT CAST(turma_id AS TEXT) FROM professor_turmas WHERE professor_id = :userId
-        """, nativeQuery = true)
+            SELECT CAST(turma_id AS TEXT) FROM aluno_turmas WHERE aluno_id = :userId
+            UNION
+            SELECT CAST(turma_id AS TEXT) FROM professor_turmas WHERE professor_id = :userId
+            """, nativeQuery = true)
     List<String> findRelatedTurmasIds(@Param("userId") String userId);
 
     @Query(value = """
-    SELECT DISTINCT u.* FROM users u
-    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-    INNER JOIN turmas t ON at.turma_id = t.id
-    WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
-    """,
+            SELECT DISTINCT u.* FROM users u
+            INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+            INNER JOIN turmas t ON at.turma_id = t.id
+            WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
+            """,
             countQuery = """
-    SELECT count(DISTINCT u.id) FROM users u
-    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-    INNER JOIN turmas t ON at.turma_id = t.id
-    WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
-    """,
+                    SELECT count(DISTINCT u.id) FROM users u
+                    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+                    INNER JOIN turmas t ON at.turma_id = t.id
+                    WHERE t.status = 'ON' AND u.tipo = 'ALUNO'
+                    """,
             nativeQuery = true)
     Page<UserEntity> findAllCursantes(Pageable pageable);
 
     @Query(value = """
-    SELECT u.* FROM users u
-    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-    WHERE at.turma_id = :idTurma
-    UNION
-    SELECT u.* FROM users u
-    INNER JOIN professor_turmas pt ON u.id = pt.professor_id
-    WHERE pt.turma_id = :idTurma
-    """,
+            SELECT u.* FROM users u
+            INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+            WHERE at.turma_id = :idTurma
+            UNION
+            SELECT u.* FROM users u
+            INNER JOIN professor_turmas pt ON u.id = pt.professor_id
+            WHERE pt.turma_id = :idTurma
+            """,
             countQuery = """
-    SELECT (
-        (SELECT count(*) FROM aluno_turmas WHERE turma_id = :idTurma) +
-        (SELECT count(*) FROM professor_turmas WHERE turma_id = :idTurma)
-    )
-    """,
+                    SELECT (
+                        (SELECT count(*) FROM aluno_turmas WHERE turma_id = :idTurma) +
+                        (SELECT count(*) FROM professor_turmas WHERE turma_id = :idTurma)
+                    )
+                    """,
             nativeQuery = true)
     Page<UserEntity> findAllPeopleByTurma(@Param("idTurma") String idTurma, Pageable pageable);
 
@@ -66,52 +66,52 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     void logicDelete(@Param("id") String id);
 
     @Query(value = """
-    SELECT u.* FROM users u
-    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-    WHERE u.id = :idAluno
-    AND at.turma_id IN (
-        SELECT pt.turma_id
-        FROM professor_turmas pt
-        WHERE pt.professor_id = :idProfessor
-    )
-    """, nativeQuery = true)
+            SELECT u.* FROM users u
+            INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+            WHERE u.id = :idAluno
+            AND at.turma_id IN (
+                SELECT pt.turma_id
+                FROM professor_turmas pt
+                WHERE pt.professor_id = :idProfessor
+            )
+            """, nativeQuery = true)
     Optional<UserEntity> findAlunoByProfessor(@Param("idProfessor") String idProfessor, @Param("idAluno") String idAluno);
 
     @Query(value = """
-        SELECT DISTINCT u.* FROM users u
-        INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-        INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
-        WHERE pt.professor_id = :idProfessor
-        AND u.tipo = 'ALUNO'
-        """,
+            SELECT DISTINCT u.* FROM users u
+            INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+            INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
+            WHERE pt.professor_id = :idProfessor
+            AND u.tipo = 'ALUNO'
+            """,
             countQuery = """
-        SELECT count(DISTINCT at.aluno_id)
-        FROM aluno_turmas at
-        INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
-        WHERE pt.professor_id = :idProfessor
-        """,
+                    SELECT count(DISTINCT at.aluno_id)
+                    FROM aluno_turmas at
+                    INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
+                    WHERE pt.professor_id = :idProfessor
+                    """,
             nativeQuery = true)
     Page<UserEntity> findAllAlunosByProfessor(@Param("idProfessor") String idProfessor, Pageable pageable);
 
     @Query(value = """
-        SELECT u.* FROM users u
-        INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-        WHERE at.turma_id = :idTurma
-        AND EXISTS (
-            SELECT 1 FROM professor_turmas pt
-            WHERE pt.turma_id = :idTurma
-            AND pt.professor_id = :idProfessor
-        )
-        """,
+            SELECT u.* FROM users u
+            INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+            WHERE at.turma_id = :idTurma
+            AND EXISTS (
+                SELECT 1 FROM professor_turmas pt
+                WHERE pt.turma_id = :idTurma
+                AND pt.professor_id = :idProfessor
+            )
+            """,
             countQuery = """
-        SELECT count(*) FROM aluno_turmas at
-        WHERE at.turma_id = :idTurma
-        AND EXISTS (
-            SELECT 1 FROM professor_turmas pt
-            WHERE pt.turma_id = :idTurma
-            AND pt.professor_id = :idProfessor
-        )
-        """,
+                    SELECT count(*) FROM aluno_turmas at
+                    WHERE at.turma_id = :idTurma
+                    AND EXISTS (
+                        SELECT 1 FROM professor_turmas pt
+                        WHERE pt.turma_id = :idTurma
+                        AND pt.professor_id = :idProfessor
+                    )
+                    """,
             nativeQuery = true)
     Page<UserEntity> findAlunosByTurmaWhereProfessorHasAccess(
             @Param("idProfessor") String idProfessor,
@@ -120,21 +120,21 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     );
 
     @Query(value = """
-        SELECT DISTINCT u.* FROM users u
-        INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-        INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
-        WHERE pt.professor_id = :idProfessor
-        AND u.nome ILIKE %:nome%
-        AND u.tipo = 'ALUNO'
-        """,
+            SELECT DISTINCT u.* FROM users u
+            INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+            INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
+            WHERE pt.professor_id = :idProfessor
+            AND u.nome ILIKE %:nome%
+            AND u.tipo = 'ALUNO'
+            """,
             countQuery = """
-        SELECT count(DISTINCT u.id) FROM users u
-        INNER JOIN aluno_turmas at ON u.id = at.aluno_id
-        INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
-        WHERE pt.professor_id = :idProfessor
-        AND u.nome ILIKE %:nome%
-        AND u.tipo = 'ALUNO'
-        """,
+                    SELECT count(DISTINCT u.id) FROM users u
+                    INNER JOIN aluno_turmas at ON u.id = at.aluno_id
+                    INNER JOIN professor_turmas pt ON at.turma_id = pt.turma_id
+                    WHERE pt.professor_id = :idProfessor
+                    AND u.nome ILIKE %:nome%
+                    AND u.tipo = 'ALUNO'
+                    """,
             nativeQuery = true)
     Page<UserEntity> findAlunosByNameAndProfessor(
             @Param("idProfessor") String idProfessor,
@@ -143,36 +143,83 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     );
 
     @Query(value = """
-        SELECT u.* FROM users u
-        INNER JOIN professor_turmas pt ON u.id = pt.professor_id
-        WHERE u.id = :idProfessor
-        AND u.tipo = 'PROFESSOR'
-        AND EXISTS (
-            SELECT 1 FROM aluno_turmas at
-            WHERE at.turma_id = pt.turma_id
-            AND at.aluno_id = :idAluno
-        )
-        """, nativeQuery = true)
+            SELECT u.* FROM users u
+            INNER JOIN professor_turmas pt ON u.id = pt.professor_id
+            WHERE u.id = :idProfessor
+            AND u.tipo = 'PROFESSOR'
+            AND EXISTS (
+                SELECT 1 FROM aluno_turmas at
+                WHERE at.turma_id = pt.turma_id
+                AND at.aluno_id = :idAluno
+            )
+            """, nativeQuery = true)
     Optional<UserEntity> findProfessorIfIsFromStudentTurma(
             @Param("idAluno") String idAluno,
             @Param("idProfessor") String idProfessor
     );
 
     @Query(value = """
-        SELECT DISTINCT u.* FROM users u
-        INNER JOIN professor_turmas pt ON u.id = pt.professor_id
-        INNER JOIN aluno_turmas at ON pt.turma_id = at.turma_id
-        WHERE at.aluno_id = :idAluno
-        AND u.tipo = 'PROFESSOR'
-        """,
+            SELECT DISTINCT u.* FROM users u
+            INNER JOIN professor_turmas pt ON u.id = pt.professor_id
+            INNER JOIN aluno_turmas at ON pt.turma_id = at.turma_id
+            WHERE at.aluno_id = :idAluno
+            AND u.tipo = 'PROFESSOR'
+            """,
             countQuery = """
-        SELECT count(DISTINCT pt.professor_id)
-        FROM professor_turmas pt
-        INNER JOIN aluno_turmas at ON pt.turma_id = at.turma_id
-        WHERE at.aluno_id = :idAluno
-        """,
+                    SELECT count(DISTINCT pt.professor_id)
+                    FROM professor_turmas pt
+                    INNER JOIN aluno_turmas at ON pt.turma_id = at.turma_id
+                    WHERE at.aluno_id = :idAluno
+                    """,
             nativeQuery = true)
     Page<UserEntity> findAllProfessoresByAluno(@Param("idAluno") String idAluno, Pageable pageable);
+
+    @Query(value = """
+    SELECT n.id, n.endpoint, n.p256dh, n.auth
+    FROM notificador n
+    JOIN users u ON n.user_id = u.id
+    WHERE u.tipo != 'DESATIVADO'
+    """, nativeQuery = true)
+    List<NotificadorProjection> findAllNotificadoresForGeneral();
+
+    @Query(value = """
+    SELECT n.id, n.endpoint, n.p256dh, n.auth
+    FROM notificador n
+    JOIN users u ON n.user_id = u.id
+    WHERE u.tipo = 'ALUNO'
+    """, nativeQuery = true)
+    List<NotificadorProjection> findAllNotificadoresForAlunos();
+
+    @Query(value = """
+    SELECT n.id, n.endpoint, n.p256dh, n.auth
+    FROM notificador n
+    JOIN users u ON n.user_id = u.id
+    WHERE u.tipo = 'PROFESSOR'
+    """, nativeQuery = true)
+    List<NotificadorProjection> findAllNotificadoresForProfessores();
+
+    @Query(value = """
+    SELECT n.id, n.endpoint, n.p256dh, n.auth
+    FROM notificador n
+    JOIN users u ON n.user_id = u.id
+    WHERE u.tipo = 'DESATIVADO'
+    """, nativeQuery = true)
+    List<NotificadorProjection> findAllNotificadoresForExAlunos();
+
+    @Query(value = """
+    SELECT DISTINCT n.id, n.endpoint, n.p256dh, n.auth
+    FROM notificador n
+    JOIN aluno_turmas at ON n.user_id = at.aluno_id
+    WHERE at.turma_id IN (:turmasIds)
+    """, nativeQuery = true)
+    List<NotificadorProjection> findAllNotificadoresForTurmas(@Param("turmasIds") List<String> turmasIds);
+
+    @Query(value = """
+    SELECT n.id, n.endpoint, n.p256dh, n.auth
+    FROM notificador n
+    WHERE n.user_id = :userId
+    """, nativeQuery = true)
+    List<NotificadorProjection> findNotificadoresByUserId(@Param("userId") String userId);
 
     Page<UserEntity> findByTipoIn(List<String> tipos, Pageable pageable);
 

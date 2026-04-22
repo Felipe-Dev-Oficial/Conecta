@@ -60,4 +60,7 @@ public class UserEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "turma_id")
     )
     private List<TurmaEntity> turmasComoProfessor;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<NotificadorEntity> notificadores;
 }

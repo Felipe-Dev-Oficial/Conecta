@@ -76,10 +76,12 @@ jobs:
           key: ${{ secrets.AZURE_SSH_KEY }}
           script: |
             cd ~/Conecta
-            git pull origin main 
             
+            sudo git fetch origin main
+            sudo git reset --hard origin/main
+            
+            sudo docker compose down
+            sudo docker rmi henriquearthur/conecta-api:latest henriquearthur/conecta-ui:latest || true
             sudo docker compose pull
-            
             sudo docker compose up -d
-            
             sudo docker image prune -f

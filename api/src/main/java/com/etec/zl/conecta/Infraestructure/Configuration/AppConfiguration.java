@@ -7,6 +7,7 @@ import com.etec.zl.conecta.Application.Mappers.Turmas.TurmaMapper;
 import com.etec.zl.conecta.Application.Mappers.Users.UserMapper;
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.*;
 import com.etec.zl.conecta.Application.Ports.Output.Services.EmailService;
+import com.etec.zl.conecta.Application.Ports.Output.Services.NotificationService;
 import com.etec.zl.conecta.Application.Ports.Output.Storage.MidiaStorage;
 import com.etec.zl.conecta.Application.Services.Services.FAQs.VerifyIfExistsModifyAndSaveFAQsService;
 import com.etec.zl.conecta.Application.Services.Services.Statements.VerifyIfExistsModifyAndSaveStatementsService;
@@ -17,7 +18,7 @@ import com.etec.zl.conecta.Application.UseCases.Midia.UploadMidiaUseCase;
 import com.etec.zl.conecta.Application.UseCases.Statements.*;
 import com.etec.zl.conecta.Application.UseCases.Turmas.*;
 import com.etec.zl.conecta.Application.UseCases.Users.*;
-import com.etec.zl.conecta.Infraestructure.Adapters.Output.Gateways.EmailServiceAdapter;
+import com.etec.zl.conecta.Infraestructure.Adapters.Output.Gateways.Gateways.EmailServiceAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -207,8 +208,8 @@ class AppConfiguration {
     }
 
     @Bean
-    EnviarMensagemUseCase enviarMensagemUseCase(MessageRepository messageRepository, UserRepository userRepository, MessageMapper mapper) {
-        return new EnviarMensagemUseCase(messageRepository, userRepository, mapper);
+    EnviarMensagemUseCase enviarMensagemUseCase(MessageRepository messageRepository, UserRepository userRepository, MessageMapper mapper, NotificationService  notificationService) {
+        return new EnviarMensagemUseCase(messageRepository, userRepository, mapper, notificationService);
     }
 
     @Bean
@@ -262,8 +263,8 @@ class AppConfiguration {
     }
 
     @Bean
-    GerarAnuncioUseCase gerarAnuncioUseCase(StatementRepository statementRepository, StatementMapper mapper) {
-        return new GerarAnuncioUseCase(statementRepository, mapper);
+    GerarAnuncioUseCase gerarAnuncioUseCase(StatementRepository statementRepository, StatementMapper mapper, UserRepository userRepository, NotificationService notificationService) {
+        return new GerarAnuncioUseCase(statementRepository, mapper, userRepository, notificationService);
     }
 
     @Bean
@@ -343,6 +344,11 @@ class AppConfiguration {
     @Bean
     public LerAnunciosGeraisUseCase lerAnunciosGeraisUseCase(StatementMapper statementRepository, TryGetByUserService userService, StatementRepository statementMapper, UserRepository userRepository){
         return new LerAnunciosGeraisUseCase(statementRepository, userService, statementMapper, userRepository);
+    }
+
+    @Bean
+    public VincularNotificadorUseCase vincularTokenNotificadorUseCase(UserRepository userRepository, TryGetByUserService tryGetByUserService) {
+        return new VincularNotificadorUseCase(userRepository, tryGetByUserService);
     }
 
     @Bean

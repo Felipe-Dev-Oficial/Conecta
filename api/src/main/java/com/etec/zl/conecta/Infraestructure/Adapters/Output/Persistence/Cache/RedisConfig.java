@@ -1,5 +1,6 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.Cache;
 
+import com.etec.zl.conecta.Domain.ValueObjects.Notificador;
 import com.etec.zl.conecta.Domain.ValueObjects.PageResult;
 import com.etec.zl.conecta.Domain.ValueObjects.SliceResult;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -37,6 +38,9 @@ public class RedisConfig {
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
     abstract static class SliceResultMixin {}
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+    abstract static class NotificadorMixin {}
+
     private ObjectMapper buildRedisObjectMapper() {
         PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator
                 .builder()
@@ -45,14 +49,16 @@ public class RedisConfig {
 
         ObjectMapper mapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
+                .addModule(new com.fasterxml.jackson.module.paramnames.ParameterNamesModule()) 
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY)
+                .activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.EVERYTHING, JsonTypeInfo.As.PROPERTY)
                 .build();
 
         // Registra os mixins para forçar @class nos records
         mapper.addMixIn(PageResult.class, PageResultMixin.class);
         mapper.addMixIn(SliceResult.class, SliceResultMixin.class);
+        mapper.addMixIn(Notificador.class, NotificadorMixin.class);
 
         return mapper;
     }

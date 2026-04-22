@@ -1,8 +1,9 @@
 package com.etec.zl.conecta.Infraestructure.Security.Configuration;
 
-import com.etec.zl.conecta.Infraestructure.Security.Filter.SecurityFilter;
-import jakarta.servlet.DispatcherType;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,9 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.beans.factory.annotation.Value;
 
-import java.util.List;
+import com.etec.zl.conecta.Infraestructure.Security.Filter.SecurityFilter;
+
+import jakarta.servlet.DispatcherType;
 
 @Configuration
 @EnableWebSecurity
@@ -52,19 +54,20 @@ public class SecurityConfiguration {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        .requestMatchers("conecta/management/**").hasRole("SECRETARIA")
-                        .requestMatchers("conecta/anuncios/management/**").hasRole("SECRETARIA")
-                        .requestMatchers("conecta/aluno/**").hasRole("ALUNO")
-                        .requestMatchers("conecta/professores/**").hasRole("PROFESSOR")
-                        .requestMatchers("conecta/alterador/**").permitAll()
-                        .requestMatchers("conecta/secretaria").authenticated()
-                        .requestMatchers("conecta/anuncios/default").permitAll()
-                        .requestMatchers("conecta/anuncio/**").authenticated()
-                        .requestMatchers("conecta/arquivos/**").authenticated()
-                        .requestMatchers("conecta/auth/login").permitAll()
-                        .requestMatchers("conecta/faqs/**").permitAll()
-                        .requestMatchers("conecta/mensagens/**").authenticated()
-                        .requestMatchers("conecta/auth").permitAll()
+                        .requestMatchers("/conecta/management/**").hasRole("SECRETARIA")
+                        .requestMatchers("/conecta/anuncios/management/**").hasRole("SECRETARIA")
+                        .requestMatchers("/conecta/aluno/**").hasRole("ALUNO")
+                        .requestMatchers("/conecta/professores/**").hasRole("PROFESSOR")
+                        .requestMatchers("/conecta/alterador/**").permitAll()
+                        .requestMatchers("/conecta/secretaria").authenticated()
+                        .requestMatchers("/conecta/anuncios/default").permitAll()
+                        .requestMatchers("/conecta/anuncio/**").authenticated()
+                        .requestMatchers("/conecta/arquivos/**").authenticated()
+                        .requestMatchers("/conecta/auth/login").permitAll()
+                        .requestMatchers("/conecta/faqs/**").permitAll()
+                        .requestMatchers("/conecta/mensagens/**").authenticated()
+                        .requestMatchers("/conecta/auth").permitAll()
+                        .requestMatchers("/conecta/notification").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)

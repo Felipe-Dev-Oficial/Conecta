@@ -1,4 +1,4 @@
-package com.etec.zl.conecta.Infraestructure.Adapters.Output.Gateways;
+package com.etec.zl.conecta.Infraestructure.Adapters.Output.Gateways.Gateways;
 
 
 import com.etec.zl.conecta.Application.Ports.Output.Services.EmailService;

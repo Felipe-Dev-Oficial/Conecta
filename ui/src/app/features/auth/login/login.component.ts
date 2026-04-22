@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/http/auth/auth.service';
 import { ThemeService } from '../../../core/services/theme/theme.service';
+import { NotificationService } from '../../../core/services/http/notification/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
   theme = inject(ThemeService);
+  notification = inject(NotificationService); // ✅ adiciona
 
   rm = '';
   senha = '';
@@ -34,6 +36,7 @@ export class LoginComponent {
       next: token => {
         localStorage.setItem('token', token);
         this.router.navigate(['/dashboard']);
+        this.notification.requestPermission();
       },
       error: err => {
         this.loading.set(false);

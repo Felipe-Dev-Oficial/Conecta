@@ -73,8 +73,8 @@ class TurmaRepositoryAdapterIntegrationTest {
     void findById_shouldUseCache() {
         TurmaEntity entity = jpaRepository.save(buildTurmaEntity(Cursos.ADMINISTRACAO, Status.ON, 1, 3));
 
-        adapter.findById(entity.getId()); // aquece cache
-        jpaRepository.deleteById(entity.getId()); // remove do banco
+        adapter.findById(entity.getId());
+        jpaRepository.deleteById(entity.getId());
 
         Optional<Turma> cached = adapter.findById(entity.getId());
         assertThat(cached).isPresent();

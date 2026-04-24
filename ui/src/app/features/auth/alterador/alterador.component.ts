@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AlteradorService } from '../../../core/services/http/alterator/alterator.service';
-import { ThemeService } from '../../../core/services/theme/theme.service';
 
 type Step = 'escolha' | 'formulario';
 type Tipo = 'senha' | 'email';
@@ -16,7 +15,6 @@ type Tipo = 'senha' | 'email';
 })
 export class AlteradorComponent {
   alterador = inject(AlteradorService);
-  theme = inject(ThemeService);
 
   step = signal<Step>('escolha');
   tipo = signal<Tipo>('senha');

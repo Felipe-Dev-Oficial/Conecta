@@ -4,6 +4,18 @@
       <h1 class="page-title">Painel</h1>
       <p class="text-muted">{{ rolePretty() }}</p>
     </div>
+
+    <div class="theme-toggle-wrap">
+      <span class="theme-label">{{ themeService.theme() === 'dark' ? 'Tema escuro' : 'Tema claro' }}</span>
+      <button
+        class="toggle-switch"
+        [class.on]="themeService.theme() === 'dark'"
+        (click)="themeService.toggle()"
+        [attr.aria-label]="'Alternar tema'"
+      >
+        <span class="toggle-knob"></span>
+      </button>
+    </div>
   </div>
 
   @if (role() === 'PROFESSOR') {
@@ -70,6 +82,7 @@
       </div>
     }
   }
+
   <div style="margin-top: 32px">
     <h2 class="page-title" style="font-size: 16px; margin-bottom: 12px">Secretaria</h2>
     @if (loadingSecretaria()) {

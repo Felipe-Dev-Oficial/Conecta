@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ThemeService } from '../../core/services/theme/theme.service';
 
 interface Card { icon: string; title: string; desc: string; route: string; }
 
@@ -11,6 +12,8 @@ interface Card { icon: string; title: string; desc: string; route: string; }
   styleUrl: './management.component.css',
 })
 export class ManagementComponent {
+  themeService = inject(ThemeService);
+
   cards: Card[] = [
     { icon: '👥', title: 'Usuários', desc: 'Gerenciar alunos e funcionários', route: '/management/usuarios' },
     { icon: '🏫', title: 'Turmas', desc: 'Criar e gerenciar turmas', route: '/management/turmas' },

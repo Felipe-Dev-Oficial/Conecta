@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/http/auth/auth.service';
-import { ThemeService } from '../../../core/services/theme/theme.service';
 import { NotificationService } from '../../../core/services/http/notification/notification.service';
 
 @Component({
@@ -15,8 +14,7 @@ import { NotificationService } from '../../../core/services/http/notification/no
 export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
-  theme = inject(ThemeService);
-  notification = inject(NotificationService); // ✅ adiciona
+  notification = inject(NotificationService);
 
   rm = '';
   senha = '';

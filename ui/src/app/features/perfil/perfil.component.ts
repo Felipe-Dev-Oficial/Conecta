@@ -7,6 +7,7 @@ import { AlunoService } from '../../core/services/http/aluno/aluno.service';
 import { ToastService } from '../../core/services/toast/toast.service';
 import { DTORetornoNormal } from '../../core/models/models';
 import { SecretariaService } from '../../core/services/http/secretaria/secretaria.service';
+import { ThemeService } from '../../core/services/theme/theme.service';
 
 @Component({
   selector: 'app-perfil',
@@ -20,6 +21,7 @@ export class PerfilComponent implements OnInit {
   profSvc = inject(ProfessorService);
   alunoSvc = inject(AlunoService);
   toast = inject(ToastService);
+  themeService = inject(ThemeService);
 
   lista = signal<DTORetornoNormal[]>([]);
   loading = signal(false);
@@ -91,6 +93,7 @@ export class PerfilComponent implements OnInit {
       error: () => { this.toast.error('Professor não encontrado.'); this.loading.set(false); },
     });
   }
+
   carregarSecretaria() {
     this.loadingSecretaria.set(true);
     this.secSvc.listarSecretaria().subscribe({

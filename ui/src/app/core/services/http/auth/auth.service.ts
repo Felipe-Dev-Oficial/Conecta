@@ -5,11 +5,13 @@ import { Observable } from 'rxjs';
 import { DTOLogin } from '../../../models/models';
 import { environment } from '../../../../../environments/environment';
 import { UserData } from '../../../models/models';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private base = `${environment.apiUrl}/auth`;
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
 
   constructor(private http: HttpClient) {}
 
@@ -18,7 +20,8 @@ export class AuthService {
     return this.http.post(`${this.base}/login`, dto, { responseType: 'text' });
   }
 
-  logout() {
+  async logout() {
+    await this.notificationService.unsubscribe();
     localStorage.removeItem('token');
     this.router.navigate(['/auth/login']);
   }

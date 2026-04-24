@@ -352,6 +352,11 @@ class AppConfiguration {
     }
 
     @Bean
+    public DeleteNotificadorUseCase deleteNotificadorUseCase(UserRepository userRepository){
+        return new DeleteNotificadorUseCase(userRepository);
+    }
+
+    @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

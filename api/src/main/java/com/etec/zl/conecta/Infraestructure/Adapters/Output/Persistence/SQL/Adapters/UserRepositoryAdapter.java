@@ -2,6 +2,7 @@ package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adap
 
 import com.etec.zl.conecta.Application.Ports.Output.Repositories.UserRepository;
 import com.etec.zl.conecta.Domain.Entities.Users.User;
+import com.etec.zl.conecta.Domain.Exceptions.UserNotFoundException;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Entities.NotificadorEntity;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Mappers.UserAdapterMapper;
@@ -93,6 +94,15 @@ public class UserRepositoryAdapter implements UserRepository {
         entity.setAuth(auth);
         user.getNotificadores().add(entity);
         externalRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteNotificador(String userId, String endpoint) {
+        var user = externalRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException()
+        );
+        user.getNotificadores().removeIf(n -> n.getEndpoint().equals(endpoint));
     }
 
     @Override

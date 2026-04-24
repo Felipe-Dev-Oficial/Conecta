@@ -2,6 +2,7 @@ package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adap
 
 import com.etec.zl.conecta.Domain.Entities.Turmas.Turma;
 import com.etec.zl.conecta.Domain.Entities.Users.User;
+import com.etec.zl.conecta.Domain.Exceptions.UserNotFoundException;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adapters.TurmaRepositoryAdapter;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adapters.UserRepositoryAdapter;
@@ -21,11 +22,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -35,9 +38,12 @@ class SQLAdaptersLogicalTest {
     @Nested
     @DisplayName("Testes do UserRepositoryAdapter")
     class UserTests {
-        @Mock private JpaUserRepository jpaRepository;
-        @Mock private UserAdapterMapper mapper;
-        @InjectMocks private UserRepositoryAdapter adapter;
+        @Mock
+        private JpaUserRepository jpaRepository;
+        @Mock
+        private UserAdapterMapper mapper;
+        @InjectMocks
+        private UserRepositoryAdapter adapter;
 
         @Test
         @DisplayName("save() deve delegar para o repository após mapeamento")
@@ -69,19 +75,42 @@ class SQLAdaptersLogicalTest {
         @DisplayName("delete() deve invocar exclusão lógica")
         void delete_ShouldCallLogicDelete() {
             String id = UUID.randomUUID().toString();
-            
+
             adapter.delete(id);
 
             verify(jpaRepository).logicDelete(id);
+        }
+        @Test
+        @DisplayName("deleteNotificador() deve lançar UserNotFoundException quando usuário não existe")
+        void deleteNotificador_ShouldThrowWhenUserNotFound() {
+            when(jpaRepository.findById("id-inexistente")).thenReturn(Optional.empty());
+
+            assertThrows(UserNotFoundException.class,
+                    () -> adapter.deleteNotificador("id-inexistente", "https://push.example.com/ep"));
+        }
+
+        @Test
+        @DisplayName("deleteNotificador() não deve chamar save() — remoção é gerenciada pelo cascade da entidade")
+        void deleteNotificador_ShouldNotCallSaveExplicitly() {
+            var entity = new UserEntity();
+            entity.setNotificadores(new ArrayList<>());
+            when(jpaRepository.findById("user-1")).thenReturn(Optional.of(entity));
+
+            adapter.deleteNotificador("user-1", "https://push.example.com/ep");
+
+            verify(jpaRepository, never()).save(any());
         }
     }
 
     @Nested
     @DisplayName("Testes do TurmaRepositoryAdapter")
     class TurmaTests {
-        @Mock private JpaTurmaRepository jpaRepository;
-        @Mock private TurmaAdapterMapper mapper;
-        @InjectMocks private TurmaRepositoryAdapter adapter;
+        @Mock
+        private JpaTurmaRepository jpaRepository;
+        @Mock
+        private TurmaAdapterMapper mapper;
+        @InjectMocks
+        private TurmaRepositoryAdapter adapter;
 
         @Test
         @DisplayName("passaModulo() deve invocar lógica de calendário no repositório")

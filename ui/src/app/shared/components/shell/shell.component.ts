@@ -42,5 +42,5 @@ export class ShellComponent {
     return map[this.role()] ?? this.role();
   });
 
-  logout() { this.auth.logout(); }
+  async logout() { await this.auth.logout(); }
 }

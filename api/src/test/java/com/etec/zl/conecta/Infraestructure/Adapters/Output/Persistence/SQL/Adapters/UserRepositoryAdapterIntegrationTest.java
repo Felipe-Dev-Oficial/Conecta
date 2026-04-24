@@ -1,5 +1,6 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Adapters;
 
+import com.etec.zl.conecta.Domain.Exceptions.UserNotFoundException;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Entities.UserEntity;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories.JpaUserRepository;
@@ -13,16 +14,22 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserRepositoryAdapterIntegrationTest {
 
-    @Autowired private UserRepositoryAdapter adapter;
-    @Autowired private JpaUserRepository jpaRepository;
-    @Autowired private CacheManager cacheManager;
-    @Autowired private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private UserRepositoryAdapter adapter;
+    @Autowired
+    private JpaUserRepository jpaRepository;
+    @Autowired
+    private CacheManager cacheManager;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -55,9 +62,9 @@ class UserRepositoryAdapterIntegrationTest {
         jpaRepository.save(professor);
 
         jdbcTemplate.execute("""
-        INSERT INTO turmas (id, curso, modulos, atual, status) 
-        VALUES ('TURMA-1', 'DESENVOLVIMENTO_DE_SISTEMAS', 3, 1, 'ON')
-        """);
+                INSERT INTO turmas (id, curso, modulos, atual, status) 
+                VALUES ('TURMA-1', 'DESENVOLVIMENTO_DE_SISTEMAS', 3, 1, 'ON')
+                """);
 
         jdbcTemplate.execute("INSERT INTO aluno_turmas (aluno_id, turma_id) VALUES ('RM1', 'TURMA-1')");
         jdbcTemplate.execute("INSERT INTO professor_turmas (professor_id, turma_id) VALUES ('PROF-1', 'TURMA-1')");
@@ -182,16 +189,64 @@ class UserRepositoryAdapterIntegrationTest {
         jpaRepository.save(buildUserEntity("RM12", "Aluno Turma B", Tipo.ALUNO));
 
         jdbcTemplate.execute("""
-        INSERT INTO turmas (id, curso, modulos, atual, status)
-        VALUES ('TURMA-2', 'DESENVOLVIMENTO_DE_SISTEMAS', 3, 1, 'ON')
-    """);
+                    INSERT INTO turmas (id, curso, modulos, atual, status)
+                    VALUES ('TURMA-2', 'DESENVOLVIMENTO_DE_SISTEMAS', 3, 1, 'ON')
+                """);
         jdbcTemplate.execute("INSERT INTO aluno_turmas (aluno_id, turma_id) VALUES ('RM11', 'TURMA-2')");
 
-        adapter.saveNotificador("RM11", "https://fcm.example.com/ep9",  "p256dh-9",  "auth-9");
+        adapter.saveNotificador("RM11", "https://fcm.example.com/ep9", "p256dh-9", "auth-9");
         adapter.saveNotificador("RM12", "https://fcm.example.com/ep10", "p256dh-10", "auth-10");
 
         var result = adapter.findAllNotificadores(TargetType.TURMA, List.of("TURMA-2"));
         assertThat(result).hasSize(1);
         assertThat(result.get(0).endpoint()).isEqualTo("https://fcm.example.com/ep9");
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("deleteNotificador() deve remover o endpoint do usuário")
+    void deleteNotificador_shouldRemoveEndpoint() {
+        jpaRepository.save(buildUserEntity("RM13", "Fernanda", Tipo.ALUNO));
+        adapter.saveNotificador("RM13", "https://fcm.example.com/ep11", "p256dh-11", "auth-11");
+
+        adapter.deleteNotificador("RM13", "https://fcm.example.com/ep11");
+
+        var result = adapter.findNotificadoresByUserId("RM13");
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("deleteNotificador() deve remover apenas o endpoint informado, mantendo os demais")
+    void deleteNotificador_shouldRemoveOnlyTargetEndpoint() {
+        jpaRepository.save(buildUserEntity("RM14", "Gustavo", Tipo.ALUNO));
+        adapter.saveNotificador("RM14", "https://fcm.example.com/ep12", "p256dh-12", "auth-12");
+        adapter.saveNotificador("RM14", "https://fcm.example.com/ep13", "p256dh-13", "auth-13");
+
+        adapter.deleteNotificador("RM14", "https://fcm.example.com/ep12");
+
+        var result = adapter.findNotificadoresByUserId("RM14");
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).endpoint()).isEqualTo("https://fcm.example.com/ep13");
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("deleteNotificador() deve lançar UserNotFoundException para usuário inexistente")
+    void deleteNotificador_shouldThrowUserNotFoundForUnknownUser() {
+        assertThrows(UserNotFoundException.class,
+                () -> adapter.deleteNotificador("ID-INEXISTENTE", "https://fcm.example.com/qualquer"));
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("deleteNotificador() não deve falhar quando o endpoint não existe para o usuário")
+    void deleteNotificador_shouldBeIdempotentForMissingEndpoint() {
+        jpaRepository.save(buildUserEntity("RM15", "Helena", Tipo.ALUNO));
+
+        assertDoesNotThrow(() ->
+                adapter.deleteNotificador("RM15", "https://fcm.example.com/inexistente"));
+
+        assertThat(adapter.findNotificadoresByUserId("RM15")).isEmpty();
     }
 }

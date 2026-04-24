@@ -61,6 +61,6 @@ public class UserEntity implements Serializable {
     )
     private List<TurmaEntity> turmasComoProfessor;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<NotificadorEntity> notificadores;
 }

@@ -1,5 +1,6 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Input.Controllers;
 
+import com.etec.zl.conecta.Application.Ports.Input.Users.DeletarNotificadorPort;
 import com.etec.zl.conecta.Infraestructure.Security.Models.DTOLogin;
 import com.etec.zl.conecta.Infraestructure.Security.Models.UserPrincipal;
 import com.etec.zl.conecta.Infraestructure.Security.Service.TokenService;
@@ -8,10 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("conecta/auth")
@@ -20,6 +19,7 @@ public class AuthController {
 
     private final AuthenticationManager manager;
     private final TokenService tokenService;
+    private final DeletarNotificadorPort deletarNotificadorPort;
 
     @PostMapping("/login")
     public ResponseEntity<String> logIn(@RequestBody @Valid DTOLogin dados) {
@@ -34,8 +34,8 @@ public class AuthController {
         return ResponseEntity.ok(tokenJWT);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logOut() {
-        return ResponseEntity.ok("Logout successful");
+    @DeleteMapping("/logout")
+    public void logOut(@AuthenticationPrincipal UserPrincipal user, String endpoint) {
+        deletarNotificadorPort.deleteNotificador(user.getId(), endpoint);
     }
 }

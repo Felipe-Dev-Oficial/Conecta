@@ -15,6 +15,7 @@ public interface UserRepository {
     List<Notificador> findAllNotificadores(TargetType targetType, List<String> targetIds);
     List<Notificador> findNotificadoresByUserId(String userId);
     void saveNotificador(String userId, String endpoint, String p256dh, String auth);
+    void deleteNotificador(String userId, String endpoint);
 
     //secretaria
     Optional<User> findById(String id);

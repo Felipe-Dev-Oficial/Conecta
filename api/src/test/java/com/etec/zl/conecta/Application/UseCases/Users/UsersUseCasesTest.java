@@ -1034,4 +1034,60 @@ class UsersUseCasesTest {
             verify(repository, never()).saveNotificador(any(), any(), any(), any());
         }
     }
+    @Nested
+    @DisplayName("DeleteNotificadorUseCase")
+    class DeleteNotificadorUseCaseTests {
+
+        private UserRepository repository;
+        private DeleteNotificadorUseCase useCase;
+
+        private static final String USER_ID  = "user-123";
+        private static final String ENDPOINT = "https://push.example.com/endpoint";
+
+        @BeforeEach
+        void setUp() {
+            repository = mock(UserRepository.class);
+            useCase    = new DeleteNotificadorUseCase(repository);
+        }
+
+        @Test
+        @DisplayName("deve delegar ao repository com userId e endpoint corretos")
+        void delegaAoRepositoryComParametrosCorretos() {
+            useCase.deleteNotificador(USER_ID, ENDPOINT);
+
+            verify(repository, times(1)).deleteNotificador(USER_ID, ENDPOINT);
+        }
+
+        @Test
+        @DisplayName("deve propagar UserNotFoundException sem encapsular")
+        void propagaUserNotFoundException() {
+            doThrow(new UserNotFoundException())
+                    .when(repository).deleteNotificador(USER_ID, ENDPOINT);
+
+            assertThrows(UserNotFoundException.class,
+                    () -> useCase.deleteNotificador(USER_ID, ENDPOINT));
+        }
+
+        @Test
+        @DisplayName("deve converter qualquer outra exceção em ProcessingErrorException")
+        void converteExcecaoGenericaEmProcessingError() {
+            doThrow(new RuntimeException("erro de banco"))
+                    .when(repository).deleteNotificador(USER_ID, ENDPOINT);
+
+            assertThrows(ProcessingErrorException.class,
+                    () -> useCase.deleteNotificador(USER_ID, ENDPOINT));
+        }
+
+        @Test
+        @DisplayName("não deve chamar repository novamente após lançar UserNotFoundException")
+        void naoReprocessaAposUserNotFound() {
+            doThrow(new UserNotFoundException())
+                    .when(repository).deleteNotificador(USER_ID, ENDPOINT);
+
+            assertThrows(UserNotFoundException.class,
+                    () -> useCase.deleteNotificador(USER_ID, ENDPOINT));
+
+            verify(repository, times(1)).deleteNotificador(USER_ID, ENDPOINT);
+        }
+    }
 }

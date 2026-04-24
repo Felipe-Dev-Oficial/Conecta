@@ -38,6 +38,26 @@ export class NotificationService {
   listenForMessages(): void {
   }
 
+  async unsubscribe(): Promise<void> {
+  if (!isPlatformBrowser(this.platformId)) return;
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (!subscription) return;
+
+    const { endpoint } = subscription.toJSON() as any;
+
+    await this.http.delete(`${environment.apiUrl}/auth/logout`, {
+      body: { endpoint }
+    }).toPromise();
+
+    await subscription.unsubscribe();
+  } catch (err) {
+    console.error('Erro ao remover notificador:', err);
+  }
+}
+
   private async getVapidPublicKey(): Promise<string> {
     return this.http
       .get(`${environment.apiUrl}/notification/vapid-public-key`, { responseType: 'text' })

@@ -59,8 +59,8 @@
           <div class="msg-wrap" [class.own]="m.nameSender.name === meuNome()">
             <div class="msg-bubble">
               <div class="msg-author">{{ m.nameSender.name }}</div>
-              @if (m.content.content) {
-                <p class="msg-text">{{ m.content.content }}</p>
+              @if (m.content) {
+                <p class="msg-text">{{ m.content }}</p>
               }
               <app-media-viewer [midia]="m.midia" />
             </div>

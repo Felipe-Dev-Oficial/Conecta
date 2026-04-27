@@ -229,38 +229,6 @@ class ValueObjectsTests {
         }
     }
 
-    // ─── Content ──────────────────────────────────────────────────────────────
-
-    @Nested
-    @DisplayName("Content")
-    class ContentTest {
-
-        @Test
-        @DisplayName("deve preservar o texto informado")
-        void preservaValor() {
-            assertEquals("Algum conteúdo", new Content("Algum conteúdo").content());
-        }
-
-        @Test
-        @DisplayName("deve aceitar texto longo sem lançar exceção")
-        void textoLongo() {
-            String longo = "a".repeat(5000);
-            assertEquals(longo, new Content(longo).content());
-        }
-
-        @Test
-        @DisplayName("deve lançar InvalidDataException para Content nulo")
-        void nulo() {
-            assertThrows(InvalidDataException.class, () -> new Content(null));
-        }
-
-        @Test
-        @DisplayName("deve lançar InvalidDataException para Content vazio")
-        void vazio() {
-            assertThrows(InvalidDataException.class, () -> new Content(""));
-        }
-    }
-
     // ─── PageRequest ──────────────────────────────────────────────────────────
 
     @Nested

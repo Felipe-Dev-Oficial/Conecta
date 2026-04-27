@@ -28,13 +28,13 @@ public class StatementEntity implements Serializable {
     private UUID id;
     @Field("sender_id")
     @Indexed
-    private String idSender;
+    private java.lang.String idSender;
     @Field("title")
-    private Content title;
+    private String title;
     @Field("sent_at")
     private Instant timestamp;
     @Field("body")
-    private Content content;
+    private String content;
     @Field("attachment")
     private Midia midia;
     @Field("priority")

@@ -1,7 +1,6 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Adapters;
 
 import com.etec.zl.conecta.Domain.Entities.Messages.Message;
-import com.etec.zl.conecta.Domain.ValueObjects.Content;
 import com.etec.zl.conecta.Domain.ValueObjects.PageRequest;
 import com.etec.zl.conecta.Domain.ValueObjects.PageResult;
 import com.etec.zl.conecta.Domain.ValueObjects.SliceResult;
@@ -27,9 +26,9 @@ class MessageRepositoryAdapterIntegrationTest {
     @Autowired private MongoMessageRepository mongoRepository;
     @Autowired private CacheManager cacheManager;
 
-    private static final String USER_A = UUID.randomUUID().toString();
-    private static final String USER_B = UUID.randomUUID().toString();
-    private static final String USER_C = UUID.randomUUID().toString();
+    private static final java.lang.String USER_A = UUID.randomUUID().toString();
+    private static final java.lang.String USER_B = UUID.randomUUID().toString();
+    private static final java.lang.String USER_C = UUID.randomUUID().toString();
 
     @BeforeEach
     void setUp() {
@@ -44,23 +43,23 @@ class MessageRepositoryAdapterIntegrationTest {
     // Helpers
     // -------------------------------------------------------
 
-    private MessageEntity buildMessage(String senderId, String receiverId) {
+    private MessageEntity buildMessage(java.lang.String senderId, java.lang.String receiverId) {
         MessageEntity e = new MessageEntity();
         e.setId(UUID.randomUUID());
         e.setIdSender(senderId);
         e.setIdReceiver(receiverId);
-        e.setContent(new Content("Olá!"));
+        e.setContent(new String("Olá!"));
         e.setTimestamp(Instant.now());
         return e;
     }
 
-    private Message buildDomain(String sender, String receiver, String text) {
+    private Message buildDomain(java.lang.String sender, java.lang.String receiver, java.lang.String text) {
         return new Message(
                 UUID.randomUUID(),
                 sender,
                 receiver,
                 Instant.now(),
-                new Content(text),
+                new String(text),
                 null
         );
     }
@@ -92,7 +91,7 @@ class MessageRepositoryAdapterIntegrationTest {
         var cache = cacheManager.getCache("messages");
         assertThat(cache).isNotNull();
 
-        String cacheKey = (USER_A.compareTo(USER_B) < 0 ? USER_A + "-" + USER_B : USER_B + "-" + USER_A) + "-0";
+        java.lang.String cacheKey = (USER_A.compareTo(USER_B) < 0 ? USER_A + "-" + USER_B : USER_B + "-" + USER_A) + "-0";
         assertThat(cache.get(cacheKey)).isNull();
     }
 
@@ -195,7 +194,7 @@ class MessageRepositoryAdapterIntegrationTest {
         mongoRepository.save(buildMessage(USER_C, USER_A));
         mongoRepository.save(buildMessage(USER_A, USER_C));
 
-        SliceResult<String> result = adapter.contatos(USER_A, new PageRequest(0, 10));
+        SliceResult<java.lang.String> result = adapter.contatos(USER_A, new PageRequest(0, 10));
 
         assertThat(result.content()).hasSize(2);
         assertThat(result.content()).containsExactlyInAnyOrder(USER_B, USER_C);
@@ -205,7 +204,7 @@ class MessageRepositoryAdapterIntegrationTest {
     @Order(10)
     @DisplayName("contatos() deve retornar vazio quando usuário não tem mensagens")
     void contatos_shouldReturnEmpty_whenNoMessages() {
-        SliceResult<String> result = adapter.contatos(USER_A, new PageRequest(0, 10));
+        SliceResult<java.lang.String> result = adapter.contatos(USER_A, new PageRequest(0, 10));
         assertThat(result.content()).isEmpty();
     }
 
@@ -218,7 +217,7 @@ class MessageRepositoryAdapterIntegrationTest {
         adapter.contatos(USER_A, new PageRequest(0, 10)); // aquece cache
         mongoRepository.deleteAll();
 
-        SliceResult<String> cached = adapter.contatos(USER_A, new PageRequest(0, 10));
+        SliceResult<java.lang.String> cached = adapter.contatos(USER_A, new PageRequest(0, 10));
         assertThat(cached.content()).hasSize(1);
     }
 
@@ -229,7 +228,7 @@ class MessageRepositoryAdapterIntegrationTest {
         mongoRepository.save(buildMessage(USER_A, USER_B));
         mongoRepository.save(buildMessage(USER_B, USER_A));
 
-        SliceResult<String> result = adapter.contatos(USER_A, new PageRequest(0, 10));
+        SliceResult<java.lang.String> result = adapter.contatos(USER_A, new PageRequest(0, 10));
 
         assertThat(result.content()).doesNotContain(USER_A);
     }

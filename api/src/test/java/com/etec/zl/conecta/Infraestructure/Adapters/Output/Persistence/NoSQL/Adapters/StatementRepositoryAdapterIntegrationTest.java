@@ -40,12 +40,12 @@ class StatementRepositoryAdapterIntegrationTest {
     // Helpers
     // -------------------------------------------------------
 
-    private StatementEntity buildEntity(Status status, TargetType targetType, List<String> targetIds, Prioridade priority) {
+    private StatementEntity buildEntity(Status status, TargetType targetType, List<java.lang.String> targetIds, Prioridade priority) {
         StatementEntity e = new StatementEntity();
         e.setId(UUID.randomUUID());
         e.setIdSender("sender-id");
-        e.setTitle(new Content("Título"));
-        e.setContent(new Content("Corpo"));
+        e.setTitle("Título");
+        e.setContent("Corpo");
         e.setStatus(status);
         e.setPriority(priority.getPeso());
         e.setTimestamp(Instant.now());
@@ -54,13 +54,13 @@ class StatementRepositoryAdapterIntegrationTest {
         return e;
     }
 
-    private Statement buildDomain(Status status, TargetType targetType, List<String> targetIds) {
+    private Statement buildDomain(Status status, TargetType targetType, List<java.lang.String> targetIds) {
         return new Statement(
                 UUID.randomUUID(),
                 "sender-id",
-                new Content("Título do Anúncio"),
+                new String("Título do Anúncio"),
                 Instant.now(),
-                new Content("Conteúdo do Anúncio"),
+                new String("Conteúdo do Anúncio"),
                 null,
                 Prioridade.BAIXA,
                 false,
@@ -189,7 +189,7 @@ class StatementRepositoryAdapterIntegrationTest {
     @Order(9)
     @DisplayName("findStatements() para ALUNO deve retornar GERAL, ALUNOS e TURMA correspondente")
     void findStatements_forAluno_shouldReturnCorrectStatements() {
-        String turmaId = UUID.randomUUID().toString();
+        java.lang.String turmaId = UUID.randomUUID().toString();
 
         mongoRepository.save(buildEntity(Status.ON, TargetType.GERAL,      List.of(),          Prioridade.BAIXA));
         mongoRepository.save(buildEntity(Status.ON, TargetType.ALUNOS,     List.of(),          Prioridade.MEDIA));

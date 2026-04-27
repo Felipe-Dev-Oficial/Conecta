@@ -50,21 +50,19 @@ class StatementsUseCasesTest {
         @Test
         @DisplayName("deve mapear DTO, salvar o anúncio e enviar notificações")
         void geraAnuncioComSucesso() {
-            var senderId    = "user-123";
-            var dto         = mock(DTOAnuncio.class);
-            var statement   = mock(Statement.class);
-            var title       = mock(Content.class);
-            var content     = mock(Content.class);
+            var senderId = "user-123";
+            var dto = mock(DTOAnuncio.class);
+            var statement = mock(Statement.class);
             var notificadores = List.of(mock(Notificador.class));
+            String titleText = "Título do anúncio";
+            String contentText = "Corpo do anúncio";
 
             when(dto.targetType()).thenReturn(mock(TargetType.class));
             when(dto.targetsId()).thenReturn(List.of("turma-1"));
-            when(dto.title()).thenReturn(title);
-            when(dto.content()).thenReturn(content);
-            when(title.content()).thenReturn("Título do anúncio");
-            when(content.content()).thenReturn("Corpo do anúncio");
+            when(dto.title()).thenReturn(titleText);
+            when(dto.content()).thenReturn(contentText);
             when(mapper.toStatement(senderId, dto)).thenReturn(statement);
-            when(userRepository.findAllNotificadores(dto.targetType(), dto.targetsId()))
+            when(userRepository.findAllNotificadores(any(), anyList()))
                     .thenReturn(notificadores);
 
             useCase.gerarAnuncio(senderId, dto);

@@ -162,12 +162,12 @@ class MessagesUseCasesTest {
             }
         }
     }
-    private DTORegisterMessage dtoPadrao(String senderId, String receiverId) {
+    private DTORegisterMessage dtoPadrao(java.lang.String senderId, java.lang.String receiverId) {
         return new DTORegisterMessage(
                 senderId,
                 receiverId,
                 new DTOInfoMessage(
-                        new Content("Olá, tudo bem?"),
+                        new String("Olá, tudo bem?"),
                         new Midia(TipoMidia.FOTO, "https://exemplo.com/foto.jpg")
                 )
         );

@@ -26,8 +26,8 @@
                 @if (a.edited) { <span class="badge badge-gray">Editado</span> }
                 <span class="text-muted" style="font-size: 12px">{{ formatDate(a.timestamp) }}</span>
               </div>
-              <div class="anuncio-titulo font-display">{{ a.title.content }}</div>
-              <p class="anuncio-texto">{{ a.content.content }}</p>
+              <div class="anuncio-titulo font-display">{{ a.title }}</div>
+              <p class="anuncio-texto">{{ a.content }}</p>
               <app-media-viewer [midia]="a.midia" />
             </div>
             <div class="anuncio-item-acoes">

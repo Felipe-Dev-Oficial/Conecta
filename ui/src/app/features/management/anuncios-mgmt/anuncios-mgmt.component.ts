@@ -55,8 +55,8 @@ export class AnunciosMgmtComponent implements OnInit {
   criar() {
     this.saving.set(true);
     const dto: DTOAnuncio = {
-      title: { content: this.fTitulo },
-      content: { content: this.fConteudo },
+      title: this.fTitulo,
+      content: this.fConteudo,
       midia: this.fMidia,
       priority: this.fPrioridade,
       targetType: this.fTarget,
@@ -76,8 +76,8 @@ export class AnunciosMgmtComponent implements OnInit {
 
   abrirEditar(a: Statement) {
     this.editId = a.id;
-    this.fTitulo = a.title.content;
-    this.fConteudo = a.content.content;
+    this.fTitulo = a.title;
+    this.fConteudo = a.content ?? '';
     this.fPrioridade = a.priority;
     this.fMidia = a.midia;
     this.showEditar.set(true);
@@ -86,8 +86,8 @@ export class AnunciosMgmtComponent implements OnInit {
   editar() {
     this.saving.set(true);
     const dto: DTOAlteraAnuncio = {
-      title: { content: this.fTitulo },
-      content: { content: this.fConteudo },
+      title: this.fTitulo,
+      content: this.fConteudo,
       midia: this.fMidia,
       priority: this.fPrioridade,
     };

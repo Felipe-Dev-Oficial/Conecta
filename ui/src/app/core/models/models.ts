@@ -50,10 +50,6 @@ export interface SliceResult<T> {
 
 // ─── Primitivos reutilizáveis ─────────────────────────────────────────────────
 
-export interface Content {
-  content: string;
-}
-
 export interface Name {
   name: string;
 }
@@ -141,14 +137,14 @@ export interface DTOContatos {
 
 /** POST /conecta/mensagens/{id} — body enviado */
 export interface DTOInfoMessage {
-  content: Content | null;
+  content: string | null;
   midia: Midia | null;
 }
 
 /** GET /conecta/mensagens/{id} — retorno de mensagem */
 export interface DTOReturnMessage {
   nameSender: Name;
-  content: Content;
+  content: string | null;
   midia: Midia | null;
 }
 
@@ -160,7 +156,7 @@ export interface DTOReturnMessageSecretaria {
   nomeReceiver: Name;
   idReceiver: string;
   timestamp: string; // ISO string
-  content: Content;
+  content: string | null;
   midia: Midia | null;
 }
 
@@ -202,8 +198,8 @@ export interface FAQ {
 
 /** POST /conecta/anuncios/management — body enviado */
 export interface DTOAnuncio {
-  title: Content;
-  content: Content;
+  title: string;
+  content: string | null;
   midia: Midia | null;
   priority: Prioridade;
   targetType: TargetType;
@@ -212,8 +208,8 @@ export interface DTOAnuncio {
 
 /** PATCH /conecta/anuncios/management/{id} — body enviado */
 export interface DTOAlteraAnuncio {
-  title: Content | null;
-  content: Content | null;
+  title: string | null;
+  content: string | null;
   midia: Midia | null;
   priority: Prioridade | null;
 }
@@ -221,8 +217,8 @@ export interface DTOAlteraAnuncio {
 /** GET /conecta/anuncios — retorno público */
 export interface DTORetornoAnuncio {
   nome: Name;
-  titulo: Content;
-  content: Content;
+  titulo: string;
+  content: string | null;
   midia: Midia | null;
   publicacao: string; // ISO string
   edited: boolean;
@@ -232,9 +228,9 @@ export interface DTORetornoAnuncio {
 export interface Statement {
   id: string;
   idSender: string;
-  title: Content;
+  title: string;
   timestamp: string; // ISO string
-  content: Content;
+  content: string | null;
   midia: Midia | null;
   priority: Prioridade;
   edited: boolean;

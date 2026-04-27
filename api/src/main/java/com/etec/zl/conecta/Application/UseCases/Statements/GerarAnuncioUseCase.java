@@ -32,8 +32,8 @@ public class GerarAnuncioUseCase implements GerarAnuncioPort {
 
         notificationService.sendNotifications(
                 userRepository.findAllNotificadores(dto.targetType(), dto.targetsId()),
-                dto.title().content(),
-                dto.content().content()
+                dto.title(),
+                dto.content()
         );
     }
 }

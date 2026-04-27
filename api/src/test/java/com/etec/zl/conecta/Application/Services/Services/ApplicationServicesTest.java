@@ -158,8 +158,8 @@ class ApplicationServicesTest {
             id = UUID.randomUUID();
             statement = new Statement(
                     id, "sender",
-                    new Content("Título"), Instant.now(),
-                    new Content("Conteúdo"), null,
+                    new String("Título"), Instant.now(),
+                    new String("Conteúdo"), null,
                     Prioridade.MEDIA, false, Status.ON, TargetVO.paraTodos()
             );
         }
@@ -403,7 +403,7 @@ class ApplicationServicesTest {
             service = new TrySaveUserService(userRepository, mapper, turmaRepository);
         }
 
-        private DTOCadastro dtoCom(Tipo tipo, List<String> turmas) {
+        private DTOCadastro dtoCom(Tipo tipo, List<java.lang.String> turmas) {
             return new DTOCadastro(
                     "user-1", new Name("João Silva"), new Email("joao@etec.com"),
                     new PhoneNumber("11987654321"), new Password("Etec@1234"), tipo, turmas

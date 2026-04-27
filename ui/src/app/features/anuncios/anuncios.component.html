@@ -25,8 +25,8 @@
             </div>
             @if (a.edited) { <span class="badge badge-gray">Editado</span> }
           </div>
-          <h2 class="anuncio-title">{{ a.titulo.content }}</h2>
-          <p class="anuncio-body">{{ a.content.content }}</p>
+          <h2 class="anuncio-title">{{ a.titulo }}</h2>
+          <p class="anuncio-body">{{ a.content }}</p>
           <app-media-viewer [midia]="a.midia" />
         </article>
       }

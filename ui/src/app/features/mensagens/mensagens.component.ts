@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { MensagensService } from '../../core/services/http/mensagem/mensagem.service';
 import { AuthService } from '../../core/services/http/auth/auth.service';
 import { ToastService } from '../../core/services/toast/toast.service';
-import { DTOContatos, DTOReturnMessage, Midia } from '../../core/models/models';
+import { DTOContatos, DTOReturnMessage, DTOInfoMessage, Midia } from '../../core/models/models';
 import { MediaViewerComponent } from '../../shared/components/media-viewer/media-viewer.component';
 import { MediaUploadComponent } from '../../shared/components/upload/upload.component';
 
@@ -92,13 +92,17 @@ export class MensagensComponent implements OnInit {
   }
 
   enviar() {
-    const t = this.texto.trim();
-    if ((!t && !this.midiaAnexada) || !this.contatoAtivo()) return;
-    this.enviando.set(true);
-    this.svc.enviarMensagem(this.contatoAtivo()!.id, {
-      content: t ? { content: t } : null,
+  const t = this.texto.trim();
+  if ((!t && !this.midiaAnexada) || !this.contatoAtivo()) return;
+
+  this.enviando.set(true);
+
+    const payload: DTOInfoMessage = {
+      content: t || null, 
       midia: this.midiaAnexada,
-    }).subscribe({
+    };
+
+    this.svc.enviarMensagem(this.contatoAtivo()!.id, payload).subscribe({
       next: () => {
         this.texto = '';
         this.midiaAnexada = null;
@@ -106,7 +110,10 @@ export class MensagensComponent implements OnInit {
         this.enviando.set(false);
         this.selecionarContato(this.contatoAtivo()!);
       },
-      error: () => { this.toast.error('Erro ao enviar mensagem.'); this.enviando.set(false); },
+      error: () => { 
+        this.toast.error('Erro ao enviar mensagem.'); 
+        this.enviando.set(false); 
+      },
     });
   }
 
@@ -135,17 +142,23 @@ export class MensagensComponent implements OnInit {
   }
 
   iniciarConversa() {
-    const id = this.novoDestinatarioId.trim();
-    const msg = this.novaMensagem.trim();
-    if (!id || (!msg && !this.novaMidia)) {
-      this.toast.error('Informe o ID e ao menos uma mensagem ou mídia.');
-      return;
-    }
-    this.enviando.set(true);
-    this.svc.enviarMensagem(id, {
-      content: msg ? { content: msg } : null,
+  const id = this.novoDestinatarioId.trim();
+  const msg = this.novaMensagem.trim();
+
+  if (!id || (!msg && !this.novaMidia)) {
+    this.toast.error('Informe o ID e ao menos uma mensagem ou mídia.');
+    return;
+  }
+
+  this.enviando.set(true);
+
+  // Mesmo ajuste aqui
+  const payload: DTOInfoMessage = {
+      content: msg || null,
       midia: this.novaMidia,
-    }).subscribe({
+    };
+
+    this.svc.enviarMensagem(id, payload).subscribe({
       next: () => {
         this.toast.success('Mensagem enviada!');
         this.fecharNova();
@@ -164,7 +177,10 @@ export class MensagensComponent implements OnInit {
           });
         }
       },
-      error: () => { this.toast.error('Erro ao enviar. Verifique o ID.'); this.enviando.set(false); },
+      error: () => { 
+        this.toast.error('Erro ao enviar. Verifique o ID.'); 
+        this.enviando.set(false); 
+      },
     });
   }
 }

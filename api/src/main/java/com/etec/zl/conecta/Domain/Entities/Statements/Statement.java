@@ -1,6 +1,7 @@
 package com.etec.zl.conecta.Domain.Entities.Statements;
 
 import com.etec.zl.conecta.Domain.Entities.Midia.Midia;
+import com.etec.zl.conecta.Domain.Exceptions.ProcessingErrorException;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 
 import java.time.Instant;
@@ -10,16 +11,16 @@ public class Statement {
 
     private UUID id;
     private String idSender;
-    private Content title;
+    private String title;
     private Instant timestamp;
-    private Content content;
+    private String content;
     private Midia midia;
     private Prioridade priority;
     private boolean edited;
     private Status status;
     private TargetVO targetVO;
 
-    public Statement(UUID id, String idSender, Content title, Instant timestamp, Content content, Midia midia, Prioridade priority, boolean edited, Status status, TargetVO targetVO) {
+    public Statement(UUID id, String idSender, String title, Instant timestamp, String content, Midia midia, Prioridade priority, boolean edited, Status status, TargetVO targetVO) {
         this.id = id;
         this.idSender = idSender;
         this.title = title;
@@ -32,7 +33,10 @@ public class Statement {
         this.targetVO = targetVO;
     }
 
-    public Statement(String idSender, Content title, Content content, Midia midia, Prioridade priority, TargetVO targetVO) {
+    public Statement(String idSender, String title, String content, Midia midia, Prioridade priority, TargetVO targetVO) {
+        if ((title == null || title.isEmpty()) && (content == null || content.isEmpty()) && midia == null) {
+            throw new ProcessingErrorException("Você não pode criar um anúncio vazio");
+        }
         this.id = UUID.randomUUID();
         this.idSender = idSender;
         this.title = title;
@@ -55,15 +59,15 @@ public class Statement {
         }
     }
 
-    public void alterarTitulo(Content titulo) {
-        if (titulo != null && !titulo.content().isEmpty()) {
+    public void alterarTitulo(String titulo) {
+        if (titulo != null && !titulo.isEmpty()) {
             this.title = titulo;
             this.edited = true;
         }
     }
 
-    public void alterarConteudo(Content content) {
-        if (content != null && !content.content().isEmpty()) {
+    public void alterarConteudo(String content) {
+        if (content != null && !content.isEmpty()) {
             this.content = content;
             this.edited = true;
         }
@@ -80,6 +84,7 @@ public class Statement {
     public void elevarPrioridade(){
         this.priority = this.priority.elevar();
     }
+
     public void reduzirPrioridade(){
         this.priority = this.priority.reduzir();
     }
@@ -96,7 +101,7 @@ public class Statement {
         return idSender;
     }
 
-    public Content getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -104,7 +109,7 @@ public class Statement {
         return timestamp;
     }
 
-    public Content getContent() {
+    public String getContent() {
         return content;
     }
 

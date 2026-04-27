@@ -14,8 +14,6 @@ import com.etec.zl.conecta.Domain.ValueObjects.Tipo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 public class EnviarMensagemUseCase implements EnviarMensagemPort {
 
     private static final Logger log = LoggerFactory.getLogger(EnviarMensagemUseCase.class);
@@ -48,7 +46,7 @@ public class EnviarMensagemUseCase implements EnviarMensagemPort {
         notificationService.sendNotifications(
                 userRepository.findNotificadoresByUserId(dto.idReceiver()),
                 sender.getNome().name(),
-                dto.dto().content().content()
+                dto.dto().content()
         );
     }
 

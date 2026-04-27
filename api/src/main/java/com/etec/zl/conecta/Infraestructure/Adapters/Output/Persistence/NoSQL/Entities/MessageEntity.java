@@ -1,6 +1,5 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Entities;
 
-import com.etec.zl.conecta.Domain.ValueObjects.Content;
 import com.etec.zl.conecta.Domain.Entities.Midia.Midia;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +37,7 @@ public class MessageEntity implements Serializable {
     private Instant timestamp;
 
     @Field("message_content")
-    private Content content;
+    private String content;
 
     @Field("attachments")
     private Midia midia;

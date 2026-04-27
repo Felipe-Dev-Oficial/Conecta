@@ -5,5 +5,5 @@ import com.etec.zl.conecta.Domain.ValueObjects.*;
 
 import java.util.List;
 
-public record DTOAnuncio(Content title, Content content, Midia midia, Prioridade priority, TargetType targetType, List<String> targetsId){
+public record DTOAnuncio(String title, String content, Midia midia, Prioridade priority, TargetType targetType, List<String> targetsId){
 }

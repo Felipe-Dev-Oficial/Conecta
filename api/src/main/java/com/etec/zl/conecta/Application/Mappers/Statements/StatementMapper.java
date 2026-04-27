@@ -9,7 +9,6 @@ import com.etec.zl.conecta.Domain.ValueObjects.TargetVO;
 import com.etec.zl.conecta.Domain.ValueObjects.Tipo;
 
 import java.util.List;
-import java.util.UUID;
 
 public class StatementMapper {
 

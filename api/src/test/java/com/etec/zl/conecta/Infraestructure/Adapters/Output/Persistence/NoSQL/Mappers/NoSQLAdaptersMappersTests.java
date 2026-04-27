@@ -34,9 +34,9 @@ class NoSQLAdaptersMappersTests {
 
     @Test
     void deveMapearMessage() {
-        MessageEntity entity = new MessageEntity(UUID.randomUUID(), "S", "R", Instant.now(), new Content("Hi"), null);
+        MessageEntity entity = new MessageEntity(UUID.randomUUID(), "S", "R", Instant.now(), new String("Hi"), null);
         Message domain = msgMapper.toDomain(entity);
-        assertEquals("Hi", domain.getContent().content());
+        assertEquals("Hi", domain.getContent());
     }
 
     @Test

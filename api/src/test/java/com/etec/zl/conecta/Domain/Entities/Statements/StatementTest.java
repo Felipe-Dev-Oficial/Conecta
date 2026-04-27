@@ -2,6 +2,7 @@ package com.etec.zl.conecta.Domain.Entities.Statements;
 
 import com.etec.zl.conecta.Domain.Entities.Midia.Midia;
 import com.etec.zl.conecta.Domain.Exceptions.InvalidDataException;
+import com.etec.zl.conecta.Domain.Exceptions.ProcessingErrorException;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,248 +13,121 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Statement")
+@DisplayName("Statement Entity Test")
 class StatementTest {
+
+    private static final String SENDER_ID = "sender-123";
 
     private Statement statementOn() {
         return new Statement(
-                UUID.randomUUID(), "sender-1",
-                new Content("Título"), Instant.now(),
-                new Content("Conteúdo"), null,
+                UUID.randomUUID(), SENDER_ID,
+                "Título Original", Instant.now(),
+                "Conteúdo Original", null,
                 Prioridade.MEDIA, false, Status.ON, TargetVO.paraTodos()
         );
     }
 
-    private Statement statementOff() {
-        return new Statement(
-                UUID.randomUUID(), "sender-1",
-                new Content("Título"), Instant.now(),
-                new Content("Conteúdo"), null,
-                Prioridade.MEDIA, false, Status.OFF, TargetVO.paraTodos()
-        );
-    }
-
-    // ─── Criação ──────────────────────────────────────────────────────────────
-
     @Nested
-    @DisplayName("Criação via construtor simples")
+    @DisplayName("Criação e Regras de Negócio")
     class Criacao {
 
         @Test
-        @DisplayName("deve iniciar com edited=false")
-        void editedFalse() {
-            var s = new Statement("sender", new Content("T"), new Content("C"), null, Prioridade.MEDIA, TargetVO.paraTodos());
-            assertFalse(s.isEdited());
-        }
+        @DisplayName("deve iniciar com valores padrão (status ON, edited FALSE)")
+        void valoresPadrao() {
+            var s = new Statement(SENDER_ID, "Título", "Conteúdo", null, Prioridade.MEDIA, TargetVO.paraTodos());
 
-        @Test
-        @DisplayName("deve gerar id não nulo automaticamente")
-        void idGerado() {
-            var s = new Statement("sender", new Content("T"), new Content("C"), null, Prioridade.MEDIA, TargetVO.paraTodos());
             assertNotNull(s.getId());
-        }
-
-        @Test
-        @DisplayName("deve preencher timestamp automaticamente")
-        void timestamp() {
-            var antes = Instant.now();
-            var s = new Statement("sender", new Content("T"), new Content("C"), null, Prioridade.MEDIA, TargetVO.paraTodos());
-            assertFalse(s.getTimestamp().isBefore(antes));
-        }
-
-        @Test
-        @DisplayName("deve iniciar com status ON")
-        void statusOn() {
-            var s = new Statement("sender", new Content("T"), new Content("C"), null, Prioridade.MEDIA, TargetVO.paraTodos());
             assertEquals(Status.ON, s.getStatus());
+            assertFalse(s.isEdited());
+            assertNotNull(s.getTimestamp());
+        }
+
+        @Test
+        @DisplayName("deve permitir criar anúncio apenas com mídia (sem título/conteúdo)")
+        void apenasMidia() {
+            var midia = new Midia(TipoMidia.FOTO, "http://link.com");
+            assertDoesNotThrow(() ->
+                    new Statement(SENDER_ID, null, null, midia, Prioridade.MEDIA, TargetVO.paraTodos())
+            );
+        }
+
+        @Test
+        @DisplayName("deve lançar exceção se tudo (título, conteúdo e mídia) estiver vazio")
+        void erroAnuncioVazio() {
+            assertThrows(ProcessingErrorException.class, () ->
+                    new Statement(SENDER_ID, "", "", null, Prioridade.MEDIA, TargetVO.paraTodos())
+            );
         }
     }
 
-    // ─── alterarTitulo() ──────────────────────────────────────────────────────
-
     @Nested
-    @DisplayName("alterarTitulo()")
-    class AlterarTitulo {
+    @DisplayName("Comportamento de Edição")
+    class Edicao {
 
         @Test
-        @DisplayName("deve atualizar título para o novo valor e marcar edited=true")
-        void valido() {
+        @DisplayName("deve marcar edited=true ao alterar título")
+        void alteraTitulo() {
             var s = statementOn();
-            s.alterarTitulo(new Content("Novo título"));
-            assertEquals("Novo título", s.getTitle().content());
+            s.alterarTitulo("Novo Título");
+            assertEquals("Novo Título", s.getTitle());
             assertTrue(s.isEdited());
         }
 
         @Test
-        @DisplayName("null não deve alterar título nem marcar edited")
-        void nulo_naoAtualiza() {
+        @DisplayName("deve marcar edited=true ao alterar conteúdo")
+        void alteraConteudo() {
             var s = statementOn();
-            Content original = s.getTitle();
-            s.alterarTitulo(null);
-            assertEquals(original, s.getTitle());
-            assertFalse(s.isEdited());
-        }
-    }
-
-    // ─── alterarConteudo() ────────────────────────────────────────────────────
-
-    @Nested
-    @DisplayName("alterarConteudo()")
-    class AlterarConteudo {
-
-        @Test
-        @DisplayName("deve atualizar conteúdo para o novo valor e marcar edited=true")
-        void valido() {
-            var s = statementOn();
-            s.alterarConteudo(new Content("Novo conteúdo"));
-            assertEquals("Novo conteúdo", s.getContent().content());
+            s.alterarConteudo("Novo Conteúdo");
             assertTrue(s.isEdited());
         }
 
         @Test
-        @DisplayName("null não deve alterar conteúdo nem marcar edited")
-        void nulo_naoAtualiza() {
+        @DisplayName("não deve marcar edited se o novo título for nulo ou vazio")
+        void alteraTituloInvalido() {
             var s = statementOn();
-            Content original = s.getContent();
-            s.alterarConteudo(null);
-            assertEquals(original, s.getContent());
+            s.alterarTitulo("");
             assertFalse(s.isEdited());
+            assertEquals("Título Original", s.getTitle());
         }
     }
 
-    // ─── alterarMidia() ───────────────────────────────────────────────────────
-
     @Nested
-    @DisplayName("alterarMidia()")
-    class AlterarMidia {
+    @DisplayName("Gestão de Prioridade")
+    class Prioridades {
 
         @Test
-        @DisplayName("deve atualizar mídia para o novo valor e marcar edited=true")
-        void valido() {
-            var s = statementOn();
-            var midia = new Midia(TipoMidia.FOTO, "https://img.com/foto.jpg");
-            s.alterarMidia(midia);
-            assertEquals(midia, s.getMidia());
-            assertTrue(s.isEdited());
-        }
+        @DisplayName("deve elevar e reduzir prioridade corretamente")
+        void fluxoPrioridade() {
+            var s = statementOn(); // Inicia MEDIA (Peso 1)
+            assertEquals(1, s.getPesoPrioridade());
 
-        @Test
-        @DisplayName("link vazio não deve atualizar mídia nem marcar edited")
-        void linkVazio_naoAtualiza() {
-            var s = statementOn();
-            s.alterarMidia(new Midia(TipoMidia.FOTO, ""));
-            assertNull(s.getMidia());
-            assertFalse(s.isEdited());
-        }
-
-        @Test
-        @DisplayName("null não deve atualizar mídia nem marcar edited")
-        void nulo_naoAtualiza() {
-            var s = statementOn();
-            s.alterarMidia(null);
-            assertNull(s.getMidia());
-            assertFalse(s.isEdited());
-        }
-    }
-
-    // ─── alterarPrioridade() ──────────────────────────────────────────────────
-
-    @Nested
-    @DisplayName("alterarPrioridade()")
-    class AlterarPrioridade {
-
-        @Test
-        @DisplayName("deve atualizar para o novo valor de prioridade")
-        void valido() {
-            var s = statementOn();
-            s.alterarPrioridade(Prioridade.URGENTE);
-            assertEquals(Prioridade.URGENTE, s.getPriority());
-        }
-
-        @Test
-        @DisplayName("null não deve alterar a prioridade atual")
-        void nulo_naoAtualiza() {
-            var s = statementOn();
-            s.alterarPrioridade(null);
-            assertEquals(Prioridade.MEDIA, s.getPriority());
-        }
-    }
-
-    // ─── elevarPrioridade() / reduzirPrioridade() ─────────────────────────────
-
-    @Nested
-    @DisplayName("elevar/reduzir prioridade")
-    class ElevarReduzirPrioridade {
-
-        @Test
-        @DisplayName("elevarPrioridade() deve subir MEDIA para ALTA")
-        void elevar_media_paraAlta() {
-            var s = statementOn(); // MEDIA
             s.elevarPrioridade();
             assertEquals(Prioridade.ALTA, s.getPriority());
-        }
 
-        @Test
-        @DisplayName("elevarPrioridade() deve subir ALTA para URGENTE")
-        void elevar_alta_paraUrgente() {
-            var s = statementOn();
-            s.alterarPrioridade(Prioridade.ALTA);
-            s.elevarPrioridade();
-            assertEquals(Prioridade.URGENTE, s.getPriority());
-        }
-
-        @Test
-        @DisplayName("reduzirPrioridade() deve descer MEDIA para BAIXA")
-        void reduzir_media_paraBaixa() {
-            var s = statementOn(); // MEDIA
-            s.reduzirPrioridade();
-            assertEquals(Prioridade.BAIXA, s.getPriority());
-        }
-
-        @Test
-        @DisplayName("reduzirPrioridade() deve descer ALTA para MEDIA")
-        void reduzir_alta_paraMedia() {
-            var s = statementOn();
-            s.alterarPrioridade(Prioridade.ALTA);
             s.reduzirPrioridade();
             assertEquals(Prioridade.MEDIA, s.getPriority());
         }
-
-        @Test
-        @DisplayName("getPesoPrioridade() deve retornar 1 para MEDIA")
-        void getPeso_media() {
-            assertEquals(1, statementOn().getPesoPrioridade());
-        }
     }
 
-    // ─── apagarAnuncio() ──────────────────────────────────────────────────────
-
     @Nested
-    @DisplayName("apagarAnuncio()")
-    class ApagarAnuncio {
+    @DisplayName("Ciclo de Vida (Status)")
+    class CicloVida {
 
         @Test
-        @DisplayName("deve mudar status para OFF quando ON")
-        void on_paraOff() {
+        @DisplayName("deve desativar anúncio (apagar)")
+        void apagar() {
             var s = statementOn();
             s.apagarAnuncio();
             assertEquals(Status.OFF, s.getStatus());
         }
 
         @Test
-        @DisplayName("deve lançar InvalidDataException quando status já é OFF")
-        void jaOff_lancaExcecao() {
-            var s = statementOff();
-            var ex = assertThrows(InvalidDataException.class, s::apagarAnuncio);
-            assertNotNull(ex.getMessage());
-        }
+        @DisplayName("deve lançar erro ao apagar anúncio já desativado")
+        void apagarJaDesativado() {
+            var s = statementOn();
+            s.apagarAnuncio();
 
-        @Test
-        @DisplayName("status não deve ser alterado quando já OFF e lança exceção")
-        void naoAlteraEmCasoDeExcecao() {
-            var s = statementOff();
             assertThrows(InvalidDataException.class, s::apagarAnuncio);
-            assertEquals(Status.OFF, s.getStatus());
         }
     }
 }

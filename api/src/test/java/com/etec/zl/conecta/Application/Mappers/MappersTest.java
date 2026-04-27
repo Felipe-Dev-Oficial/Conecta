@@ -142,8 +142,8 @@ class MappersTest {
         private Statement statementPadrao() {
             return new Statement(
                     UUID.randomUUID(), "sender-1",
-                    new Content("Título"), Instant.now(),
-                    new Content("Conteúdo"), null,
+                    new String("Título"), Instant.now(),
+                    new String("Conteúdo"), null,
                     Prioridade.MEDIA, false, Status.ON, TargetVO.paraTodos()
             );
         }
@@ -174,7 +174,7 @@ class MappersTest {
         @DisplayName("toStatement com targetType GERAL deve gerar TargetVO com tipo GERAL e lista vazia")
         void toStatement_targetGeral() {
             var dto = new DTOAnuncio(
-                    new Content("Título"), new Content("Corpo"),
+                    new String("Título"), new String("Corpo"),
                     null, Prioridade.MEDIA, TargetType.GERAL, null
             );
             Statement s = mapper.toStatement("s-1", dto);
@@ -187,7 +187,7 @@ class MappersTest {
         @DisplayName("toStatement com targetType TURMA deve registrar o id nos targetIds")
         void toStatement_targetTurma() {
             var dto = new DTOAnuncio(
-                    new Content("Título"), new Content("Corpo"),
+                    new String("Título"), new String("Corpo"),
                     null, Prioridade.MEDIA, TargetType.TURMA, List.of("turma-99")
             );
             Statement s = mapper.toStatement("s-2", dto);
@@ -200,7 +200,7 @@ class MappersTest {
         @DisplayName("toStatement com targetType TURMA e sem id deve lançar IllegalArgumentException")
         void toStatement_targetTurma_semId() {
             var dto = new DTOAnuncio(
-                    new Content("Título"), new Content("Corpo"),
+                    new String("Título"), new String("Corpo"),
                     null, Prioridade.MEDIA, TargetType.TURMA, List.of()
             );
             assertThrows(IllegalArgumentException.class, () -> mapper.toStatement("s-3", dto));
@@ -211,7 +211,7 @@ class MappersTest {
         void toStatement_targetTurmas() {
             var ids = List.of("t1", "t2", "t3");
             var dto = new DTOAnuncio(
-                    new Content("Título"), new Content("Corpo"),
+                    new String("Título"), new String("Corpo"),
                     null, Prioridade.MEDIA, TargetType.TURMAS, ids
             );
             Statement s = mapper.toStatement("s-4", dto);
@@ -224,7 +224,7 @@ class MappersTest {
         @DisplayName("toStatement com targetType null deve usar TargetVO.paraTodos() como default")
         void toStatement_targetNull() {
             var dto = new DTOAnuncio(
-                    new Content("Título"), new Content("Corpo"),
+                    new String("Título"), new String("Corpo"),
                     null, Prioridade.MEDIA, null, null
             );
             Statement s = mapper.toStatement("s-5", dto);
@@ -245,7 +245,7 @@ class MappersTest {
         private final MessageMapper mapper = new MessageMapper();
 
         private Message messagePadrao() {
-            return new Message("sender-1", "receiver-1", new Content("Olá!"), null);
+            return new Message("sender-1", "receiver-1", new String("Olá!"), null);
         }
 
         @Test
@@ -255,20 +255,20 @@ class MappersTest {
             DTOReturnMessage dto = mapper.toReturn(name, messagePadrao());
 
             assertEquals(name,               dto.nameSender());
-            assertEquals("Olá!",             dto.content().content());
+            assertEquals("Olá!",             dto.content());
             assertNull(dto.midia());
         }
 
         @Test
         @DisplayName("toRegister deve mapear idSender, idReceiver, content e midia")
         void toRegister() {
-            var inner = new DTOInfoMessage(new Content("Olá!"), null);
+            var inner = new DTOInfoMessage(new String("Olá!"), null);
             var dto   = new DTORegisterMessage("sender-1", "receiver-1", inner);
             Message msg = mapper.toRegister(dto);
 
             assertEquals("sender-1",   msg.getIdSender());
             assertEquals("receiver-1", msg.getIdReceiver());
-            assertEquals("Olá!",       msg.getContent().content());
+            assertEquals("Olá!",       msg.getContent());
         }
 
         @Test
@@ -284,7 +284,7 @@ class MappersTest {
             assertEquals(nameReceiver, dto.nomeReceiver());
             assertEquals("sender-1",   dto.idSender());
             assertEquals("receiver-1", dto.idReceiver());
-            assertEquals("Olá!",       dto.content().content());
+            assertEquals("Olá!",       dto.content());
         }
 
         @Test
@@ -327,10 +327,10 @@ class MappersTest {
 
         // ─── Fixtures ────────────────────────────────────────────────────────────
 
-        private static final String USER_ID = "user-abc";
+        private static final java.lang.String USER_ID = "user-abc";
         private static final Name NOME = new Name("Arthur Henrique");
         private static final Email EMAIL = new Email("arthur@etec.sp.gov.br");
-        private static final List<String> CURSOS = List.of("curso-1", "curso-2");
+        private static final List<java.lang.String> CURSOS = List.of("curso-1", "curso-2");
 
         private User userFactory() {
             return new User(
@@ -342,7 +342,7 @@ class MappersTest {
             );
         }
 
-        private Solicitation solicitationFactory(TypeRequirement type, String other, boolean solved) {
+        private Solicitation solicitationFactory(TypeRequirement type, java.lang.String other, boolean solved) {
             return new Solicitation(
                     UUID.randomUUID(), type, other, solved,
                     USER_ID, NOME, EMAIL, CURSOS, Instant.now()

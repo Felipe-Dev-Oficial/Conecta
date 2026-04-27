@@ -1,0 +1,119 @@
+<div class="page-body">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Meus Requerimentos</h1>
+      <p class="text-muted">Solicite documentos e acompanhe seus pedidos</p>
+    </div>
+    <button class="btn btn-primary" (click)="abrirForm()">+ Novo Requerimento</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay" style="padding: 60px"><div class="spinner"></div></div>
+  } @else if (solicitations().length === 0) {
+    <div class="empty">
+      <div class="empty-icon">📋</div>
+      <p>Você ainda não fez nenhum requerimento.</p>
+      <button class="btn btn-primary btn-sm" style="margin-top: 12px" (click)="abrirForm()">
+        Fazer primeiro requerimento
+      </button>
+    </div>
+  } @else {
+    <div class="sol-list">
+      @for (s of solicitations(); track s.id) {
+        <div class="sol-item card" [class.sol-resolved]="s.solved">
+
+          <!-- Cabeçalho: ícone + título + data + badge -->
+          <div class="sol-header">
+            <div class="sol-tipo-icon" aria-hidden="true">
+              @if (s.type === 'DECLARAÇÃO_DE_MATRICULA') { 📄 }
+              @else if (s.type === 'CERTIFICADO_ATUAL') { 🎓 }
+              @else { 📝 }
+            </div>
+            <div class="sol-header-info">
+              <p class="sol-title">{{ labelTipo(s.type) }}</p>
+              <p class="sol-date">{{ formatDate(s.createdAt) }}</p>
+            </div>
+            <span class="sol-badge" [class.sol-badge-success]="s.solved" [class.sol-badge-warning]="!s.solved">
+              {{ s.solved ? '✓ Resolvido' : '⏳ Pendente' }}
+            </span>
+          </div>
+
+          <!-- Descrição (somente tipo OUTRO) -->
+          @if (s.type === 'OUTRO' && s.otherRequirement) {
+            <div class="sol-outro-wrapper">
+              <span class="sol-outro-label">Descrição</span>
+              <p class="sol-outro">{{ s.otherRequirement }}</p>
+            </div>
+          }
+
+          <!-- Rodapé de status -->
+          <div class="sol-footer">
+            @if (s.solved) {
+              <span class="sol-status-msg sol-status-success">Sua solicitação foi atendida pela secretaria.</span>
+            } @else {
+              <span class="sol-status-msg sol-status-pending">Aguardando análise da secretaria.</span>
+            }
+          </div>
+
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="goTo(page() - 1)" [disabled]="page() === 0">‹</button>
+        @for (p of pageRange(); track p) {
+          <button class="page-btn" [class.active]="p === page()" (click)="goTo(p)">{{ p + 1 }}</button>
+        }
+        <button class="page-btn" (click)="goTo(page() + 1)" [disabled]="page() === totalPages() - 1">›</button>
+      </div>
+    }
+  }
+</div>
+
+<!-- ── Modal: Novo Requerimento ─────────────────────────────────────────────── -->
+@if (showForm()) {
+  <div class="modal-backdrop" (click)="fecharForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Novo Requerimento</h3>
+        <button class="btn btn-ghost btn-icon btn-sm" (click)="fecharForm()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="field">
+          <label>Tipo de Requerimento</label>
+          <select class="input" [(ngModel)]="tipoSelecionado">
+            <option value="" disabled>Selecione...</option>
+            @for (t of tiposDisponiveis; track t.value) {
+              <option [value]="t.value">{{ t.label }}</option>
+            }
+          </select>
+        </div>
+
+        @if (tipoSelecionado === 'OUTRO') {
+          <div class="field">
+            <label>Descreva seu requerimento</label>
+            <textarea
+              class="input"
+              rows="4"
+              placeholder="Descreva detalhadamente o que você precisa..."
+              [(ngModel)]="outroTexto"
+            ></textarea>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="fecharForm()">Cancelar</button>
+        <button
+          class="btn btn-primary"
+          (click)="enviar()"
+          [disabled]="!tipoSelecionado || (tipoSelecionado === 'OUTRO' && !outroTexto.trim()) || enviando()"
+        >
+          @if (enviando()) { <span class="spinner"></span> } Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+}

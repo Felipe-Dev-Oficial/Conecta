@@ -1,0 +1,140 @@
+.busca-card { margin-bottom: 24px; }
+.busca-fields { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.busca-btn { height: 44px; flex-shrink: 0; }
+
+.sol-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sol-item {
+  transition: border-color var(--transition);
+}
+.sol-item:hover {
+  border-color: var(--border-light);
+}
+.sol-resolved {
+  opacity: 0.65;
+}
+
+/* Cabeçalho do card */
+.sol-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.sol-user {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sol-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid var(--accent-dim);
+  flex-shrink: 0;
+}
+
+.sol-nome {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.sol-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.badge-success {
+  background: var(--success-bg, rgba(34,197,94,0.12));
+  color: var(--success, #22c55e);
+  border-color: rgba(34,197,94,0.25);
+}
+
+.badge-warning {
+  background: var(--warning-bg, rgba(234,179,8,0.12));
+  color: var(--warning, #eab308);
+  border-color: rgba(234,179,8,0.25);
+}
+
+.badge-info {
+  background: var(--info-bg, rgba(59,130,246,0.12));
+  color: var(--info, #3b82f6);
+  border-color: rgba(59,130,246,0.25);
+}
+
+.sol-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  margin: 10px 0 2px;
+}
+
+/* Descrição "Outro" */
+.sol-outro {
+  margin: 10px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* Rodapé */
+.sol-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.sol-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}

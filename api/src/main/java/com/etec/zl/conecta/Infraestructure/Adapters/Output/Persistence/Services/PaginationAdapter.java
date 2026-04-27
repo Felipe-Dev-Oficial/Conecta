@@ -6,11 +6,16 @@ import com.etec.zl.conecta.Domain.ValueObjects.SliceResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 
 public class PaginationAdapter {
 
     public static Pageable toSpring(PageRequest req) {
         return org.springframework.data.domain.PageRequest.of(req.page(), req.size());
+    }
+
+    public static Pageable toSpring(PageRequest req, Sort sort) {
+        return org.springframework.data.domain.PageRequest.of(req.page(), req.size(), sort);
     }
 
     public static <T> PageResult<T> toDomain(Page<T> page) {

@@ -25,6 +25,7 @@ public interface UserRepository {
     PageResult<User> findAll(PageRequest pageable);
     PageResult<User> findAllByName(Name name, PageRequest pageable);
     PageResult<User> findAllSecretaria(PageRequest pageable);
+    List<Notificador> findAllNotificadoresSecretariaSolicitation();
     void delete(String id);
 
     //professores

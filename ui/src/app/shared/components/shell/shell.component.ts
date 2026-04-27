@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, effect } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/http/auth/auth.service';
@@ -21,6 +21,7 @@ export class ShellComponent {
   router = inject(Router);
   mobileOpen = signal(false);
   platformId = inject(PLATFORM_ID);
+  collapsed = signal(false);
 
   isLogado = computed(() => {
     return isPlatformBrowser(this.platformId) && !!localStorage.getItem('token');
@@ -41,6 +42,16 @@ export class ShellComponent {
     };
     return map[this.role()] ?? this.role();
   });
+
+  constructor() {
+    // Propaga o estado collapsed para o body — qualquer componente filho
+    // (mensagens, etc.) pode reagir via CSS: body.sidebar-collapsed ...
+    effect(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        document.body.classList.toggle('sidebar-collapsed', this.collapsed());
+      }
+    });
+  }
 
   async logout() { await this.auth.logout(); }
 }

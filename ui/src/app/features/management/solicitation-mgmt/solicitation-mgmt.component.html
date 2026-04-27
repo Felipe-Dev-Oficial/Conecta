@@ -1,0 +1,107 @@
+<div class="page-body">
+  <div class="page-header">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <a routerLink="/management" class="btn btn-ghost btn-sm btn-icon">←</a>
+      <div>
+        <h1 class="page-title">Requerimentos</h1>
+        <p class="text-muted">Gerenciar solicitações dos alunos e professores</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Busca -->
+  <div class="busca-card card">
+    <h3 class="font-display" style="font-size: 15px; font-weight: 600; margin-bottom: 14px">Filtrar requerimentos</h3>
+    <div class="busca-fields">
+      <div class="field" style="flex: 1; min-width: 200px">
+        <label>Buscar por nome ou RM</label>
+        <input
+          class="input"
+          type="text"
+          placeholder="Ex: João Silva ou 123456"
+          [(ngModel)]="search"
+          (keyup.enter)="buscar()"
+        />
+      </div>
+      <button class="btn btn-primary busca-btn" (click)="buscar()" [disabled]="loading()">
+        @if (loading()) { <span class="spinner"></span> } @else { 🔍 } Buscar
+      </button>
+    </div>
+  </div>
+
+  <!-- Lista -->
+  @if (loading()) {
+    <div class="loading-overlay" style="padding: 60px"><div class="spinner"></div></div>
+  } @else if (solicitations().length === 0) {
+    <div class="empty">
+      <div class="empty-icon">📋</div>
+      <p>Nenhum requerimento encontrado.</p>
+    </div>
+  } @else {
+    <div class="sol-list">
+      @for (s of solicitations(); track s.id) {
+        <div class="sol-item card" [class.sol-resolved]="s.solved">
+          <!-- Cabeçalho do card -->
+          <div class="sol-header">
+            <div class="sol-user">
+              <div class="sol-avatar">{{ s.nome.name[0]?.toUpperCase() }}</div>
+              <div>
+                <div class="sol-nome">{{ s.nome.name }}</div>
+                <div class="text-muted" style="font-size: 11px; font-family: var(--font-mono)">{{ s.idSoliciter }}</div>
+                <div class="text-muted" style="font-size: 11px">{{ s.emailSoliciter.email }}</div>
+              </div>
+            </div>
+            <div class="sol-badges">
+              <span class="badge" [class.badge-success]="s.solved" [class.badge-warning]="!s.solved">
+                {{ s.solved ? '✓ Resolvido' : '⏳ Pendente' }}
+              </span>
+              <span class="badge badge-info">{{ labelTipo(s.typeRequirement) }}</span>
+            </div>
+          </div>
+
+          <!-- Nome da solicitação em destaque -->
+          <div class="sol-title">{{ labelTipo(s.typeRequirement) }}</div>
+
+          <!-- Descrição (apenas para OUTRO) -->
+          @if (s.typeRequirement === 'OUTRO' && s.otherRequirement) {
+            <p class="sol-outro">{{ s.otherRequirement }}</p>
+          }
+
+          <!-- Rodapé: data + ações -->
+          <div class="sol-footer">
+            <span class="text-muted" style="font-size: 12px">{{ formatDate(s.createdAt) }}</span>
+            <div class="sol-actions">
+              <button
+                class="btn btn-ghost btn-sm"
+                (click)="responder(s.idSoliciter)"
+                title="Responder por mensagem"
+              >
+                Responder
+              </button>
+              @if (!s.solved) {
+                <button
+                  class="btn btn-primary btn-sm"
+                  (click)="resolver(s.id)"
+                  [disabled]="resolvendo() === s.id"
+                >
+                  @if (resolvendo() === s.id) { <span class="spinner"></span> }
+                  ✓ Marcar como resolvido
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="goTo(page() - 1)" [disabled]="page() === 0">‹</button>
+        @for (p of pageRange(); track p) {
+          <button class="page-btn" [class.active]="p === page()" (click)="goTo(p)">{{ p + 1 }}</button>
+        }
+        <button class="page-btn" (click)="goTo(page() + 1)" [disabled]="page() === totalPages() - 1">›</button>
+      </div>
+    }
+  }
+</div>

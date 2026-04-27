@@ -59,6 +59,11 @@ export const routes: Routes = [
           import('./features/perfil/perfil.component').then(m => m.PerfilComponent),
       },
       {
+        path: 'solicitacoes',
+        loadComponent: () =>
+          import('./features/solicitation/solicitation.component').then(m => m.SolicitationComponent),
+      },
+      {
         path: 'management',
         canActivate: [secretariaGuard],
         children: [
@@ -96,6 +101,13 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/management/mensagens-mgmt/mensagens-mgmt.component').then(
                 m => m.MensagensMgmtComponent,
+              ),
+          },
+          {
+            path: 'solicitacoes',
+            loadComponent: () =>
+              import('./features/management/solicitation-mgmt/solicitation-mgmt.component').then(
+                m => m.SolicitationMgmtComponent,
               ),
           },
         ],

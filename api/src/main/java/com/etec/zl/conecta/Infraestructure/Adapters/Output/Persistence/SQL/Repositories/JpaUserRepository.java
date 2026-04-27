@@ -1,6 +1,7 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories;
 
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Entities.UserEntity;
+import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Projection.NotificadorProjection;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -207,6 +208,14 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     List<NotificadorProjection> findAllNotificadoresForExAlunos();
 
     @Query(value = """
+    SELECT n.id, n.endpoint, n.p256dh, n.auth
+    FROM notificador n
+    JOIN users u ON n.user_id = u.id
+    WHERE u.tipo = 'SECRETARIA'
+    """, nativeQuery = true)
+    List<NotificadorProjection> findAllNotificadoresForSecretaria();
+
+    @Query(value = """
     SELECT DISTINCT n.id, n.endpoint, n.p256dh, n.auth
     FROM notificador n
     JOIN aluno_turmas at ON n.user_id = at.aluno_id
@@ -220,6 +229,7 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     WHERE n.user_id = :userId
     """, nativeQuery = true)
     List<NotificadorProjection> findNotificadoresByUserId(@Param("userId") String userId);
+
 
     Page<UserEntity> findByTipoIn(List<String> tipos, Pageable pageable);
 

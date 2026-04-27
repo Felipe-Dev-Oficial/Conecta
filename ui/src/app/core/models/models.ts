@@ -243,6 +243,39 @@ export interface Statement {
   pesoPrioridade: number;
 }
 
+export type TypeRequirement =
+  | 'DECLARAÇÃO_DE_MATRICULA'
+  | 'CERTIFICADO_ATUAL'
+  | 'OUTRO';
+ 
+/** POST /conecta/solicitations — body enviado */
+export interface DTORequirement {
+  typeRequirement: TypeRequirement;
+  otherRequirement: string | null;
+}
+ 
+/** GET /conecta/solicitations — retorno do próprio usuário */
+export interface DTOReturnRequirement {
+  id: string;
+  type: TypeRequirement;
+  otherRequirement: string | null;
+  solved: boolean;
+  createdAt: string; // ISO string
+}
+ 
+/** GET /conecta/management/solicitations — retorno completo para secretaria */
+export interface Solicitation {
+  id: string;
+  typeRequirement: TypeRequirement;
+  otherRequirement: string | null;
+  solved: boolean;
+  idSoliciter: string;
+  nome: Name;            
+  emailSoliciter: Email; 
+  idCursos: string[];
+  createdAt: string;     // ISO string
+}
+
 export interface UserData {
   id: string;
   nome: string;

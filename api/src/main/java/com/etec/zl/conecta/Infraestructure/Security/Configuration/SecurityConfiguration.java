@@ -68,6 +68,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/conecta/mensagens/**").authenticated()
                         .requestMatchers("/conecta/auth").permitAll()
                         .requestMatchers("/conecta/notification").permitAll()
+                        .requestMatchers("/conecta/solicitations").hasAnyRole("ALUNO", "PROFESSOR", "DESATIVADO")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)

@@ -1,7 +1,7 @@
 /* ── Layout raiz ─────────────────────────────────────────────────────────── */
 .mensagens-layout {
   display: flex;
-  height: 100dvh;   /* dvh: desconta barras do browser mobile */
+  height: 100dvh;
   overflow: hidden;
   position: relative;
 }
@@ -15,7 +15,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: width 0.2s ease, transform 0.2s ease;
+  transition: width var(--transition), transform var(--transition);
 }
 
 .contatos-header {
@@ -26,6 +26,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  /* evita que o header quebre quando a sidebar encolhe */
+  overflow: hidden;
 }
 
 .contatos-list {
@@ -46,6 +48,7 @@
   cursor: pointer;
   text-align: left;
   transition: background var(--transition);
+  overflow: hidden;
 }
 .contato-item:hover  { background: var(--bg-2); }
 .contato-item.active { background: var(--accent-glow); border-left: 3px solid var(--accent); }
@@ -66,8 +69,8 @@
   border: 1px solid var(--border);
 }
 
-.contato-info  { flex: 1; min-width: 0; }
-.contato-nome  { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.contato-info  { flex: 1; min-width: 0; overflow: hidden; }
+.contato-nome  { font-size: 14px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── Painel do chat ──────────────────────────────────────────────────────── */
 .chat-panel {
@@ -75,7 +78,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 0;         /* essencial para o flex filho não vazar */
+  min-height: 0;
   background: var(--bg-0);
   overflow: hidden;
 }
@@ -99,7 +102,6 @@
   flex-shrink: 0;
 }
 
-/* botão voltar — só aparece no mobile */
 .btn-back {
   display: none;
   background: none;
@@ -120,7 +122,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 0;         /* crítico: sem isso o flex não limita a altura */
+  min-height: 0;
 }
 
 /* ── Bolhas ──────────────────────────────────────────────────────────────── */
@@ -174,7 +176,6 @@
   border-top: 1px solid var(--border);
   flex-shrink: 0;
   align-items: center;
-  /* empurra a barra para cima do teclado virtual no iOS */
   padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
 
@@ -196,31 +197,63 @@
   border-color: var(--accent-dim);
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+   Desktop: sidebar de contatos encolhe quando o shell está colapsado.
+   O ShellComponent adiciona/remove body.sidebar-collapsed via effect(),
+   então qualquer componente na página pode reagir aqui sem comunicação direta.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 641px) {
+  body.sidebar-collapsed .contatos-panel {
+    width: 64px;
+  }
+
+  body.sidebar-collapsed .contatos-panel .contato-nome,
+  body.sidebar-collapsed .contatos-panel .contato-info,
+  body.sidebar-collapsed .contatos-panel h2,
+  body.sidebar-collapsed .contatos-panel .btn {
+    display: none;
+  }
+
+  body.sidebar-collapsed .contatos-panel .contatos-header {
+    justify-content: center;
+    padding: 12px 8px;
+  }
+
+  body.sidebar-collapsed .contatos-panel .contato-item {
+    justify-content: center;
+    padding: 10px 8px;
+    gap: 0;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 900px) {
+  .contatos-panel { width: 220px; }
+}
+
 /* ── Mobile (≤ 640px) ────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .mensagens-layout {
     position: relative;
-    height: 100dvh;          /* ocupa toda a viewport incluindo topbar */
-    flex-direction: column;  /* empilha verticalmente */
+    height: 100dvh;
+    flex-direction: column;
   }
 
-  /* Lista de contatos vira tela cheia quando nenhum contato está selecionado */
   .contatos-panel {
-    width: 100%;
+    width: 100% !important;
     height: 100%;
     position: absolute;
     top: 0; left: 0;
     z-index: 2;
     transform: translateX(0);
     transition: transform 0.25s ease;
+    flex-shrink: unset;
   }
 
-  /* Quando um contato está ativo, desliza a lista para fora */
   .mensagens-layout.chat-ativo .contatos-panel {
     transform: translateX(-100%);
   }
 
-  /* Chat ocupa a tela toda */
   .chat-panel {
     width: 100%;
     height: 100%;
@@ -229,17 +262,11 @@
     z-index: 1;
   }
 
-  /* Mostra o botão de voltar */
   .btn-back { display: flex; align-items: center; }
-
   .msg-bubble { max-width: 88%; }
-
   .chat-msgs { padding: 12px; }
-
-  .chat-input-bar { padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
-}
-
-/* ── Tablet (641–900px) ──────────────────────────────────────────────────── */
-@media (min-width: 641px) and (max-width: 900px) {
-  .contatos-panel { width: 220px; }
+  .chat-input-bar {
+    padding: 10px 12px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
 }

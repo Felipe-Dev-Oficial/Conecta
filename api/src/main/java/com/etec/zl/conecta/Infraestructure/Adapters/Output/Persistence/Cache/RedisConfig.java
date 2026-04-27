@@ -95,6 +95,7 @@ public class RedisConfig {
         specs.put("faq-single",    defaultConfig.entryTtl(Duration.ofHours(4)));
         specs.put("statements",    defaultConfig.entryTtl(Duration.ofHours(4)));
         specs.put("messages",      defaultConfig.entryTtl(Duration.ofHours(2)));
+        specs.put("solicitations",  defaultConfig.entryTtl(Duration.ofHours(2)));
 
         return RedisCacheManager.builder(factory)
                 .cacheDefaults(defaultConfig)

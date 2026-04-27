@@ -11,7 +11,11 @@
       <div class="loading-overlay" style="padding: 30px"><div class="spinner"></div></div>
     } @else if (contatos().length === 0) {
       <div class="empty" style="padding: 30px">
-        <div class="empty-icon">💬</div>
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 21 1.9-1.9A9 9 0 1 1 21 12.4a9 9 0 0 1-18 8.6Z"/>
+          </svg>
+        </div>
         <p>Sem contatos.</p>
         <button class="btn btn-ghost btn-sm" style="margin-top: 10px" (click)="abrirNova()">Iniciar conversa</button>
       </div>
@@ -33,7 +37,11 @@
   <main class="chat-panel">
     @if (!contatoAtivo()) {
       <div class="empty chat-empty">
-        <div class="empty-icon">💬</div>
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 21 1.9-1.9A9 9 0 1 1 21 12.4a9 9 0 0 1-18 8.6Z"/>
+          </svg>
+        </div>
         <p>Selecione um contato para ver as mensagens</p>
         <button class="btn btn-primary btn-sm" style="margin-top: 16px" (click)="abrirNova()">+ Nova conversa</button>
       </div>

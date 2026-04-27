@@ -1,3 +1,7 @@
+<div align="right">
+  <a href="https://github.com/Etec-da-Zona-Leste-TCCs-DS-Noite/Conecta/blob/main/README.en.md">English</a>
+</div>
+
 <div align="center">
 
 <img src="https://img.shields.io/badge/-%F0%9F%93%9A%20CONECTA-0d1117?style=for-the-badge&labelColor=0d1117&color=4A90D9&logoColor=white" height="40"/>
@@ -21,8 +25,8 @@
 O Conecta resolve isso oferecendo um **hub centralizado** onde:
 
 - **Alunos** recebem anúncios, comunicados e podem enviar mensagens diretamente à secretaria ou professores
-- **Professores** publicam anúncios para suas turmas com segmentação precisa
-- **A secretaria** gerencia usuários, turmas, FAQs e tem visibilidade total da comunicação
+- **Professores** recebem anúncios e conseguem enviar mensagens diretamente aos alunos de suas respectivas turmas
+- **A secretaria** gerencia usuários, turmas, anúncios, FAQs e tem visibilidade total da comunicação
 
 Tudo isso acessível via web, com autenticação segura, notificações push, suporte a arquivos de mídia e uma experiência fluida tanto no desktop quanto no mobile.
 
@@ -262,7 +266,6 @@ Acesse em `http://localhost` (Nginx redireciona para HTTPS em produção).
 
 ## 📍 Próximos passos
 
-- [ ] Formulário de requerimentos
 - [ ] Realização de testes práticos
    
 ---

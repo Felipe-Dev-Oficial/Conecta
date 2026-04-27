@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MensagensService } from '../../core/services/http/mensagem/mensagem.service';
 import { AuthService } from '../../core/services/http/auth/auth.service';
 import { ToastService } from '../../core/services/toast/toast.service';
@@ -19,6 +20,7 @@ export class MensagensComponent implements OnInit {
   svc = inject(MensagensService);
   auth = inject(AuthService);
   toast = inject(ToastService);
+  router = inject(Router);
 
   contatos = signal<DTOContatos[]>([]);
   mensagens = signal<DTOReturnMessage[]>([]);
@@ -42,8 +44,26 @@ export class MensagensComponent implements OnInit {
   meuNome = computed(() => this.auth.getUserData()?.nome ?? '');
 
   ngOnInit() {
-    this.svc.listarContatos().subscribe({
-      next: r => { this.contatos.set(r.content); this.loadingContatos.set(false); },
+  this.svc.listarContatos().subscribe({
+    next: r => {
+      this.contatos.set(r.content);
+      this.loadingContatos.set(false);
+ 
+      // Se vier de "Responder" em Solicitações, o Router state traz destinatarioId
+      const destinatarioId = (history.state as { destinatarioId?: string })?.destinatarioId;
+ 
+      if (destinatarioId) {
+        const existente = r.content.find(c => c.id === destinatarioId);
+        if (existente) {
+          // Contato já existe na lista — abre o chat direto
+          this.selecionarContato(existente);
+        } else {
+          // Nunca conversaram — abre modal nova conversa com RM já preenchido
+          this.abrirNova();
+          this.novoDestinatarioId = destinatarioId;
+        }
+      }
+    },
       error: () => { this.toast.error('Erro ao carregar contatos.'); this.loadingContatos.set(false); },
     });
   }

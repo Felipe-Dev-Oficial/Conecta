@@ -1,7 +1,6 @@
 package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Repositories;
 
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Entities.MessageEntity;
-import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.NoSQL.Entities.StatementEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

@@ -5,8 +5,11 @@ import com.etec.zl.conecta.Application.DTOs.Users.DTOCadastro;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoNormal;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoSecretaria;
 import com.etec.zl.conecta.Application.Ports.Input.Messages.LerMensagensSecretariaPort;
+import com.etec.zl.conecta.Application.Ports.Input.Solicitations.GetSolicitationsSecretariaPort;
+import com.etec.zl.conecta.Application.Ports.Input.Solicitations.SolveSolicitationPort;
 import com.etec.zl.conecta.Application.Ports.Input.Turmas.*;
 import com.etec.zl.conecta.Application.Ports.Input.Users.*;
+import com.etec.zl.conecta.Domain.Entities.Solicitations.Solicitation;
 import com.etec.zl.conecta.Domain.Entities.Turmas.Turma;
 import com.etec.zl.conecta.Domain.ValueObjects.*;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("conecta")
@@ -40,6 +44,8 @@ public class SecretariaController {
     private final PassaModuloPort passaModuloPort;
     private final LerMensagensSecretariaPort lerMensagensSecretariaPort;
     private final RetornarSecretariaPort retornarSecretariaPort;
+    private final GetSolicitationsSecretariaPort getSolicitationsSecretariaPort;
+    private final SolveSolicitationPort solveSolicitationPort;
 
     @GetMapping("/management/alunos")
     public PageResult<DTORetornoSecretaria> lerCursantes(
@@ -184,5 +190,19 @@ public class SecretariaController {
             @RequestParam(defaultValue = "20") int size){
         var request = new PageRequest(page, size);
         return retornarSecretariaPort.listagemSecretaria(request);
+    }
+
+    @GetMapping("/management/solicitations")
+    public PageResult<Solicitation> getSolicitationsSecretaria(
+            @RequestParam String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return getSolicitationsSecretariaPort.getSolicitationsSecretaria(search, new PageRequest(page, size));
+    }
+
+    @PatchMapping("/management/solicitations")
+    public void solveSolicitation(@RequestParam UUID id){
+        solveSolicitationPort.solveSolicitation(id);
     }
 }

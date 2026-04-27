@@ -2,6 +2,7 @@ package com.etec.zl.conecta.Infraestructure.Configuration;
 
 import com.etec.zl.conecta.Application.Mappers.FAQs.FAQMapper;
 import com.etec.zl.conecta.Application.Mappers.Messages.MessageMapper;
+import com.etec.zl.conecta.Application.Mappers.Solicitations.SolicitationMapper;
 import com.etec.zl.conecta.Application.Mappers.Statements.StatementMapper;
 import com.etec.zl.conecta.Application.Mappers.Turmas.TurmaMapper;
 import com.etec.zl.conecta.Application.Mappers.Users.UserMapper;
@@ -15,6 +16,10 @@ import com.etec.zl.conecta.Application.Services.Services.Users.*;
 import com.etec.zl.conecta.Application.UseCases.FAQs.*;
 import com.etec.zl.conecta.Application.UseCases.Messages.*;
 import com.etec.zl.conecta.Application.UseCases.Midia.UploadMidiaUseCase;
+import com.etec.zl.conecta.Application.UseCases.Solicitations.GetSelfSolicitationUseCase;
+import com.etec.zl.conecta.Application.UseCases.Solicitations.GetSolicitationsSecretariaUseCase;
+import com.etec.zl.conecta.Application.UseCases.Solicitations.SendSolicitationUseCase;
+import com.etec.zl.conecta.Application.UseCases.Solicitations.SolveSolicitationUseCase;
 import com.etec.zl.conecta.Application.UseCases.Statements.*;
 import com.etec.zl.conecta.Application.UseCases.Turmas.*;
 import com.etec.zl.conecta.Application.UseCases.Users.*;
@@ -55,6 +60,11 @@ class AppConfiguration {
     @Bean
     StatementMapper statementMapper() {
         return new StatementMapper();
+    }
+
+    @Bean
+    SolicitationMapper solicitationMapper() {
+        return new SolicitationMapper();
     }
 
     @Bean
@@ -297,67 +307,87 @@ class AppConfiguration {
         return new LerAnuncioSecretariaUseCase(statementRepository, userRepository, mapper, userService);
     }
     @Bean
-    public ListarTodasAsTurmasAtuaisUseCase listarTodasAsTurmasAtuaisUseCase(TurmaRepository turmaRepository) {
+    ListarTodasAsTurmasAtuaisUseCase listarTodasAsTurmasAtuaisUseCase(TurmaRepository turmaRepository) {
         return new ListarTodasAsTurmasAtuaisUseCase(turmaRepository);
     }
 
     @Bean
-    public ListarTodasAsTurmasUseCase listarTodasAsTurmasUseCase(TurmaRepository turmaRepository) {
+    ListarTodasAsTurmasUseCase listarTodasAsTurmasUseCase(TurmaRepository turmaRepository) {
         return new ListarTodasAsTurmasUseCase(turmaRepository);
     }
 
     @Bean
-    public ListarTurmasPorCursoAtuaisUseCase listarTurmasPorCursoAtuaisUseCase(TurmaRepository turmaRepository) {
+    ListarTurmasPorCursoAtuaisUseCase listarTurmasPorCursoAtuaisUseCase(TurmaRepository turmaRepository) {
         return new ListarTurmasPorCursoAtuaisUseCase(turmaRepository);
     }
 
     @Bean
-    public ListarTurmasPorCursoUseCase listarTurmasPorCursoUseCase(TurmaRepository turmaRepository) {
+    ListarTurmasPorCursoUseCase listarTurmasPorCursoUseCase(TurmaRepository turmaRepository) {
         return new ListarTurmasPorCursoUseCase(turmaRepository);
     }
 
     @Bean
-    public NovasTurmasUseCase novasTurmasUseCase(TurmaRepository turmaRepository, TurmaMapper turmaMapper) {
+    NovasTurmasUseCase novasTurmasUseCase(TurmaRepository turmaRepository, TurmaMapper turmaMapper) {
         return new NovasTurmasUseCase(turmaRepository, turmaMapper);
     }
 
     @Bean
-    public PassaModuloUseCase passaModuloUseCase(TurmaRepository turmaRepository) {
+    PassaModuloUseCase passaModuloUseCase(TurmaRepository turmaRepository) {
         return new PassaModuloUseCase(turmaRepository);
     }
 
     @Bean
-    public EncontrarTurmaPorIdUseCase encontrarTurmaPorIdUseCase(TurmaRepository turmaRepository) {
+    EncontrarTurmaPorIdUseCase encontrarTurmaPorIdUseCase(TurmaRepository turmaRepository) {
         return new EncontrarTurmaPorIdUseCase(turmaRepository);
     }
 
     @Bean
-    public RetornarSecretariaUseCase retornarSecretariaUseCase(UserRepository userRepository, TryGetUsersService tryGetUsersService) {
+    RetornarSecretariaUseCase retornarSecretariaUseCase(UserRepository userRepository, TryGetUsersService tryGetUsersService) {
         return new RetornarSecretariaUseCase(userRepository, tryGetUsersService);
     }
 
     @Bean
-    public UploadMidiaUseCase uploadMidiaUseCase(MidiaStorage midiaStorage) {
+    UploadMidiaUseCase uploadMidiaUseCase(MidiaStorage midiaStorage) {
         return new UploadMidiaUseCase(midiaStorage);
     }
 
     @Bean
-    public LerAnunciosGeraisUseCase lerAnunciosGeraisUseCase(StatementMapper statementRepository, TryGetByUserService userService, StatementRepository statementMapper, UserRepository userRepository){
+    LerAnunciosGeraisUseCase lerAnunciosGeraisUseCase(StatementMapper statementRepository, TryGetByUserService userService, StatementRepository statementMapper, UserRepository userRepository){
         return new LerAnunciosGeraisUseCase(statementRepository, userService, statementMapper, userRepository);
     }
 
     @Bean
-    public VincularNotificadorUseCase vincularTokenNotificadorUseCase(UserRepository userRepository, TryGetByUserService tryGetByUserService) {
+    VincularNotificadorUseCase vincularTokenNotificadorUseCase(UserRepository userRepository, TryGetByUserService tryGetByUserService) {
         return new VincularNotificadorUseCase(userRepository, tryGetByUserService);
     }
 
     @Bean
-    public DeleteNotificadorUseCase deleteNotificadorUseCase(UserRepository userRepository){
+    DeleteNotificadorUseCase deleteNotificadorUseCase(UserRepository userRepository){
         return new DeleteNotificadorUseCase(userRepository);
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    GetSelfSolicitationUseCase getSelfSolicitationUseCase(SolicitationRepository solicitationRepository, SolicitationMapper solicitationMapper){
+        return new GetSelfSolicitationUseCase(solicitationRepository, solicitationMapper);
+    }
+
+    @Bean
+    GetSolicitationsSecretariaUseCase getSolicitationsSecretariaUseCase(SolicitationRepository solicitationRepository){
+        return new GetSolicitationsSecretariaUseCase(solicitationRepository);
+    }
+
+    @Bean
+    SendSolicitationUseCase sendSolicitationUseCase(SolicitationRepository solicitationRepository, UserRepository userRepository, TryGetByUserService userService, SolicitationMapper solicitationMapper, NotificationService notificationService){
+        return new SendSolicitationUseCase(solicitationRepository, userRepository, userService, solicitationMapper, notificationService);
+    }
+
+    @Bean
+    SolveSolicitationUseCase solveSolicitationUseCase(SolicitationRepository solicitationRepository){
+        return new SolveSolicitationUseCase(solicitationRepository);
+    }
+
+    @Bean
+    BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

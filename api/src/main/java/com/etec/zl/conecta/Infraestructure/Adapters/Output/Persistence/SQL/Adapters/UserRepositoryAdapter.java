@@ -7,7 +7,7 @@ import com.etec.zl.conecta.Domain.ValueObjects.*;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Entities.NotificadorEntity;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Mappers.UserAdapterMapper;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories.JpaUserRepository;
-import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories.NotificadorProjection;
+import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Projection.NotificadorProjection;
 import com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.Services.PaginationAdapter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -157,6 +157,14 @@ public class UserRepositoryAdapter implements UserRepository {
     public PageResult<User> findAllSecretaria(PageRequest pageable) {
         return PaginationAdapter.toDomain(externalRepository.findByTipoIn(List.of("SECRETARIA"), PaginationAdapter.toSpring(pageable))
                 .map(mapper::toDomain));
+    }
+
+    @Override
+    public List<Notificador> findAllNotificadoresSecretariaSolicitation() {
+        return externalRepository.findAllNotificadoresForSecretaria()
+                .stream()
+                .map(p -> new Notificador(p.getId(), p.getEndpoint(), p.getP256dh(), p.getAuth()))
+                .toList();
     }
 
     @Override

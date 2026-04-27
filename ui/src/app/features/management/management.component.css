@@ -54,3 +54,25 @@
   transform: translateX(20px);
   background: #fff;
 }
+
+.mgmt-icon {
+  width: 42px;  
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; 
+}
+
+.mgmt-icon ::ng-deep svg {
+  width: 100%;  
+  height: 100%;
+  max-width: 24px; 
+  max-height: 24px;
+  stroke: currentColor; 
+  transition: transform 0.3s ease;
+}
+
+.mgmt-card:hover .mgmt-icon ::ng-deep svg {
+  transform: scale(1.1);
+}

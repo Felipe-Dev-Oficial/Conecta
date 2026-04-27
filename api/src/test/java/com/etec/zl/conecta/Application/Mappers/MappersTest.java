@@ -3,6 +3,7 @@ package com.etec.zl.conecta.Application.Mappers;
 import com.etec.zl.conecta.Application.DTOs.FAQs.DTORegisterFAQ;
 import com.etec.zl.conecta.Application.DTOs.FAQs.DTOReturnFAQ;
 import com.etec.zl.conecta.Application.DTOs.Messages.*;
+import com.etec.zl.conecta.Application.DTOs.Solicitations.DTORequirement;
 import com.etec.zl.conecta.Application.DTOs.Statements.DTOAnuncio;
 import com.etec.zl.conecta.Application.DTOs.Statements.DTOLeitura;
 import com.etec.zl.conecta.Application.DTOs.Statements.DTORetornoAnuncio;
@@ -11,11 +12,13 @@ import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoNormal;
 import com.etec.zl.conecta.Application.DTOs.Users.DTORetornoSecretaria;
 import com.etec.zl.conecta.Application.Mappers.FAQs.FAQMapper;
 import com.etec.zl.conecta.Application.Mappers.Messages.MessageMapper;
+import com.etec.zl.conecta.Application.Mappers.Solicitations.SolicitationMapper;
 import com.etec.zl.conecta.Application.Mappers.Statements.StatementMapper;
 import com.etec.zl.conecta.Application.Mappers.Turmas.TurmaMapper;
 import com.etec.zl.conecta.Application.Mappers.Users.UserMapper;
 import com.etec.zl.conecta.Domain.Entities.FAQs.FAQ;
 import com.etec.zl.conecta.Domain.Entities.Messages.Message;
+import com.etec.zl.conecta.Domain.Entities.Solicitations.Solicitation;
 import com.etec.zl.conecta.Domain.Entities.Statements.Statement;
 import com.etec.zl.conecta.Domain.Entities.Turmas.Turma;
 import com.etec.zl.conecta.Domain.Entities.Users.User;
@@ -28,6 +31,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Mappers")
@@ -312,6 +316,147 @@ class MappersTest {
 
             assertEquals(Cursos.ADMINISTRACAO, turma.getCurso());
             assertEquals(3, turma.getModulos());
+        }
+    }
+
+    @Nested
+    @DisplayName("SolicitationMapper")
+    class SolicitationMapperTest {
+
+        private final SolicitationMapper mapper = new SolicitationMapper();
+
+        // ─── Fixtures ────────────────────────────────────────────────────────────
+
+        private static final String USER_ID = "user-abc";
+        private static final Name NOME = new Name("Arthur Henrique");
+        private static final Email EMAIL = new Email("arthur@etec.sp.gov.br");
+        private static final List<String> CURSOS = List.of("curso-1", "curso-2");
+
+        private User userFactory() {
+            return new User(
+                    USER_ID, NOME, EMAIL,
+                    new PhoneNumber("11930055058"),
+                    new Password("SenhaSenhuda78#"),
+                    Tipo.ALUNO,
+                    CURSOS
+            );
+        }
+
+        private Solicitation solicitationFactory(TypeRequirement type, String other, boolean solved) {
+            return new Solicitation(
+                    UUID.randomUUID(), type, other, solved,
+                    USER_ID, NOME, EMAIL, CURSOS, Instant.now()
+            );
+        }
+
+        // ─── toRegister ──────────────────────────────────────────────────────────
+
+        @Nested
+        @DisplayName("toRegister()")
+        class ToRegister {
+
+            @Test
+            @DisplayName("should pull id, name, email and turmas from User")
+            void shouldMapUserFieldsToSolicitation() {
+                var dto = new DTORequirement(TypeRequirement.DECLARAÇÃO_DE_MATRICULA, null);
+                var result = mapper.toRegister(userFactory(), dto);
+
+                assertThat(result.getIdSoliciter()).isEqualTo(USER_ID);
+                assertThat(result.getNome()).isEqualTo(NOME);
+                assertThat(result.getEmailSoliciter()).isEqualTo(EMAIL);
+                assertThat(result.getIdCursos()).containsExactlyElementsOf(CURSOS);
+            }
+
+            @Test
+            @DisplayName("should map typeRequirement from DTO")
+            void shouldMapTypeRequirement() {
+                var dto = new DTORequirement(TypeRequirement.CERTIFICADO_ATUAL, null);
+                var result = mapper.toRegister(userFactory(), dto);
+
+                assertThat(result.getTypeRequirement()).isEqualTo(TypeRequirement.CERTIFICADO_ATUAL);
+            }
+
+            @Test
+            @DisplayName("should propagate otherRequirement when type is OUTRO")
+            void shouldPropagateOtherRequirementForOutro() {
+                var dto = new DTORequirement(TypeRequirement.OUTRO, "Atestado de frequência");
+                var result = mapper.toRegister(userFactory(), dto);
+
+                assertThat(result.getTypeRequirement()).isEqualTo(TypeRequirement.OUTRO);
+                assertThat(result.getOtherRequirement()).isEqualTo("Atestado de frequência");
+            }
+
+            @Test
+            @DisplayName("should produce a new Solicitation with generated id and solved=false")
+            void shouldProduceUnsolved() {
+                var dto = new DTORequirement(TypeRequirement.DECLARAÇÃO_DE_MATRICULA, null);
+                var result = mapper.toRegister(userFactory(), dto);
+
+                assertThat(result.getId()).isNotNull();
+                assertThat(result.isSolved()).isFalse();
+            }
+
+            @Test
+            @DisplayName("should set createdAt close to now")
+            void shouldSetCreatedAtToNow() {
+                var before = Instant.now().minusSeconds(1);
+                var dto = new DTORequirement(TypeRequirement.CERTIFICADO_ATUAL, null);
+                var result = mapper.toRegister(userFactory(), dto);
+                var after = Instant.now().plusSeconds(1);
+
+                assertThat(result.getCreatedAt()).isBetween(before, after);
+            }
+        }
+
+        // ─── toDTOReturnRequirement ───────────────────────────────────────────────
+
+        @Nested
+        @DisplayName("toDTOReturnRequirement()")
+        class ToDTOReturnRequirement {
+
+            @Test
+            @DisplayName("should map all fields from Solicitation to DTO")
+            void shouldMapAllFields() {
+                var solicitation = solicitationFactory(TypeRequirement.DECLARAÇÃO_DE_MATRICULA, null, false);
+                var dto = mapper.toDTOReturnRequirement(solicitation);
+
+                assertThat(dto.id()).isEqualTo(solicitation.getId());
+                assertThat(dto.type()).isEqualTo(TypeRequirement.DECLARAÇÃO_DE_MATRICULA);
+                assertThat(dto.otherRequirement()).isNull();
+                assertThat(dto.solved()).isFalse();
+                assertThat(dto.createdAt()).isEqualTo(solicitation.getCreatedAt());
+            }
+
+            @Test
+            @DisplayName("should reflect solved=true in DTO when solicitation is resolved")
+            void shouldReflectSolvedState() {
+                var solicitation = solicitationFactory(TypeRequirement.CERTIFICADO_ATUAL, null, true);
+                var dto = mapper.toDTOReturnRequirement(solicitation);
+
+                assertThat(dto.solved()).isTrue();
+            }
+
+            @Test
+            @DisplayName("should include otherRequirement in DTO when type is OUTRO")
+            void shouldIncludeOtherRequirement() {
+                var solicitation = solicitationFactory(TypeRequirement.OUTRO, "Preciso de declaração", false);
+                var dto = mapper.toDTOReturnRequirement(solicitation);
+
+                assertThat(dto.type()).isEqualTo(TypeRequirement.OUTRO);
+                assertThat(dto.otherRequirement()).isEqualTo("Preciso de declaração");
+            }
+
+            @Test
+            @DisplayName("should map every TypeRequirement variant without error")
+            void shouldMapAllTypeRequirementVariants() {
+                for (var type : TypeRequirement.values()) {
+                    var other = (type == TypeRequirement.OUTRO) ? "desc" : null;
+                    var solicitation = solicitationFactory(type, other, false);
+                    var dto = mapper.toDTOReturnRequirement(solicitation);
+
+                    assertThat(dto.type()).isEqualTo(type);
+                }
+            }
         }
     }
 }

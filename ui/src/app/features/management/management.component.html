@@ -21,7 +21,7 @@
   <div class="mgmt-grid">
     @for (c of cards; track c.route) {
       <a [routerLink]="c.route" class="mgmt-card card">
-        <div class="mgmt-icon">{{ c.icon }}</div>
+        <div class="mgmt-icon" [innerHTML]="c.icon"></div>
         <div class="mgmt-title font-display">{{ c.title }}</div>
         <div class="text-muted" style="font-size: 13px; margin-top: 4px">{{ c.desc }}</div>
         <div class="mgmt-arrow">→</div>

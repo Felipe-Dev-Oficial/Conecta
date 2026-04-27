@@ -1,4 +1,4 @@
-package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Repositories;
+package com.etec.zl.conecta.Infraestructure.Adapters.Output.Persistence.SQL.Projection;
 
 public interface NotificadorProjection {
     Long getId();

@@ -40,6 +40,13 @@ Tudo isso acessível via web, com autenticação segura, notificações push, su
 
 ---
 
+## Devs
+
+> duartefelipe020@gmail.com
+> guilhermecampos0108@gmail.com
+> isaacalvessilva.07@gmail.com
+
+
 ## 🧩 Funcionalidades principais
 
 | Módulo | Descrição |

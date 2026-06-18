@@ -42,8 +42,8 @@ Tudo isso acessível via web, com autenticação segura, notificações push, su
 
 ## Devs
 
-> duartefelipe020@gmail.com
-> guilhermecampos0108@gmail.com
+> duartefelipe020@gmail.com <br>
+> guilhermecampos0108@gmail.com <br>
 > isaacalvessilva.07@gmail.com
 
 

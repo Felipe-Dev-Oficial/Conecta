@@ -34,7 +34,7 @@ Tudo isso acessível via web, com autenticação segura, notificações push, su
 
 ## 🔗 Acesso
 
-> 🌐 **[https://conectamais.duckdns.org](https://conectamais.duckdns.org)**
+> 🌐 **[http://135.232.195.79)**
 >
 > Ambiente em produção hospedado na **Microsoft Azure**.
 

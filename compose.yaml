@@ -10,12 +10,13 @@ services:
       - /etc/letsencrypt:/etc/nginx/ssl:ro
     ports:
       - "80:80"
-      - "443:443" 
+      - "443:443"
     depends_on:
       - api
       - ui
     networks:
       - network
+
   ui:
     image: henriquearthur/conecta-ui:latest
     container_name: conecta_ui
@@ -24,7 +25,7 @@ services:
       - NODE_TLS_REJECT_UNAUTHORIZED=0
       - PORT=3000
     ports:
-      - "3000" 
+      - "3000"
     depends_on:
       api:
         condition: service_started
@@ -34,6 +35,7 @@ services:
   api:
     image: henriquearthur/conecta-api:latest
     container_name: conecta_api
+    restart: always
     env_file:
       - .env
     expose:
@@ -46,51 +48,54 @@ services:
       redis:
         condition: service_started
     environment:
-        - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/conecta_postgres
-        - SPRING_DATASOURCE_USERNAME=admin
-        - SPRING_DATASOURCE_PASSWORD=admin
-        - SPRING_DATA_MONGODB_UUID_REPRESENTATION=standard
-        - MONGO_HOST=mongodb
-        - SPRING_DATA_REDIS_HOST=redis
-        - SPRING_DATA_REDIS_PORT=6379
-        - SERVER_FORWARD_HEADERS_STRATEGY=native 
-        - ENCRYPTOR_KEY=${ENCRYPTOR_KEY}
-        - MAIL_USERNAME=${MAIL_USERNAME}
-        - MAIL_PASSWORD=${MAIL_PASSWORD}
-        - JWT_SECRET=${JWT_SECRET}
-        - IP=${IP}
-        - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
-        - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
-        - VAPID_SUBJECT=${VAPID_SUBJECT}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/conecta_postgres
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATA_MONGODB_UUID_REPRESENTATION=standard
+      - MONGO_HOST=mongodb
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SERVER_FORWARD_HEADERS_STRATEGY=native
+      - ENCRYPTOR_KEY=${ENCRYPTOR_KEY}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - IP=${IP}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_SUBJECT=${VAPID_SUBJECT}
     networks:
       - network
     volumes:
-      - media_data:/var/www/media 
+      - media_data:/var/www/media
+
   postgres:
     image: postgres:latest
     container_name: conecta_postgres
+    restart: always
     ports:
       - "5432"
     environment:
       - POSTGRES_DB=conecta_postgres
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin -d conecta_postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d conecta_postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: always
     networks:
       - network
     volumes:
       - postgres_data:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # ← removido após primeiro up
+
   mongodb:
     image: mongo:latest
     container_name: conecta_mongo
+    restart: always
     ports:
       - "27017"
-    restart: always
     networks:
       - network
     volumes:
@@ -99,14 +104,14 @@ services:
   redis:
     image: redis:latest
     container_name: conecta_cache
+    restart: always
     ports:
       - "6379"
-    restart: always
     command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - redis_data:/data
     networks:
       - network
+    volumes:
+      - redis_data:/data
 
 networks:
   network:
